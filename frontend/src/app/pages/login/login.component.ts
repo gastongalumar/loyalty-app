@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -12,8 +12,8 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="auth-page">
       <div class="auth-card fade-in">
-        <div class="auth-logo">☕ {{ 'APP.NAME' | translate }}</div>
-        <p class="auth-tagline">{{ 'APP.TAGLINE' | translate }}</p>
+        <div class="auth-logo">☕ {{ 'app.name' | translate }}</div>
+        <p class="auth-tagline">{{ 'auth.welcomeBack' | translate }}</p>
 
         <div class="lang-row">
           <div class="lang-switcher">
@@ -25,41 +25,32 @@ import { AuthService } from '../../services/auth.service';
         <div *ngIf="error" class="alert alert-error">⚠️ {{ error }}</div>
 
         <div class="form-group">
-          <label class="form-label">{{ 'AUTH.EMAIL' | translate }}</label>
+          <label class="form-label">{{ 'auth.email' | translate }}</label>
           <input type="email" class="form-control" [(ngModel)]="email"
-                 [placeholder]="'AUTH.EMAIL' | translate" />
+                 [placeholder]="'auth.email' | translate" />
         </div>
 
         <div class="form-group">
-          <label class="form-label">{{ 'AUTH.PASSWORD' | translate }}</label>
+          <label class="form-label">{{ 'auth.password' | translate }}</label>
           <input type="password" class="form-control" [(ngModel)]="password"
-                 [placeholder]="'AUTH.PASSWORD' | translate"
+                 [placeholder]="'auth.password' | translate"
                  (keydown.enter)="onLogin()" />
         </div>
 
         <button class="btn btn-primary btn-full btn-lg" [disabled]="loading" (click)="onLogin()">
-          <span *ngIf="!loading">{{ 'AUTH.SIGN_IN' | translate }}</span>
-          <span *ngIf="loading">{{ 'COMMON.LOADING' | translate }}</span>
+          <span *ngIf="!loading">{{ 'auth.signIn' | translate }}</span>
+          <span *ngIf="loading">{{ 'auth.signingIn' | translate }}</span>
         </button>
 
         <p class="auth-link">
-          {{ 'AUTH.NO_ACCOUNT' | translate }}
-          <a routerLink="/register">{{ 'AUTH.SIGN_UP' | translate }}</a>
+          {{ 'auth.noAccount' | translate }}
+          <a routerLink="/register">{{ 'auth.signUp' | translate }}</a>
         </p>
       </div>
     </div>
-  `,
-  styles: [`
-    .lang-row { display: flex; justify-content: center; margin-bottom: 20px; }
-    .lang-switcher { background: #f0eeeb; padding: 3px; border-radius: 8px; display: flex; gap: 4px; }
-    .lang-btn { background: none; border: none; color: #6B6B7B; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s; }
-    .lang-btn.active { background: var(--primary); color: white; }
-    .auth-link { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-secondary); }
-    .auth-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
-    .auth-link a:hover { text-decoration: underline; }
-  `]
+  `
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   loading = false;
@@ -70,7 +61,9 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private translate: TranslateService
-  ) {
+  ) {}
+
+  ngOnInit() {
     this.currentLang = localStorage.getItem('lang') || 'en';
   }
 
@@ -89,7 +82,7 @@ export class LoginComponent {
         else this.router.navigate(['/admin/dashboard']);
       },
       error: (err) => {
-        this.error = err.error?.error || 'Login failed';
+        this.error = err.error?.error || 'Invalid email or password';
         this.loading = false;
       }
     });

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -11,18 +11,20 @@ import { AuthService } from '../services/auth.service';
   template: `
     <nav class="navbar">
       <a class="navbar-brand" [routerLink]="isAdmin ? '/admin/dashboard' : '/customer/card'">
-        ☕ {{ 'APP.NAME' | translate }}
+        ☕ {{ 'app.name' | translate }}
       </a>
 
       <ul class="navbar-nav">
         <ng-container *ngIf="!isAdmin">
-          <li><a routerLink="/customer/card" routerLinkActive="active">{{ 'NAV.MY_CARD' | translate }}</a></li>
-          <li><a routerLink="/customer/qr" routerLinkActive="active">{{ 'NAV.MY_QR' | translate }}</a></li>
+          <li><a routerLink="/customer/card" routerLinkActive="active">{{ 'nav.myCard' | translate }}</a></li>
+          <li><a routerLink="/customer/qr" routerLinkActive="active">{{ 'nav.myQr' | translate }}</a></li>
         </ng-container>
         <ng-container *ngIf="isAdmin">
-          <li><a routerLink="/admin/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a></li>
-          <li><a routerLink="/admin/scanner" routerLinkActive="active">{{ 'NAV.SCANNER' | translate }}</a></li>
-          <li><a routerLink="/admin/customers" routerLinkActive="active">{{ 'NAV.CUSTOMERS' | translate }}</a></li>
+          <li><a routerLink="/admin/dashboard" routerLinkActive="active">{{ 'nav.dashboard' | translate }}</a></li>
+          <li><a routerLink="/admin/scanner" routerLinkActive="active">{{ 'nav.scanner' | translate }}</a></li>
+          <li><a routerLink="/admin/customers" routerLinkActive="active">{{ 'nav.customers' | translate }}</a></li>
+          <li><a routerLink="/admin/users" routerLinkActive="active">{{ 'nav.users' | translate }}</a></li>
+          <li><a routerLink="/admin/appearance" routerLinkActive="active">{{ 'nav.appearance' | translate }}</a></li>
           <li><a routerLink="/admin/settings" routerLinkActive="active">⚙️</a></li>
         </ng-container>
       </ul>
@@ -32,7 +34,7 @@ import { AuthService } from '../services/auth.service';
           <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
           <button class="lang-btn" [class.active]="currentLang === 'es'" (click)="setLang('es')">ES</button>
         </div>
-        <button class="btn btn-ghost btn-sm" (click)="logout()">{{ 'NAV.LOGOUT' | translate }}</button>
+        <button class="btn btn-ghost btn-sm" (click)="logout()">{{ 'nav.logout' | translate }}</button>
       </div>
     </nav>
   `

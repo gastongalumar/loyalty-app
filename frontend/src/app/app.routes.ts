@@ -18,6 +18,11 @@ export const routes: Routes = [
     data: { role: 'CUSTOMER' },
     children: [
       {
+        path: 'users',
+        loadComponent: () => import('./pages/user-management/user-management.component')
+          .then(m => m.UserManagementComponent)
+      },
+      {
         path: 'card',
         loadComponent: () => import('./pages/customer-card/customer-card.component').then(m => m.CustomerCardComponent)
       },
@@ -44,6 +49,15 @@ export const routes: Routes = [
       {
         path: 'customers',
         loadComponent: () => import('./pages/customer-search/customer-search.component').then(m => m.CustomerSearchComponent)
+      },
+      {
+        path: 'users',                                                              // ← NUEVO
+        loadComponent: () => import('./pages/user-management/user-management.component')
+          .then(m => m.UserManagementComponent)
+      },
+      {
+        path: 'appearance',
+        loadComponent: () => import('./pages/appearance/appearance.component').then(m => m.AppearanceComponent)
       },
       {
         path: 'settings',
