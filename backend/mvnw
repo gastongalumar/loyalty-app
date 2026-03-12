@@ -1,0 +1,31 @@
+#!/bin/sh
+# Maven Wrapper Script
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#   https://www.apache.org/licenses/LICENSE-2.0
+# ----------------------------------------------------------------------------
+
+set -e
+
+MAVEN_WRAPPER_JAR=".mvn/wrapper/maven-wrapper.jar"
+MAVEN_WRAPPER_PROPERTIES=".mvn/wrapper/maven-wrapper.properties"
+
+DISTRIBUTION_URL=$(grep distributionUrl "$MAVEN_WRAPPER_PROPERTIES" | cut -d'=' -f2)
+
+if [ -z "$JAVA_HOME" ]; then
+  JAVA_CMD="java"
+else
+  JAVA_CMD="$JAVA_HOME/bin/java"
+fi
+
+if [ -f "$MAVEN_WRAPPER_JAR" ]; then
+  exec "$JAVA_CMD" -jar "$MAVEN_WRAPPER_JAR" "$@"
+else
+  echo "Downloading Maven wrapper..."
+  mvn "$@"
+fi
