@@ -4,15 +4,26 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
+import { LogoComponent } from '../../components/logo.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, LogoComponent],
   template: `
     <div class="auth-page">
       <div class="auth-card fade-in">
-        <div class="auth-logo">☕ {{ 'app.name' | translate }}</div>
+
+        <app-logo
+          [showAppName]="true"
+          [logoSize]="60"
+          [nameSize]="28"
+          [align]="'center'"
+          [direction]="'column'"
+          [textColor]="'var(--primary)'">
+        </app-logo>
+
         <p class="auth-tagline">{{ 'auth.welcomeBack' | translate }}</p>
 
         <div class="lang-row">
@@ -27,14 +38,14 @@ import { AuthService } from '../../services/auth.service';
         <div class="form-group">
           <label class="form-label">{{ 'auth.email' | translate }}</label>
           <input type="email" class="form-control" [(ngModel)]="email"
-                 [placeholder]="'auth.email' | translate" />
+                 [placeholder]="'auth.email' | translate">
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ 'auth.password' | translate }}</label>
           <input type="password" class="form-control" [(ngModel)]="password"
                  [placeholder]="'auth.password' | translate"
-                 (keydown.enter)="onLogin()" />
+                 (keydown.enter)="onLogin()">
         </div>
 
         <button class="btn btn-primary btn-full btn-lg" [disabled]="loading" (click)="onLogin()">
@@ -60,7 +71,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
@@ -78,8 +90,11 @@ export class LoginComponent implements OnInit {
     this.loading = true;
     this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
-        if (res.role === 'CUSTOMER') this.router.navigate(['/customer/card']);
-        else this.router.navigate(['/admin/dashboard']);
+        if (res.role === 'CUSTOMER') {
+          this.router.navigate(['/customer/card']);
+        } else {
+          this.router.navigate(['/admin/dashboard']);
+        }
       },
       error: (err) => {
         this.error = err.error?.error || 'Invalid email or password';

@@ -12,7 +12,6 @@
     "settings": "Settings",
     "users": "Users",
     "appearance": "Appearance",
-    "users": "Users",
     "logout": "Logout"
   },
   "auth": {
@@ -49,7 +48,11 @@
     "stampOf": "{{current}} of {{total}} stamps",
     "stampsAway": "{{count}} stamps away from reward",
     "earnedReward": "🎉 Reward unlocked!",
-    "rewards": "Available rewards"
+    "rewards": "Available rewards",
+    "available": "Available",
+    "redeemed": "Redeemed",
+    "addedBy": "Added by",
+    "recentStamps": "Recent stamps"
   },
   "qr": {
     "title": "Your QR Code",
@@ -70,7 +73,12 @@
     "scanSubtitle": "Scan a customer's QR to add a stamp",
     "stampAdded": "Stamp added successfully!",
     "confirmScan": "Add stamp",
-    "searchPlaceholder": "Search by name or email..."
+    "searchPlaceholder": "Search by name or email...",
+    "manualCode": "Or enter code manually",
+    "enterCode": "Enter QR code",
+    "customers_zero": "No customers",
+    "customers_one": "1 customer",
+    "customers_other": "{{count}} customers"
   },
   "appearance": {
     "title": "Appearance",
@@ -86,6 +94,9 @@
     "fonts": "Typography",
     "fontFamily": "Font family",
     "branding": "Branding",
+    "appName": "App name",
+    "logoSize": "Logo size",
+    "nameSize": "Name size",
     "uploadLogo": "Upload logo",
     "logoPosition": "Logo position",
     "positionTopLeft": "Top left",
@@ -98,7 +109,8 @@
     "bgBlur": "Blur overlay",
     "saveAppearance": "Save appearance",
     "preview": "Preview",
-    "resetDefaults": "Reset to defaults"
+    "resetDefaults": "Reset to defaults",
+    "remove": "Remove"
   },
   "settings": {
     "title": "Business Settings",
@@ -109,6 +121,41 @@
     "logoUrl": "Logo URL",
     "stampsRequired": "Stamps required",
     "rewardDescription": "Reward description",
-    "customers": "customer(s) enrolled"
+    "customers": "customer(s) enrolled",
+    "customers_zero": "No customers enrolled",
+    "customers_one": "1 customer enrolled",
+    "customers_other": "{{count}} customers enrolled"
+  },
+  "userManagement": {
+    "title": "User Management",
+    "subtitle": "Create, edit and manage users",
+    "createNew": "Create new user",
+    "newUser": "New user",
+    "cancel": "Cancel",
+    "totalUsers": "Total users",
+    "searchPlaceholder": "Search by name or email...",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "actions": "Actions",
+    "memberSince": "Member since",
+    "customer": "Customer",
+    "admin": "Admin",
+    "deleteConfirm": "Delete user?",
+    "deleteWarning": "You are about to delete <strong>{{name}}</strong> ({{email}}). This action cannot be undone.",
+    "delete": "Delete",
+    "yesDelete": "Yes, delete",
+    "created": "User created successfully",
+    "roleUpdated": "Role updated successfully",
+    "deleted": "User deleted successfully",
+    "errorLoading": "Error loading users",
+    "errorCreating": "Error creating user",
+    "errorUpdating": "Error updating role",
+    "errorDeleting": "Error deleting user",
+    "requiredFields": "Please fill in all required fields",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "password": "Password"
   }
 }

@@ -12,7 +12,6 @@
     "settings": "Ajustes",
     "users": "Usuarios",
     "appearance": "Apariencia",
-    "users": "Usuarios",
     "logout": "Cerrar sesión"
   },
   "auth": {
@@ -49,7 +48,11 @@
     "stampOf": "{{current}} de {{total}} sellos",
     "stampsAway": "Te faltan {{count}} sellos para tu recompensa",
     "earnedReward": "🎉 ¡Recompensa desbloqueada!",
-    "rewards": "Recompensas disponibles"
+    "rewards": "Recompensas disponibles",
+    "available": "Disponible",
+    "redeemed": "Canjeada",
+    "addedBy": "Agregado por",
+    "recentStamps": "Sellos recientes"
   },
   "qr": {
     "title": "Tu código QR",
@@ -67,10 +70,15 @@
     "customersList": "Clientes",
     "noCustomers": "Aún no hay clientes",
     "scanTitle": "Escanear código QR",
-    "scanSubtitle": "Escaneá el QR de un cliente para agregar un sello",
+    "scanSubtitle": "Escanéa el QR de un cliente para agregar un sello",
     "stampAdded": "¡Sello agregado con éxito!",
     "confirmScan": "Agregar sello",
-    "searchPlaceholder": "Buscar por nombre o email..."
+    "searchPlaceholder": "Buscar por nombre o email...",
+    "manualCode": "O ingresá el código manualmente",
+    "enterCode": "Ingresá el código QR",
+    "customers_zero": "Sin clientes",
+    "customers_one": "1 cliente",
+    "customers_other": "{{count}} clientes"
   },
   "appearance": {
     "title": "Apariencia",
@@ -86,6 +94,9 @@
     "fonts": "Tipografía",
     "fontFamily": "Familia de fuente",
     "branding": "Marca",
+    "appName": "Nombre de la app",
+    "logoSize": "Tamaño del logo",
+    "nameSize": "Tamaño del nombre",
     "uploadLogo": "Subir logo",
     "logoPosition": "Posición del logo",
     "positionTopLeft": "Arriba a la izquierda",
@@ -98,7 +109,8 @@
     "bgBlur": "Desenfoque superpuesto",
     "saveAppearance": "Guardar apariencia",
     "preview": "Vista previa",
-    "resetDefaults": "Restablecer por defecto"
+    "resetDefaults": "Restablecer por defecto",
+    "remove": "Eliminar"
   },
   "settings": {
     "title": "Ajustes del negocio",
@@ -109,6 +121,41 @@
     "logoUrl": "URL del logo",
     "stampsRequired": "Sellos requeridos",
     "rewardDescription": "Descripción de la recompensa",
-    "customers": "cliente(s) inscripto(s)"
+    "customers": "cliente(s) inscripto(s)",
+    "customers_zero": "Sin clientes inscriptos",
+    "customers_one": "1 cliente inscripto",
+    "customers_other": "{{count}} clientes inscriptos"
+  },
+  "userManagement": {
+    "title": "Gestión de usuarios",
+    "subtitle": "Creá, editá y administrá usuarios",
+    "createNew": "Crear nuevo usuario",
+    "newUser": "Nuevo usuario",
+    "cancel": "Cancelar",
+    "totalUsers": "Total de usuarios",
+    "searchPlaceholder": "Buscar por nombre o email...",
+    "name": "Nombre",
+    "email": "Email",
+    "role": "Rol",
+    "actions": "Acciones",
+    "memberSince": "Miembro desde",
+    "customer": "Cliente",
+    "admin": "Admin",
+    "deleteConfirm": "¿Eliminar usuario?",
+    "deleteWarning": "Vas a eliminar a <strong>{{name}}</strong> ({{email}}). Esta acción no se puede deshacer.",
+    "delete": "Eliminar",
+    "yesDelete": "Sí, eliminar",
+    "created": "Usuario creado correctamente",
+    "roleUpdated": "Rol actualizado correctamente",
+    "deleted": "Usuario eliminado correctamente",
+    "errorLoading": "Error cargando usuarios",
+    "errorCreating": "Error al crear usuario",
+    "errorUpdating": "Error al actualizar rol",
+    "errorDeleting": "Error al eliminar usuario",
+    "requiredFields": "Completá todos los campos obligatorios",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Teléfono",
+    "password": "Contraseña"
   }
 }

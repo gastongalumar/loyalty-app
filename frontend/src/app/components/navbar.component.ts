@@ -3,15 +3,25 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
+import { LogoComponent } from './logo.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, LogoComponent],
   template: `
     <nav class="navbar">
       <a class="navbar-brand" [routerLink]="isAdmin ? '/admin/dashboard' : '/customer/card'">
-        ☕ {{ 'app.name' | translate }}
+        <app-logo
+          [showAppName]="true"
+          [logoSize]="themeService.getTheme().logoSize"
+          [nameSize]="themeService.getTheme().nameSize"
+          [align]="'left'"
+          [direction]="'row'"
+          [textColor]="themeService.getTheme().navbarTextColor"
+          [logoMarginTop]="0">
+        </app-logo>
       </a>
 
       <ul class="navbar-nav">
@@ -43,7 +53,11 @@ export class NavbarComponent implements OnInit {
   isAdmin = false;
   currentLang = 'en';
 
-  constructor(private authService: AuthService, private translate: TranslateService) {}
+  constructor(
+    private authService: AuthService,
+    private translate: TranslateService,
+    public themeService: ThemeService
+  ) {}
 
   ngOnInit() {
     this.isAdmin = this.authService.isAdmin();

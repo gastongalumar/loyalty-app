@@ -4,15 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
+import { LogoComponent } from '../../components/logo.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, LogoComponent],
   template: `
     <div class="auth-page">
       <div class="auth-card fade-in">
-        <div class="auth-logo">☕ {{ 'app.name' | translate }}</div>
+
+        <!-- 🔥 LOGO PERSONALIZADO -->
+        <app-logo
+          [showAppName]="true"
+          [logoMarginTop]="0"
+          [align]="'center'">
+        </app-logo>
+
         <p class="auth-tagline">{{ 'auth.createAccount' | translate }}</p>
 
         <div class="lang-row">
@@ -28,35 +36,33 @@ import { AuthService } from '../../services/auth.service';
           <div class="form-group">
             <label class="form-label">{{ 'auth.firstName' | translate }}</label>
             <input type="text" class="form-control" [(ngModel)]="form.firstName"
-                   [placeholder]="'auth.firstName' | translate" />
+                   [placeholder]="'auth.firstName' | translate">
           </div>
           <div class="form-group">
             <label class="form-label">{{ 'auth.lastName' | translate }}</label>
             <input type="text" class="form-control" [(ngModel)]="form.lastName"
-                   [placeholder]="'auth.lastName' | translate" />
+                   [placeholder]="'auth.lastName' | translate">
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ 'auth.email' | translate }}</label>
           <input type="email" class="form-control" [(ngModel)]="form.email"
-                 [placeholder]="'auth.email' | translate" />
+                 [placeholder]="'auth.email' | translate">
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ 'auth.phone' | translate }}</label>
           <input type="tel" class="form-control" [(ngModel)]="form.phone"
-                 [placeholder]="'auth.phone' | translate" />
+                 [placeholder]="'auth.phone' | translate">
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ 'auth.password' | translate }}</label>
           <input type="password" class="form-control" [(ngModel)]="form.password"
                  [placeholder]="'auth.password' | translate"
-                 (keydown.enter)="onRegister()" />
+                 (keydown.enter)="onRegister()">
         </div>
-
-        <!-- Role selector REMOVED — all users registered as CUSTOMER -->
 
         <button class="btn btn-primary btn-full btn-lg" [disabled]="loading" (click)="onRegister()">
           <span *ngIf="!loading">{{ 'auth.signUp' | translate }}</span>
@@ -78,7 +84,7 @@ export class RegisterComponent {
     email: '',
     phone: '',
     password: '',
-    role: 'CUSTOMER', // Always CUSTOMER — not exposed to user
+    role: 'CUSTOMER',
   };
   loading = false;
   error = '';
