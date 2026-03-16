@@ -2,6 +2,7 @@ package com.loyalty.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "business_themes")
@@ -13,6 +14,7 @@ public class BusinessTheme {
 
     @OneToOne
     @JoinColumn(name = "business_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"loyaltyCards", "owner", "stamps", "rewards"})
     private Business business;
 
     @Column(length = 20)

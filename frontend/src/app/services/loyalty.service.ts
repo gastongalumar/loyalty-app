@@ -20,6 +20,11 @@ export class LoyaltyService {
     return this.http.get(`${this.CUSTOMER_API}/qr`, { responseType: 'text' });
   }
 
+  // NUEVO: Solicitar canje de recompensa
+  requestRedemption(request: { rewardId: number, rewardType: string }): Observable<any> {
+    return this.http.post(`${this.CUSTOMER_API}/redemptions/request`, request);
+  }
+
   // Admin endpoints
   getAllCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(`${this.ADMIN_API}/customers`);

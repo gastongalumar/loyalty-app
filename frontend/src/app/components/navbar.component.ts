@@ -35,6 +35,8 @@ import { LogoComponent } from './logo.component';
           <li><a routerLink="/admin/customers" routerLinkActive="active">{{ 'nav.customers' | translate }}</a></li>
           <li><a routerLink="/admin/users" routerLinkActive="active">{{ 'nav.users' | translate }}</a></li>
           <li><a routerLink="/admin/appearance" routerLinkActive="active">{{ 'nav.appearance' | translate }}</a></li>
+         <li><a routerLink="/admin/fidelity-tiers" routerLinkActive="active">🎯 Fidelidad</a></li>
+         <li><a routerLink="/admin/redemptions" routerLinkActive="active">🎁 Canjes</a></li>
           <li><a routerLink="/admin/settings" routerLinkActive="active">⚙️</a></li>
         </ng-container>
       </ul>

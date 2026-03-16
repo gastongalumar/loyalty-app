@@ -51,7 +51,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/customer-search/customer-search.component').then(m => m.CustomerSearchComponent)
       },
       {
-        path: 'users',                                                              // ← NUEVO
+        path: 'users',
         loadComponent: () => import('./pages/user-management/user-management.component')
           .then(m => m.UserManagementComponent)
       },
@@ -60,8 +60,16 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/appearance/appearance.component').then(m => m.AppearanceComponent)
       },
       {
+        path: 'fidelity-tiers',
+        loadComponent: () => import('./pages/fidelity-tiers/fidelity-tiers.component').then(m => m.FidelityTiersComponent)
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./pages/business-settings/business-settings.component').then(m => m.BusinessSettingsComponent)
+      },
+      {
+        path: 'redemptions',
+        loadComponent: () => import('./pages/admin-redemptions/admin-redemptions.component').then(m => m.AdminRedemptionsComponent)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

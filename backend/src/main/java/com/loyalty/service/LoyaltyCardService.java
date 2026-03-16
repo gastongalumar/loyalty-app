@@ -13,18 +13,31 @@ import java.util.stream.Collectors;
 @Service
 public class LoyaltyCardService {
 
+    private final FidelityTierRepository fidelityTierRepository;
+    private final FidelityRewardRepository fidelityRewardRepository;
     private final LoyaltyCardRepository loyaltyCardRepository;
     private final UserRepository userRepository;
     private final StampRepository stampRepository;
     private final RewardRepository rewardRepository;
     private final QrCodeService qrCodeService;
 
-    public LoyaltyCardService(LoyaltyCardRepository loyaltyCardRepository, UserRepository userRepository, StampRepository stampRepository, RewardRepository rewardRepository, QrCodeService qrCodeService) {
+    // ✅ ÚNICO CONSTRUCTOR
+    public LoyaltyCardService(
+            LoyaltyCardRepository loyaltyCardRepository,
+            UserRepository userRepository,
+            StampRepository stampRepository,
+            RewardRepository rewardRepository,
+            QrCodeService qrCodeService,
+            FidelityTierRepository fidelityTierRepository,
+            FidelityRewardRepository fidelityRewardRepository
+    ) {
         this.loyaltyCardRepository = loyaltyCardRepository;
         this.userRepository = userRepository;
         this.stampRepository = stampRepository;
         this.rewardRepository = rewardRepository;
         this.qrCodeService = qrCodeService;
+        this.fidelityTierRepository = fidelityTierRepository;
+        this.fidelityRewardRepository = fidelityRewardRepository;
     }
 
     public LoyaltyCardDto getLoyaltyCard(Long userId) {
@@ -64,6 +77,9 @@ public class LoyaltyCardService {
             card.setCompletedCards(card.getCompletedCards() + 1);
             card.setCurrentStamps(0);
             card.setStatus(LoyaltyCard.CardStatus.REWARD_PENDING);
+
+            // ✅ Verificar recompensas por fidelidad
+            checkAndGrantFidelityRewards(card);
         }
 
         loyaltyCardRepository.save(card);
@@ -114,6 +130,20 @@ public class LoyaltyCardService {
                         .build())
                 .collect(Collectors.toList());
 
+        // ✅ NUEVO: Obtener recompensas de fidelidad
+        List<LoyaltyCardDto.FidelityRewardDto> fidelityRewards = fidelityRewardRepository
+                .findByLoyaltyCardOrderByEarnedAtDesc(card)
+                .stream()
+                .map(fr -> LoyaltyCardDto.FidelityRewardDto.builder()
+                        .id(fr.getId())
+                        .description(fr.getDescription())
+                        .status(fr.getStatus().name())
+                        .earnedAt(fr.getEarnedAt())
+                        .redeemedAt(fr.getRedeemedAt())
+                        .cardsRequired(fr.getTier().getCardsRequired())
+                        .build())
+                .collect(Collectors.toList());
+
         return LoyaltyCardDto.builder()
                 .id(card.getId())
                 .userId(card.getUser().getId())
@@ -130,7 +160,31 @@ public class LoyaltyCardService {
                 .updatedAt(card.getUpdatedAt())
                 .recentStamps(recentStamps)
                 .rewards(rewards)
+                .fidelityRewards(fidelityRewards)  // ← NUEVO
                 .build();
+    }
+
+    private void checkAndGrantFidelityRewards(LoyaltyCard card) {
+        List<FidelityTier> eligibleTiers = fidelityTierRepository.findEligibleTiers(
+                card.getBusiness(),
+                card.getCompletedCards()
+        );
+
+        for (FidelityTier tier : eligibleTiers) {
+            boolean alreadyGranted = fidelityRewardRepository
+                    .findByLoyaltyCardAndStatus(card, FidelityReward.RewardStatus.AVAILABLE)
+                    .stream()
+                    .anyMatch(r -> r.getTier().getId().equals(tier.getId()));
+
+            if (!alreadyGranted) {
+                FidelityReward fidelityReward = new FidelityReward();
+                fidelityReward.setLoyaltyCard(card);
+                fidelityReward.setTier(tier);
+                fidelityReward.setDescription(tier.getRewardDescription());
+                fidelityReward.setStatus(FidelityReward.RewardStatus.AVAILABLE);
+                fidelityRewardRepository.save(fidelityReward);
+            }
+        }
     }
 
     private CustomerDto mapUserToCustomerDto(User user) {

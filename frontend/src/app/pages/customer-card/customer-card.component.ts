@@ -17,6 +17,10 @@ import { LoyaltyCard } from '../../models/models';
     <app-navbar></app-navbar>
 
     <div class="container" style="padding-top: 24px; padding-bottom: 32px;">
+      <!-- Alertas -->
+      <app-alert *ngIf="successMsg" [message]="successMsg" type="success" (dismissed)="successMsg = ''"></app-alert>
+      <app-alert *ngIf="errorMsg" [message]="errorMsg" type="error" (dismissed)="errorMsg = ''"></app-alert>
+
       <div *ngIf="loading" style="text-align:center; padding: 40px 0;">
         <div class="spinner"></div>
         <p style="color: var(--text-muted);">{{ 'COMMON.LOADING' | translate }}</p>
@@ -27,11 +31,13 @@ import { LoyaltyCard } from '../../models/models';
         <div class="loyalty-card-visual">
           <div class="loyalty-card-business">{{ card.businessName }}</div>
           <div class="loyalty-card-name">{{ card.customerName }}</div>
-          <div class="loyalty-card-reward">🏆 {{ card.rewardDescription }}</div>
+          <div class="loyalty-card-reward">🎁 {{ card.rewardDescription }}</div>
 
           <!-- Stamp Grid -->
           <div class="stamp-grid">
-            <div *ngFor="let i of stampArray" class="stamp-cell" [class.filled]="i < card.currentStamps" [class.empty]="i >= card.currentStamps">
+            <div *ngFor="let i of stampArray" class="stamp-cell"
+                 [class.filled]="i < card.currentStamps"
+                 [class.empty]="i >= card.currentStamps">
               <span *ngIf="i < card.currentStamps">☕</span>
               <span *ngIf="i >= card.currentStamps" style="font-size: 0.9rem;">{{ i + 1 }}</span>
             </div>
@@ -76,15 +82,73 @@ import { LoyaltyCard } from '../../models/models';
           📱 {{ 'CARD.SHOW_QR' | translate }}
         </a>
 
-        <!-- Available Rewards -->
+        <!-- Available Rewards (tarjetas completadas) -->
         <div *ngIf="availableRewards.length > 0" class="card" style="margin-bottom: 16px;">
-          <h3 style="font-size: 1rem; margin-bottom: 12px;">🏆 {{ 'CARD.REWARDS' | translate }}</h3>
+          <h3 style="font-size: 1rem; margin-bottom: 12px;">🎁 {{ 'CARD.REWARDS' | translate }}</h3>
           <div *ngFor="let reward of availableRewards" style="padding: 10px 0; border-bottom: 1px solid var(--border);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="font-size: 0.9rem;">{{ reward.description }}</span>
-              <span class="badge" [class.badge-success]="reward.status === 'AVAILABLE'" [class.badge-secondary]="reward.status === 'REDEEMED'">
-                {{ (reward.status === 'AVAILABLE' ? 'CARD.AVAILABLE' : 'CARD.REDEEMED') | translate }}
-              </span>
+              <div>
+                <!-- Estado: Pendiente (solicitud enviada) -->
+                <span *ngIf="reward.status === 'REQUESTED'"
+                      class="badge badge-warning"
+                      style="background: #ff9800; color: white; padding: 4px 8px;">
+                  ⏳ Pendiente
+                </span>
+
+                <!-- Estado: Aprobado/Canjeado -->
+                <span *ngIf="reward.status === 'REDEEMED'"
+                      class="badge badge-success"
+                      style="background: #4caf50; color: white; padding: 4px 8px;">
+                  ✅ Canjeado
+                </span>
+
+                <!-- Estado: Disponible (con botón rojo) -->
+                <button *ngIf="reward.status === 'AVAILABLE' && !reward.requestedAt"
+                        class="btn"
+                        style="background: #dc3545; color: white; border: none;"
+                        (click)="requestRedemption(reward.id, 'CARD')">
+                  🔴 Canjear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fidelity Rewards (recompensas por niveles) -->
+        <div *ngIf="card.fidelityRewards && card.fidelityRewards.length > 0" class="card" style="margin-bottom: 16px;">
+          <h3 style="font-size: 1rem; margin-bottom: 12px;">🏆 Recompensas por fidelidad</h3>
+          <div *ngFor="let reward of card.fidelityRewards" style="padding: 10px 0; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.9rem; font-weight: 600;">{{ reward.description }}</span>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                  Por {{ reward.cardsRequired }} tarjetas completadas
+                </div>
+              </div>
+              <div>
+                <!-- Estado: Pendiente (solicitud enviada) -->
+                <span *ngIf="reward.status === 'REQUESTED'"
+                      class="badge badge-warning"
+                      style="background: #ff9800; color: white; padding: 4px 8px;">
+                  ⏳ Pendiente
+                </span>
+
+                <!-- Estado: Aprobado/Canjeado -->
+                <span *ngIf="reward.status === 'REDEEMED'"
+                      class="badge badge-success"
+                      style="background: #4caf50; color: white; padding: 4px 8px;">
+                  ✅ Canjeado
+                </span>
+
+                <!-- Estado: Disponible (con botón rojo) -->
+                <button *ngIf="reward.status === 'AVAILABLE' && !reward.requestedAt"
+                        class="btn"
+                        style="background: #dc3545; color: white; border: none;"
+                        (click)="requestRedemption(reward.id, 'FIDELITY')">
+                  🔴 Canjear
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -109,6 +173,8 @@ export class CustomerCardComponent implements OnInit {
   card: LoyaltyCard | null = null;
   loading = true;
   stampArray: number[] = [];
+  successMsg = '';
+  errorMsg = '';
 
   get progressPercent() {
     if (!this.card) return 0;
@@ -116,12 +182,19 @@ export class CustomerCardComponent implements OnInit {
   }
 
   get availableRewards() {
-    return this.card?.rewards?.filter(r => r.status === 'AVAILABLE') || [];
+    return this.card?.rewards?.filter(r =>
+      r.status === 'AVAILABLE' ||
+      r.status === 'REQUESTED' ||
+      r.status === 'REDEEMED'
+    ) || [];
   }
-
   constructor(private loyaltyService: LoyaltyService) {}
 
   ngOnInit() {
+    this.loadCard();
+  }
+
+  loadCard() {
     this.loyaltyService.getMyCard().subscribe({
       next: (card) => {
         this.card = card;
@@ -129,6 +202,20 @@ export class CustomerCardComponent implements OnInit {
         this.loading = false;
       },
       error: () => { this.loading = false; }
+    });
+  }
+
+  requestRedemption(rewardId: number, rewardType: string) {
+    this.loyaltyService.requestRedemption({ rewardId, rewardType }).subscribe({
+      next: (res) => {
+        this.successMsg = 'Solicitud enviada al admin';
+        setTimeout(() => this.successMsg = '', 3000);
+        this.loadCard();
+      },
+      error: (err) => {
+        this.errorMsg = err.error?.error || 'Error al solicitar canje';
+        setTimeout(() => this.errorMsg = '', 3000);
+      }
     });
   }
 }

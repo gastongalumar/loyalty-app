@@ -1,12 +1,11 @@
 package com.loyalty.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rewards")
-public class Reward {
+@Table(name = "fidelity_rewards")
+public class FidelityReward {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,12 +15,16 @@ public class Reward {
     @JoinColumn(name = "loyalty_card_id", nullable = false)
     private LoyaltyCard loyaltyCard;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tier_id", nullable = false)
+    private FidelityTier tier;
+
     @Column(nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RewardStatus status;
+    private RewardStatus status = RewardStatus.AVAILABLE;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime earnedAt;
@@ -33,22 +36,24 @@ public class Reward {
     private LocalDateTime rejectedAt;
     private String rejectionReason;
 
-    public Reward() {}
-
-    public Reward(Long id, LoyaltyCard loyaltyCard, String description, RewardStatus status, LocalDateTime earnedAt, LocalDateTime redeemedAt) {
-        this.id = id;
-        this.loyaltyCard = loyaltyCard;
-        this.description = description;
-        this.status = status;
-        this.earnedAt = earnedAt;
-        this.redeemedAt = redeemedAt;
+    @PrePersist
+    protected void onCreate() {
+        earnedAt = LocalDateTime.now();
     }
 
+    public enum RewardStatus {
+        AVAILABLE, REDEEMED, REQUESTED
+    }
+
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public LoyaltyCard getLoyaltyCard() { return loyaltyCard; }
     public void setLoyaltyCard(LoyaltyCard loyaltyCard) { this.loyaltyCard = loyaltyCard; }
+
+    public FidelityTier getTier() { return tier; }
+    public void setTier(FidelityTier tier) { this.tier = tier; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -62,13 +67,20 @@ public class Reward {
     public LocalDateTime getRedeemedAt() { return redeemedAt; }
     public void setRedeemedAt(LocalDateTime redeemedAt) { this.redeemedAt = redeemedAt; }
 
-
     public LocalDateTime getRequestedAt() {
         return requestedAt;
     }
 
     public void setRequestedAt(LocalDateTime requestedAt) {
         this.requestedAt = requestedAt;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 
     public LocalDateTime getApprovedAt() {
@@ -86,37 +98,4 @@ public class Reward {
     public void setRejectedAt(LocalDateTime rejectedAt) {
         this.rejectedAt = rejectedAt;
     }
-
-    public String getRejectionReason() {
-        return rejectionReason;
-    }
-
-    public void setRejectionReason(String rejectionReason) {
-        this.rejectionReason = rejectionReason;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        earnedAt = LocalDateTime.now();
-    }
-
-    public enum RewardStatus {
-        AVAILABLE, REDEEMED, REQUESTED
-    }
-
-    // Minimal builder
-    public static Builder builder() { return new Builder(); }
-    public static class Builder {
-        private LoyaltyCard loyaltyCard;
-        private String description;
-        private RewardStatus status;
-
-        public Builder loyaltyCard(LoyaltyCard loyaltyCard) { this.loyaltyCard = loyaltyCard; return this; }
-        public Builder description(String description) { this.description = description; return this; }
-        public Builder status(RewardStatus status) { this.status = status; return this; }
-        public Reward build() { return new Reward(null, loyaltyCard, description, status, null, null); }
-    }
-
-
-
 }

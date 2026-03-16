@@ -37,6 +37,7 @@ export interface LoyaltyCard {
   updatedAt: string;
   recentStamps: Stamp[];
   rewards: Reward[];
+  fidelityRewards: FidelityReward[];
 }
 
 export interface Stamp {
@@ -49,9 +50,26 @@ export interface Stamp {
 export interface Reward {
   id: number;
   description: string;
-  status: 'AVAILABLE' | 'REDEEMED';
+  status: 'AVAILABLE' | 'REDEEMED' | 'REQUESTED';
   earnedAt: string;
   redeemedAt?: string;
+  requestedAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
+}
+
+export interface FidelityReward {
+  id: number;
+  description: string;
+  status: 'AVAILABLE' | 'REDEEMED' | 'REQUESTED';
+  earnedAt: string;
+  redeemedAt?: string;
+  requestedAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
+  cardsRequired: number;
 }
 
 export interface Customer {

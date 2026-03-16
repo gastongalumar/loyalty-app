@@ -31,6 +31,29 @@ public class ThemeController {
         this.fileStorageService = fileStorageService;
     }
 
+    @GetMapping("/public")
+    public ResponseEntity<?> getPublicTheme() {
+        try {
+            Business business = businessRepository.findAll()
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No business found"));
+
+            BusinessTheme theme = themeRepository.findByBusiness(business)
+                    .orElseGet(() -> {
+                        BusinessTheme newTheme = new BusinessTheme();
+                        newTheme.setBusiness(business);
+                        return themeRepository.save(newTheme);
+                    });
+
+            return ResponseEntity.ok(theme);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping
     public ResponseEntity<?> getTheme(@AuthenticationPrincipal User owner) {
         try {

@@ -4,35 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb546d16-e4b4-4f0a-a832-55f01d665f66" name="Changes" comment="Initial commit - loyalty card app with Spring Boot + Angular">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/WebConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/FileController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/BusinessThemeRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/FileStorageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/components/logo.component.ts" afterDir="false" />
+    <list default="true" id="fb546d16-e4b4-4f0a-a832-55f01d665f66" name="Changes" comment="git add .&#10;git commit -m &quot;feat: Implementar sistema completo de personalización visual con almacenamiento de imágenes&#10;&#10;- Agregar entidad BusinessTheme para guardar configuración visual en BD&#10;- Crear repositorio BusinessThemeRepository&#10;- Implementar FileStorageService para guardar archivos físicos en uploads/&#10;- Agregar WebConfig para servir archivos estáticos&#10;- Crear FileController para servir imágenes por API sin autenticación&#10;- Desarrollar ThemeController con endpoints completos:&#10;  * GET/PUT configuración de tema&#10;  * POST upload-logo y upload-background&#10;  * DELETE remove-logo y remove-background&#10;- Configurar SecurityConfig para permitir acceso público a /api/files/**&#10;- Actualizar application.properties con configuración de archivos y CORS&#10;- Agregar application-prod.properties para producción&#10;- Modificar theme.service.ts para separar vista previa de guardado&#10;- Actualizar appearance.component.ts con métodos async y preview en tiempo real&#10;- Corregir logo.component.ts para usar getImageUrl() y mostrar imágenes&#10;- Crear estructura de carpetas uploads/logos y uploads/backgrounds&#10;- Solucionar errores CORS y 403/404 en imágenes&#10;&#10;Cambios principales:&#10;✓ Las imágenes se guardan como archivos físicos en backend/uploads/&#10;✓ La configuración visual persiste en base de datos&#10;✓ Los cambios se ven en tiempo real sin recargar&#10;✓ Las imágenes se sirven correctamente vía /api/files/&#10;✓ El sistema funciona en localhost y está preparado para producción&#10;&#10;Closes: #personalizacion-visual, #almacenamiento-imagenes&quot;">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/AdminRedemptionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/FidelityTierController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/RewardRedemptionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/RewardRedemptionDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityReward.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/FidelityRewardRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/FidelityTierRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/components/install-prompt.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/admin-redemptions/admin-redemptions.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/fidelity-tiers/fidelity-tiers.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/proxy.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/proxy.conf.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/RewardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/RewardRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/register/register.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/register/register.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/models/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/models/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/qr-scanner/qr-scanner.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/qr-scanner/qr-scanner.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/assets/i18n/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/i18n/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/assets/i18n/es.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/i18n/es.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/environments/environment.prod.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/environments/environment.prod.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/environments/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/environments/environment.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project-snapshot.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773282245403</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="git add .&#10;git commit -m &quot;feat: Implementar sistema completo de personalización visual con almacenamiento de imágenes&#10;&#10;- Agregar entidad BusinessTheme para guardar configuración visual en BD&#10;- Crear repositorio BusinessThemeRepository&#10;- Implementar FileStorageService para guardar archivos físicos en uploads/&#10;- Agregar WebConfig para servir archivos estáticos&#10;- Crear FileController para servir imágenes por API sin autenticación&#10;- Desarrollar ThemeController con endpoints completos:&#10;  * GET/PUT configuración de tema&#10;  * POST upload-logo y upload-background&#10;  * DELETE remove-logo y remove-background&#10;- Configurar SecurityConfig para permitir acceso público a /api/files/**&#10;- Actualizar application.properties con configuración de archivos y CORS&#10;- Agregar application-prod.properties para producción&#10;- Modificar theme.service.ts para separar vista previa de guardado&#10;- Actualizar appearance.component.ts con métodos async y preview en tiempo real&#10;- Corregir logo.component.ts para usar getImageUrl() y mostrar imágenes&#10;- Crear estructura de carpetas uploads/logos y uploads/backgrounds&#10;- Solucionar errores CORS y 403/404 en imágenes&#10;&#10;Cambios principales:&#10;✓ Las imágenes se guardan como archivos físicos en backend/uploads/&#10;✓ La configuración visual persiste en base de datos&#10;✓ Los cambios se ven en tiempo real sin recargar&#10;✓ Las imágenes se sirven correctamente vía /api/files/&#10;✓ El sistema funciona en localhost y está preparado para producción&#10;&#10;Closes: #personalizacion-visual, #almacenamiento-imagenes&quot;">
+      <option name="closed" value="true" />
+      <created>1773598666436</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1773598666436</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -199,7 +206,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit - loyalty card app with Spring Boot + Angular" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit - loyalty card app with Spring Boot + Angular" />
+    <MESSAGE value="git add .&#10;git commit -m &quot;feat: Implementar sistema completo de personalización visual con almacenamiento de imágenes&#10;&#10;- Agregar entidad BusinessTheme para guardar configuración visual en BD&#10;- Crear repositorio BusinessThemeRepository&#10;- Implementar FileStorageService para guardar archivos físicos en uploads/&#10;- Agregar WebConfig para servir archivos estáticos&#10;- Crear FileController para servir imágenes por API sin autenticación&#10;- Desarrollar ThemeController con endpoints completos:&#10;  * GET/PUT configuración de tema&#10;  * POST upload-logo y upload-background&#10;  * DELETE remove-logo y remove-background&#10;- Configurar SecurityConfig para permitir acceso público a /api/files/**&#10;- Actualizar application.properties con configuración de archivos y CORS&#10;- Agregar application-prod.properties para producción&#10;- Modificar theme.service.ts para separar vista previa de guardado&#10;- Actualizar appearance.component.ts con métodos async y preview en tiempo real&#10;- Corregir logo.component.ts para usar getImageUrl() y mostrar imágenes&#10;- Crear estructura de carpetas uploads/logos y uploads/backgrounds&#10;- Solucionar errores CORS y 403/404 en imágenes&#10;&#10;Cambios principales:&#10;✓ Las imágenes se guardan como archivos físicos en backend/uploads/&#10;✓ La configuración visual persiste en base de datos&#10;✓ Los cambios se ven en tiempo real sin recargar&#10;✓ Las imágenes se sirven correctamente vía /api/files/&#10;✓ El sistema funciona en localhost y está preparado para producción&#10;&#10;Closes: #personalizacion-visual, #almacenamiento-imagenes&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="git add .&#10;git commit -m &quot;feat: Implementar sistema completo de personalización visual con almacenamiento de imágenes&#10;&#10;- Agregar entidad BusinessTheme para guardar configuración visual en BD&#10;- Crear repositorio BusinessThemeRepository&#10;- Implementar FileStorageService para guardar archivos físicos en uploads/&#10;- Agregar WebConfig para servir archivos estáticos&#10;- Crear FileController para servir imágenes por API sin autenticación&#10;- Desarrollar ThemeController con endpoints completos:&#10;  * GET/PUT configuración de tema&#10;  * POST upload-logo y upload-background&#10;  * DELETE remove-logo y remove-background&#10;- Configurar SecurityConfig para permitir acceso público a /api/files/**&#10;- Actualizar application.properties con configuración de archivos y CORS&#10;- Agregar application-prod.properties para producción&#10;- Modificar theme.service.ts para separar vista previa de guardado&#10;- Actualizar appearance.component.ts con métodos async y preview en tiempo real&#10;- Corregir logo.component.ts para usar getImageUrl() y mostrar imágenes&#10;- Crear estructura de carpetas uploads/logos y uploads/backgrounds&#10;- Solucionar errores CORS y 403/404 en imágenes&#10;&#10;Cambios principales:&#10;✓ Las imágenes se guardan como archivos físicos en backend/uploads/&#10;✓ La configuración visual persiste en base de datos&#10;✓ Los cambios se ven en tiempo real sin recargar&#10;✓ Las imágenes se sirven correctamente vía /api/files/&#10;✓ El sistema funciona en localhost y está preparado para producción&#10;&#10;Closes: #personalizacion-visual, #almacenamiento-imagenes&quot;" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

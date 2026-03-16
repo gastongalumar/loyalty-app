@@ -53,9 +53,12 @@ export class ThemeService {
 
   async loadFromServer() {
     try {
-      const serverTheme = await firstValueFrom(this.http.get<AppTheme>(this.apiUrl));
+      const serverTheme = await firstValueFrom(
+        this.http.get<AppTheme>(`${environment.apiUrl}/admin/theme/public`)
+      );
       this.theme = { ...DEFAULT_THEME, ...serverTheme };
       this.apply();
+      localStorage.setItem('app-theme', JSON.stringify(this.theme));
     } catch (error) {
       console.error('Error loading theme from server', error);
       this.loadFromLocalStorage();
@@ -82,13 +85,10 @@ export class ThemeService {
   applyTheme(partial: Partial<AppTheme>): void {
     this.theme = { ...this.theme, ...partial };
     this.apply();
-    // Backup en localStorage por si acaso
-    localStorage.setItem('app-theme', JSON.stringify(this.theme));
   }
 
   // GUARDA SOLO LA CONFIGURACIÓN (SIN IMÁGENES)
   saveConfig(): Promise<AppTheme> {
-    // Crear una copia SIN las URLs de imágenes
     const configToSave = {
       mode: this.theme.mode,
       primaryColor: this.theme.primaryColor,
@@ -115,13 +115,11 @@ export class ThemeService {
     };
     this.theme = { ...this.theme, ...presets[mode], mode };
     this.apply();
-    // No guardamos automáticamente
   }
 
   resetDefaults(): void {
     this.theme = { ...DEFAULT_THEME };
     this.apply();
-    // No guardamos automáticamente
   }
 
   async uploadLogo(file: File): Promise<string> {
@@ -212,7 +210,6 @@ export class ThemeService {
     root.style.setProperty('--font-display', fontMap[t.fontFamily] || fontMap['Syne']);
 
     if (t.backgroundUrl) {
-      // Usar getImageUrl para la URL del background
       const bgUrl = this.getImageUrl(t.backgroundUrl);
       const bgValue = t.backgroundBlur
         ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${bgUrl}')`
@@ -245,17 +242,14 @@ export class ThemeService {
     return `#${((mix(r) << 16) | (mix(g) << 8) | mix(b)).toString(16).padStart(6, '0')}`;
   }
 
-  // Helper para construir URLs completas de imágenes usando FileController
   getImageUrl(path: string): string {
     if (!path) return '';
     if (path.startsWith('http')) return path;
     if (path.startsWith('/uploads')) {
-      // Extraer tipo (logos/backgrounds) y nombre del archivo
       const parts = path.split('/');
-      const type = parts[2]; // "logos" o "backgrounds"
+      const type = parts[2];
       const filename = parts[3];
-      // Usar el endpoint del FileController
-      return `http://localhost:8081/api/files/${type}/${filename}`;
+      return `${environment.apiUrl}/files/${type}/${filename}`;
     }
     return path;
   }
