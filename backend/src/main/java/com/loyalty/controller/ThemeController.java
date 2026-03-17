@@ -112,6 +112,12 @@ public class ThemeController {
             theme.setBackgroundBlur(updatedTheme.getBackgroundBlur());
             theme.setCardOpacity(updatedTheme.getCardOpacity());
 
+            // 🔥 NUEVAS PROPIEDADES - AGREGADAS AQUÍ 🔥
+            theme.setBodyTextColor(updatedTheme.getBodyTextColor());
+            theme.setHeadingTextColor(updatedTheme.getHeadingTextColor());
+            theme.setBodyFontSize(updatedTheme.getBodyFontSize());
+            theme.setLoginLogoSize(updatedTheme.getLoginLogoSize());
+
             // IMPORTANTE: NO tocamos logoUrl ni backgroundUrl aquí
 
             BusinessTheme saved = themeRepository.save(theme);

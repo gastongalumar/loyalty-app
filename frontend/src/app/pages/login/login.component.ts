@@ -17,7 +17,7 @@ import { LogoComponent } from '../../components/logo.component';
 
         <app-logo
           [showAppName]="true"
-          [logoSize]="60"
+          [logoSize]="loginLogoSize"
           [nameSize]="28"
           [align]="'center'"
           [direction]="'column'"
@@ -67,6 +67,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   currentLang = 'en';
+  loginLogoSize = 80;
 
   constructor(
     private authService: AuthService,
@@ -77,6 +78,8 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.currentLang = localStorage.getItem('lang') || 'en';
+    const theme = this.themeService.getTheme();
+    this.loginLogoSize = theme.loginLogoSize || 80;
   }
 
   setLang(lang: string) {

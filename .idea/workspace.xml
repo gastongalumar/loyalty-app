@@ -4,34 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb546d16-e4b4-4f0a-a832-55f01d665f66" name="Changes" comment="git add .&#10;git commit -m &quot;feat: Implementar sistema completo de personalización visual con almacenamiento de imágenes&#10;&#10;- Agregar entidad BusinessTheme para guardar configuración visual en BD&#10;- Crear repositorio BusinessThemeRepository&#10;- Implementar FileStorageService para guardar archivos físicos en uploads/&#10;- Agregar WebConfig para servir archivos estáticos&#10;- Crear FileController para servir imágenes por API sin autenticación&#10;- Desarrollar ThemeController con endpoints completos:&#10;  * GET/PUT configuración de tema&#10;  * POST upload-logo y upload-background&#10;  * DELETE remove-logo y remove-background&#10;- Configurar SecurityConfig para permitir acceso público a /api/files/**&#10;- Actualizar application.properties con configuración de archivos y CORS&#10;- Agregar application-prod.properties para producción&#10;- Modificar theme.service.ts para separar vista previa de guardado&#10;- Actualizar appearance.component.ts con métodos async y preview en tiempo real&#10;- Corregir logo.component.ts para usar getImageUrl() y mostrar imágenes&#10;- Crear estructura de carpetas uploads/logos y uploads/backgrounds&#10;- Solucionar errores CORS y 403/404 en imágenes&#10;&#10;Cambios principales:&#10;✓ Las imágenes se guardan como archivos físicos en backend/uploads/&#10;✓ La configuración visual persiste en base de datos&#10;✓ Los cambios se ven en tiempo real sin recargar&#10;✓ Las imágenes se sirven correctamente vía /api/files/&#10;✓ El sistema funciona en localhost y está preparado para producción&#10;&#10;Closes: #personalizacion-visual, #almacenamiento-imagenes&quot;">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/AdminRedemptionController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/FidelityTierController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/RewardRedemptionController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/RewardRedemptionDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityReward.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/FidelityRewardRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/FidelityTierRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/components/install-prompt.component.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/admin-redemptions/admin-redemptions.component.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/fidelity-tiers/fidelity-tiers.component.ts" afterDir="false" />
+    <list default="true" id="fb546d16-e4b4-4f0a-a832-55f01d665f66" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Business.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Business.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/RewardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/repository/RewardRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/LoyaltyCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/LoyaltyCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/uploads/backgrounds/111d7816-6140-4314-b308-b73fbbeb86a5.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/uploads/logos/1466914a-39f8-4e97-b81a-3b3639b8e020.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/models/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/models/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/admin-dashboard/admin-dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/admin-dashboard/admin-dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/qr-scanner/qr-scanner.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/qr-scanner/qr-scanner.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-search/customer-search.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-search/customer-search.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,30 +70,30 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;C:\\Users\\user\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;test-online&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/TPS 2026/loyalty-app/loyalty-app/frontend/src/assets/i18n&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.16420358&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHELLCHECK.PATH": "C:\\Users\\user\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe",
+    "git-widget-placeholder": "test-online",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/TPS 2026/loyalty-app/loyalty-app/frontend/src/app/pages/customer-card",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.16420358",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src\app\pages\customer-card" />
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src\assets\i18n" />
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src" />
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src\app\components" />
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src\app\pages\user-management" />
-      <recent name="D:\TPS 2026\loyalty-app\loyalty-app\backend\src\main\java\com\loyalty\controller" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\backend\src\main\java\com\loyalty\controller" />

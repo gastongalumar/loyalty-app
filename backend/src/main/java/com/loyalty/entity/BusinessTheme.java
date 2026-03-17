@@ -53,6 +53,19 @@ public class BusinessTheme {
     private Boolean backgroundBlur = false;
     private Integer cardOpacity = 85;
 
+    // 🔹 NUEVAS PROPIEDADES PARA PERSONALIZACIÓN AVANZADA
+    @Column(length = 10)
+    private String bodyTextColor = "#111118";
+
+    @Column(length = 10)
+    private String headingTextColor = "#111118";
+
+    @Column
+    private Integer bodyFontSize = 16;
+
+    @Column
+    private Integer loginLogoSize = 80;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -69,7 +82,7 @@ public class BusinessTheme {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters y Setters (sin cambios)
+    // Getters y Setters (incluyendo los nuevos)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -117,6 +130,19 @@ public class BusinessTheme {
 
     public Integer getCardOpacity() { return cardOpacity; }
     public void setCardOpacity(Integer cardOpacity) { this.cardOpacity = cardOpacity; }
+
+    // 🔹 GETTERS Y SETTERS PARA LAS NUEVAS PROPIEDADES
+    public String getBodyTextColor() { return bodyTextColor; }
+    public void setBodyTextColor(String bodyTextColor) { this.bodyTextColor = bodyTextColor; }
+
+    public String getHeadingTextColor() { return headingTextColor; }
+    public void setHeadingTextColor(String headingTextColor) { this.headingTextColor = headingTextColor; }
+
+    public Integer getBodyFontSize() { return bodyFontSize; }
+    public void setBodyFontSize(Integer bodyFontSize) { this.bodyFontSize = bodyFontSize; }
+
+    public Integer getLoginLogoSize() { return loginLogoSize; }
+    public void setLoginLogoSize(Integer loginLogoSize) { this.loginLogoSize = loginLogoSize; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

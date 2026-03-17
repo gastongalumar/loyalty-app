@@ -1,0 +1,348 @@
+<!-- frontend/src/app/pages/customer-card/customer-card.component.html -->
+
+<div class="wallet-shell">
+
+  <!-- ════════════════════ LOADING ════════════════════ -->
+  <div *ngIf="loading" class="loading-screen">
+    <div class="loader-ring"></div>
+    <p class="loader-label">Loading your card…</p>
+  </div>
+
+  <!-- ════════════════════ ERROR ════════════════════ -->
+  <div *ngIf="!loading && errorMsg" class="error-banner">
+    <span>⚠️ {{ errorMsg }}</span>
+    <button (click)="errorMsg = ''">✕</button>
+  </div>
+
+  <!-- ════════════════════ MAIN CONTENT ════════════════════ -->
+  <ng-container *ngIf="!loading && card">
+
+    <!-- ── TOP HEADER ───────────────────────────────────────── -->
+    <header class="wallet-header">
+      <div class="header-greeting">
+        <span class="greeting-label">Welcome back</span>
+        <span class="greeting-name">{{ card.customerName }}</span>
+      </div>
+      <button class="qr-fab" (click)="openQr()" aria-label="Show QR code">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>
+        </svg>
+        <span>QR</span>
+      </button>
+    </header>
+
+    <!-- ── SUCCESS TOAST ────────────────────────────────────── -->
+    <div *ngIf="successMsg" class="toast toast-success" role="alert">
+      {{ successMsg }}
+    </div>
+
+    <!-- ── LOYALTY CARD ──────────────────────────────────────── -->
+    <section class="loyalty-card-hero" aria-label="Your loyalty card">
+
+      <div class="card-chip">
+        <div class="chip-dot"></div>
+        <div class="chip-dot"></div>
+        <div class="chip-dot"></div>
+      </div>
+
+      <div class="card-brand">{{ card.businessName }}</div>
+      <div class="card-reward-label">{{ card.rewardDescription }}</div>
+
+      <!-- Stamp grid -->
+      <div class="stamp-grid" role="list" [attr.aria-label]="card.currentStamps + ' of ' + card.totalStamps + ' stamps collected'">
+        <div
+          *ngFor="let i of stampArray"
+          class="stamp-cell"
+          [class.stamp-filled]="i < card.currentStamps"
+          [class.stamp-empty]="i >= card.currentStamps"
+          role="listitem"
+          [attr.aria-label]="i < card.currentStamps ? 'Stamp ' + (i+1) + ' collected' : 'Stamp ' + (i+1) + ' empty'"
+        >
+          <span *ngIf="i < card.currentStamps" class="stamp-icon">☕</span>
+          <span *ngIf="i >= card.currentStamps" class="stamp-num">{{ i + 1 }}</span>
+        </div>
+      </div>
+
+      <!-- Stamp progress bar -->
+      <div class="progress-track" role="progressbar"
+           [attr.aria-valuenow]="stampProgressPercent"
+           aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-fill" [style.width.%]="stampProgressPercent"></div>
+      </div>
+
+      <div class="card-footer-row">
+        <span class="stamp-count">{{ card.currentStamps }} / {{ card.totalStamps }} stamps</span>
+        <span *ngIf="card.status === 'ACTIVE'" class="stamp-away">
+          {{ stampsRemaining }} away from reward
+        </span>
+        <span *ngIf="card.status === 'REWARD_PENDING'" class="reward-ready-badge">
+          🎉 Reward ready!
+        </span>
+      </div>
+
+      <div class="card-completed-row">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4" stroke="white" stroke-width="1.5" fill="none"/></svg>
+        {{ card.completedCards }} card{{ card.completedCards !== 1 ? 's' : '' }} completed
+      </div>
+    </section>
+
+    <!-- ── BONUS PROGRESS ────────────────────────────────────── -->
+    <section *ngIf="card.nextBonusDescription" class="bonus-block glass-card">
+      <div class="bonus-header">
+        <span class="bonus-icon">🏆</span>
+        <div>
+          <div class="bonus-title">Loyalty Milestone</div>
+          <div class="bonus-desc">{{ card.nextBonusDescription }}</div>
+        </div>
+        <span class="bonus-cards-left">{{ cardsToNextBonus }} cards left</span>
+      </div>
+
+      <!-- ✅ BUG FIX: Bonus progress bar uses bonusProgressPercent getter -->
+      <div class="bonus-track" role="progressbar"
+           [attr.aria-valuenow]="bonusProgressPercent"
+           aria-valuemin="0" aria-valuemax="100"
+           [attr.aria-label]="'Bonus progress ' + bonusProgressPercent + '%'">
+        <div class="bonus-fill gold-fill" [style.width.%]="bonusProgressPercent">
+          <span class="bonus-fill-glow"></span>
+        </div>
+      </div>
+
+      <div class="bonus-meta">
+        <span>{{ card.completedCards }} / {{ card.nextBonusCardsRequired }} cards</span>
+        <span>{{ bonusProgressPercent }}%</span>
+      </div>
+    </section>
+
+    <!-- ── TAB NAV ───────────────────────────────────────────── -->
+    <nav class="tab-nav" role="tablist" aria-label="Reward sections">
+      <button
+        class="tab-btn"
+        [class.tab-active]="activeTab === 'stamps'"
+        (click)="setTab('stamps')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'stamps'">
+        Activity
+      </button>
+      <button
+        class="tab-btn"
+        [class.tab-active]="activeTab === 'rewards'"
+        (click)="setTab('rewards')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'rewards'">
+        Rewards
+        <span *ngIf="availableRewards.length > 0" class="badge">{{ availableRewards.length }}</span>
+      </button>
+      <button
+        class="tab-btn"
+        [class.tab-active]="activeTab === 'fidelity'"
+        (click)="setTab('fidelity')"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'fidelity'">
+        Bonuses
+        <!-- ✅ BUG FIX: Badge now driven by availableFidelityRewards count -->
+        <span *ngIf="fidelityRewardsBadgeCount > 0" class="badge badge-gold">{{ fidelityRewardsBadgeCount }}</span>
+      </button>
+    </nav>
+
+    <!-- ── STAMPS TAB ────────────────────────────────────────── -->
+    <section *ngIf="activeTab === 'stamps'" class="tab-panel" role="tabpanel">
+      <div *ngIf="!card.recentStamps?.length" class="empty-state">
+        <div class="empty-icon">☕</div>
+        <p>No stamps yet. Visit us to get your first!</p>
+      </div>
+      <ul *ngIf="card.recentStamps?.length" class="activity-list">
+        <li *ngFor="let stamp of card.recentStamps" class="activity-item glass-card">
+          <div class="activity-icon">☕</div>
+          <div class="activity-body">
+            <span class="activity-title">Stamp added</span>
+            <span *ngIf="stamp.note" class="activity-note">{{ stamp.note }}</span>
+          </div>
+          <time class="activity-time">{{ stamp.createdAt | date:'MMM d' }}</time>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── REWARDS TAB ────────────────────────────────────────── -->
+    <section *ngIf="activeTab === 'rewards'" class="tab-panel" role="tabpanel">
+
+      <div *ngIf="!card.rewards?.length" class="empty-state">
+        <div class="empty-icon">🎁</div>
+        <p>Complete your card to earn a reward!</p>
+      </div>
+
+      <!-- Available -->
+      <div *ngIf="availableRewards.length" class="rewards-group">
+        <h3 class="group-label">Available to Redeem</h3>
+        <div *ngFor="let reward of availableRewards" class="reward-card glass-card reward-available">
+          <div class="reward-card-inner">
+            <span class="reward-emoji">🎁</span>
+            <div class="reward-body">
+              <span class="reward-title">{{ reward.description }}</span>
+              <time class="reward-date">Earned {{ reward.earnedAt | date:'MMM d, y' }}</time>
+            </div>
+            <button
+              class="redeem-btn"
+              [disabled]="redemptionLoading"
+              (click)="requestRedemption(reward.id, 'CARD')"
+              [attr.aria-label]="'Request redemption for ' + reward.description">
+              Redeem
+            </button>
+          </div>
+          <div class="reward-shimmer"></div>
+        </div>
+      </div>
+
+      <!-- Pending -->
+      <div *ngIf="pendingRewards.length" class="rewards-group">
+        <h3 class="group-label">Pending Approval</h3>
+        <div *ngFor="let reward of pendingRewards" class="reward-card glass-card reward-pending">
+          <div class="reward-card-inner">
+            <span class="reward-emoji">⏳</span>
+            <div class="reward-body">
+              <span class="reward-title">{{ reward.description }}</span>
+              <span class="reward-status-label">Awaiting shop confirmation</span>
+            </div>
+            <span class="status-pill pending">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Redeemed -->
+      <div *ngIf="redeemedRewards.length" class="rewards-group">
+        <h3 class="group-label">Used</h3>
+        <div *ngFor="let reward of redeemedRewards" class="reward-card glass-card reward-used">
+          <div class="reward-card-inner">
+            <span class="reward-emoji">✅</span>
+            <div class="reward-body">
+              <span class="reward-title">{{ reward.description }}</span>
+              <time class="reward-date">Used {{ reward.redeemedAt | date:'MMM d, y' }}</time>
+            </div>
+            <span class="status-pill used">Used</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FIDELITY BONUSES TAB ───────────────────────────────── -->
+    <!--
+      ✅ BUG FIX: This entire section was missing from the original component.
+      fidelityRewards were never rendered. Now they display with proper status
+      handling and a working redemption button.
+    -->
+    <section *ngIf="activeTab === 'fidelity'" class="tab-panel" role="tabpanel">
+
+      <div *ngIf="!card.fidelityRewards?.length" class="empty-state">
+        <div class="empty-icon">🏆</div>
+        <p>Complete more cards to unlock loyalty bonuses!</p>
+        <p class="empty-sub" *ngIf="card.nextBonusDescription">
+          Next: <strong>{{ card.nextBonusDescription }}</strong> at {{ card.nextBonusCardsRequired }} completed cards
+        </p>
+      </div>
+
+      <div *ngIf="card.fidelityRewards?.length">
+
+        <!-- Available fidelity rewards -->
+        <div *ngIf="availableFidelityRewards.length" class="rewards-group">
+          <h3 class="group-label">🌟 Ready to Claim</h3>
+          <div *ngFor="let fr of availableFidelityRewards" class="reward-card glass-card reward-available fidelity-reward">
+            <div class="fidelity-badge">{{ fr.cardsRequired }} cards</div>
+            <div class="reward-card-inner">
+              <span class="reward-emoji">🏆</span>
+              <div class="reward-body">
+                <span class="reward-title">{{ fr.description }}</span>
+                <time class="reward-date">Earned {{ fr.earnedAt | date:'MMM d, y' }}</time>
+              </div>
+              <button
+                class="redeem-btn redeem-btn-gold"
+                [disabled]="redemptionLoading"
+                (click)="requestRedemption(fr.id, 'FIDELITY')"
+                [attr.aria-label]="'Claim ' + fr.description">
+                Claim
+              </button>
+            </div>
+            <div class="reward-shimmer shimmer-gold"></div>
+          </div>
+        </div>
+
+        <!-- Pending fidelity rewards -->
+        <div *ngIf="pendingFidelityRewards.length" class="rewards-group">
+          <h3 class="group-label">Pending Approval</h3>
+          <div *ngFor="let fr of pendingFidelityRewards" class="reward-card glass-card reward-pending">
+            <div class="reward-card-inner">
+              <span class="reward-emoji">⏳</span>
+              <div class="reward-body">
+                <span class="reward-title">{{ fr.description }}</span>
+                <span class="reward-status-label">Awaiting shop confirmation</span>
+              </div>
+              <span class="status-pill pending">Pending</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- All other fidelity rewards (redeemed, etc.) -->
+        <div *ngIf="(card.fidelityRewards | slice:0) as all">
+          <div *ngFor="let fr of card.fidelityRewards">
+            <div *ngIf="fr.status === 'REDEEMED'" class="reward-card glass-card reward-used">
+              <div class="reward-card-inner">
+                <span class="reward-emoji">✅</span>
+                <div class="reward-body">
+                  <span class="reward-title">{{ fr.description }}</span>
+                  <time class="reward-date">Used {{ fr.redeemedAt | date:'MMM d, y' }}</time>
+                </div>
+                <span class="status-pill used">Used</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+
+  <!-- ════════════════════ QR MODAL ════════════════════ -->
+  <div *ngIf="showQrModal" class="qr-overlay" (click)="closeQr()" role="dialog" aria-modal="true" aria-label="Your QR Code">
+    <div class="qr-modal glass-card" (click)="$event.stopPropagation()">
+      <button class="qr-modal-close" (click)="closeQr()" aria-label="Close QR modal">✕</button>
+      <h2 class="qr-modal-title">Your QR Code</h2>
+      <p class="qr-modal-sub">Show this at the counter</p>
+      <div class="qr-frame">
+        <img *ngIf="qrImageUrl" [src]="qrImageUrl" alt="QR Code" class="qr-image" />
+        <div *ngIf="!qrImageUrl" class="qr-placeholder">
+          <div class="loader-ring small"></div>
+        </div>
+      </div>
+      <div *ngIf="card" class="qr-code-text">{{ card.qrCode }}</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ BOTTOM NAV ════════════════════ -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="bottom-nav-item active" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>
+      <span>My Card</span>
+    </button>
+    <button class="bottom-nav-item qr-center-btn" (click)="openQr()" aria-label="Open QR code">
+      <div class="qr-center-ring">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>
+        </svg>
+      </div>
+      <span>QR</span>
+    </button>
+    <a class="bottom-nav-item" routerLink="/customer/qr">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>Profile</span>
+      <span *ngIf="totalRewardsBadgeCount > 0" class="nav-badge">{{ totalRewardsBadgeCount }}</span>
+    </a>
+  </nav>
+
+</div>

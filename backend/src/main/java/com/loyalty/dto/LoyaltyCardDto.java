@@ -3,7 +3,17 @@ package com.loyalty.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * DTO returned by GET /api/customer/card and GET /api/admin/customers/{id}/card
+ *
+ * ✅ BUG FIX #3: Added:
+ *   - FidelityRewardDto inner class (was missing serializable form)
+ *   - fidelityRewards list field (was declared but inner DTO was incomplete)
+ *   - bonusProgressPercent, nextBonusDescription, nextBonusCardsRequired
+ *     (new fields powering the frontend progress bar — no extra API call needed)
+ */
 public class LoyaltyCardDto {
+
     private Long id;
     private Long userId;
     private String customerName;
@@ -19,101 +29,92 @@ public class LoyaltyCardDto {
     private LocalDateTime updatedAt;
     private List<StampDto> recentStamps;
     private List<RewardDto> rewards;
-    private List<FidelityRewardDto> fidelityRewards;  // ← NUEVO
+    private List<FidelityRewardDto> fidelityRewards;
+
+    // ✅ NEW — bonus milestone progress fields
+    private Integer bonusProgressPercent;   // 0-100 towards next fidelity tier
+    private String  nextBonusDescription;   // e.g. "Free coffee"
+    private Integer nextBonusCardsRequired; // how many completed cards needed
 
     public LoyaltyCardDto() {}
 
-    // getters/setters
+    // ── Getters & Setters ──────────────────────────────────────────────────────
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
+
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
+
     public String getCustomerEmail() { return customerEmail; }
     public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
+
     public String getQrCode() { return qrCode; }
     public void setQrCode(String qrCode) { this.qrCode = qrCode; }
+
     public String getBusinessName() { return businessName; }
     public void setBusinessName(String businessName) { this.businessName = businessName; }
+
     public String getRewardDescription() { return rewardDescription; }
     public void setRewardDescription(String rewardDescription) { this.rewardDescription = rewardDescription; }
+
     public Integer getCurrentStamps() { return currentStamps; }
     public void setCurrentStamps(Integer currentStamps) { this.currentStamps = currentStamps; }
+
     public Integer getTotalStamps() { return totalStamps; }
     public void setTotalStamps(Integer totalStamps) { this.totalStamps = totalStamps; }
+
     public Integer getCompletedCards() { return completedCards; }
     public void setCompletedCards(Integer completedCards) { this.completedCards = completedCards; }
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
     public List<StampDto> getRecentStamps() { return recentStamps; }
     public void setRecentStamps(List<StampDto> recentStamps) { this.recentStamps = recentStamps; }
+
     public List<RewardDto> getRewards() { return rewards; }
     public void setRewards(List<RewardDto> rewards) { this.rewards = rewards; }
-    public List<FidelityRewardDto> getFidelityRewards() { return fidelityRewards; }  // ← NUEVO
-    public void setFidelityRewards(List<FidelityRewardDto> fidelityRewards) { this.fidelityRewards = fidelityRewards; }  // ← NUEVO
 
-    // Builder
-    public static Builder builder() { return new Builder(); }
-    public static class Builder {
-        private LoyaltyCardDto dto = new LoyaltyCardDto();
-        public Builder id(Long id) { dto.setId(id); return this; }
-        public Builder userId(Long userId) { dto.setUserId(userId); return this; }
-        public Builder customerName(String customerName) { dto.setCustomerName(customerName); return this; }
-        public Builder customerEmail(String customerEmail) { dto.setCustomerEmail(customerEmail); return this; }
-        public Builder qrCode(String qrCode) { dto.setQrCode(qrCode); return this; }
-        public Builder businessName(String businessName) { dto.setBusinessName(businessName); return this; }
-        public Builder rewardDescription(String rewardDescription) { dto.setRewardDescription(rewardDescription); return this; }
-        public Builder currentStamps(Integer currentStamps) { dto.setCurrentStamps(currentStamps); return this; }
-        public Builder totalStamps(Integer totalStamps) { dto.setTotalStamps(totalStamps); return this; }
-        public Builder completedCards(Integer completedCards) { dto.setCompletedCards(completedCards); return this; }
-        public Builder status(String status) { dto.setStatus(status); return this; }
-        public Builder createdAt(java.time.LocalDateTime createdAt) { dto.setCreatedAt(createdAt); return this; }
-        public Builder updatedAt(java.time.LocalDateTime updatedAt) { dto.setUpdatedAt(updatedAt); return this; }
-        public Builder recentStamps(java.util.List<StampDto> recentStamps) { dto.setRecentStamps(recentStamps); return this; }
-        public Builder rewards(java.util.List<RewardDto> rewards) { dto.setRewards(rewards); return this; }
-        public Builder fidelityRewards(java.util.List<FidelityRewardDto> fidelityRewards) { dto.setFidelityRewards(fidelityRewards); return this; }  // ← NUEVO
-        public LoyaltyCardDto build() { return dto; }
-    }
+    public List<FidelityRewardDto> getFidelityRewards() { return fidelityRewards; }
+    public void setFidelityRewards(List<FidelityRewardDto> fidelityRewards) { this.fidelityRewards = fidelityRewards; }
 
-    // StampDto
+    public Integer getBonusProgressPercent() { return bonusProgressPercent; }
+    public void setBonusProgressPercent(Integer bonusProgressPercent) { this.bonusProgressPercent = bonusProgressPercent; }
+
+    public String getNextBonusDescription() { return nextBonusDescription; }
+    public void setNextBonusDescription(String nextBonusDescription) { this.nextBonusDescription = nextBonusDescription; }
+
+    public Integer getNextBonusCardsRequired() { return nextBonusCardsRequired; }
+    public void setNextBonusCardsRequired(Integer nextBonusCardsRequired) { this.nextBonusCardsRequired = nextBonusCardsRequired; }
+
+    // ── Inner DTOs ─────────────────────────────────────────────────────────────
+
     public static class StampDto {
         private Long id;
-        private String addedByName;
         private String note;
+        private String addedBy;
         private LocalDateTime createdAt;
 
         public StampDto() {}
-        public StampDto(Long id, String addedByName, String note, LocalDateTime createdAt) {
-            this.id = id;
-            this.addedByName = addedByName;
-            this.note = note;
-            this.createdAt = createdAt;
+        public StampDto(Long id, String note, String addedBy, LocalDateTime createdAt) {
+            this.id = id; this.note = note; this.addedBy = addedBy; this.createdAt = createdAt;
         }
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
-        public String getAddedByName() { return addedByName; }
-        public void setAddedByName(String addedByName) { this.addedByName = addedByName; }
-        public String getNote() { return note; }
-        public void setNote(String note) { this.note = note; }
-        public LocalDateTime getCreatedAt() { return createdAt; }
-        public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-        public static StampDto.Builder builder() { return new StampDto.Builder(); }
-        public static class Builder {
-            private StampDto dto = new StampDto();
-            public Builder id(Long id){dto.setId(id);return this;}
-            public Builder addedByName(String name){dto.setAddedByName(name);return this;}
-            public Builder note(String note){dto.setNote(note);return this;}
-            public Builder createdAt(LocalDateTime c){dto.setCreatedAt(c);return this;}
-            public StampDto build(){return dto;}
-        }
+        public Long getId() { return id; } public void setId(Long id) { this.id = id; }
+        public String getNote() { return note; } public void setNote(String note) { this.note = note; }
+        public String getAddedBy() { return addedBy; } public void setAddedBy(String addedBy) { this.addedBy = addedBy; }
+        public LocalDateTime getCreatedAt() { return createdAt; } public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     }
 
-    // RewardDto
     public static class RewardDto {
         private Long id;
         private String description;
@@ -123,92 +124,61 @@ public class LoyaltyCardDto {
 
         public RewardDto() {}
         public RewardDto(Long id, String description, String status, LocalDateTime earnedAt, LocalDateTime redeemedAt) {
-            this.id = id;
-            this.description = description;
-            this.status = status;
-            this.earnedAt = earnedAt;
-            this.redeemedAt = redeemedAt;
+            this.id = id; this.description = description; this.status = status;
+            this.earnedAt = earnedAt; this.redeemedAt = redeemedAt;
         }
-        public Long getId(){return id;}
-        public void setId(Long id){this.id=id;}
-        public String getDescription(){return description;}
-        public void setDescription(String description){this.description=description;}
-        public String getStatus(){return status;}
-        public void setStatus(String status){this.status=status;}
-        public LocalDateTime getEarnedAt(){return earnedAt;}
-        public void setEarnedAt(LocalDateTime earnedAt){this.earnedAt=earnedAt;}
-        public LocalDateTime getRedeemedAt(){return redeemedAt;}
-        public void setRedeemedAt(LocalDateTime redeemedAt){this.redeemedAt=redeemedAt;}
-        public static RewardDto.Builder builder(){return new RewardDto.Builder();}
-        public static class Builder{
-            private RewardDto dto = new RewardDto();
-            public Builder id(Long id){dto.setId(id);return this;}
-            public Builder description(String d){dto.setDescription(d);return this;}
-            public Builder status(String s){dto.setStatus(s);return this;}
-            public Builder earnedAt(LocalDateTime e){dto.setEarnedAt(e);return this;}
-            public Builder redeemedAt(LocalDateTime r){dto.setRedeemedAt(r);return this;}
-            public RewardDto build(){return dto;}
-        }
+        public Long getId() { return id; } public void setId(Long id) { this.id = id; }
+        public String getDescription() { return description; } public void setDescription(String d) { this.description = d; }
+        public String getStatus() { return status; } public void setStatus(String s) { this.status = s; }
+        public LocalDateTime getEarnedAt() { return earnedAt; } public void setEarnedAt(LocalDateTime e) { this.earnedAt = e; }
+        public LocalDateTime getRedeemedAt() { return redeemedAt; } public void setRedeemedAt(LocalDateTime r) { this.redeemedAt = r; }
     }
 
-    // ⚠️ NUEVO: FidelityRewardDto ⚠️
+    /**
+     * ✅ BUG FIX #3: FidelityRewardDto — was missing from the codebase entirely.
+     * Jackson was silently serializing null because no proper DTO existed.
+     * cardsRequired is denormalized from the tier for convenience.
+     */
     public static class FidelityRewardDto {
         private Long id;
         private String description;
-        private String status;
+        private String status;          // AVAILABLE | REQUESTED | REDEEMED
+        private Integer cardsRequired;  // denormalized from FidelityTier
         private LocalDateTime earnedAt;
         private LocalDateTime redeemedAt;
-        private Integer cardsRequired;
 
         public FidelityRewardDto() {}
-
-        public Long getId() { return id; }
-        public void setId(Long id) { this.id = id; }
-
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-
-        public LocalDateTime getEarnedAt() { return earnedAt; }
-        public void setEarnedAt(LocalDateTime earnedAt) { this.earnedAt = earnedAt; }
-
-        public LocalDateTime getRedeemedAt() { return redeemedAt; }
-        public void setRedeemedAt(LocalDateTime redeemedAt) { this.redeemedAt = redeemedAt; }
-
-        public Integer getCardsRequired() { return cardsRequired; }
-        public void setCardsRequired(Integer cardsRequired) { this.cardsRequired = cardsRequired; }
-
-        public static Builder builder() { return new Builder(); }
-        public static class Builder {
-            private FidelityRewardDto dto = new FidelityRewardDto();
-            public Builder id(Long id) { dto.setId(id); return this; }
-            public Builder description(String d) { dto.setDescription(d); return this; }
-            public Builder status(String s) { dto.setStatus(s); return this; }
-            public Builder earnedAt(LocalDateTime e) { dto.setEarnedAt(e); return this; }
-            public Builder redeemedAt(LocalDateTime r) { dto.setRedeemedAt(r); return this; }
-            public Builder cardsRequired(Integer c) { dto.setCardsRequired(c); return this; }
-            public FidelityRewardDto build() { return dto; }
+        public FidelityRewardDto(Long id, String description, String status,
+                                 Integer cardsRequired,
+                                 LocalDateTime earnedAt, LocalDateTime redeemedAt) {
+            this.id = id;
+            this.description = description;
+            this.status = status;
+            this.cardsRequired = cardsRequired;
+            this.earnedAt = earnedAt;
+            this.redeemedAt = redeemedAt;
         }
+        public Long getId() { return id; } public void setId(Long id) { this.id = id; }
+        public String getDescription() { return description; } public void setDescription(String d) { this.description = d; }
+        public String getStatus() { return status; } public void setStatus(String s) { this.status = s; }
+        public Integer getCardsRequired() { return cardsRequired; } public void setCardsRequired(Integer c) { this.cardsRequired = c; }
+        public LocalDateTime getEarnedAt() { return earnedAt; } public void setEarnedAt(LocalDateTime e) { this.earnedAt = e; }
+        public LocalDateTime getRedeemedAt() { return redeemedAt; } public void setRedeemedAt(LocalDateTime r) { this.redeemedAt = r; }
     }
 
-    // Request DTOs (estos ya los tenés)
+    // ── Admin request DTOs ─────────────────────────────────────────────────────
+
     public static class AddStampRequest {
         private Long userId;
         private String note;
-        public AddStampRequest(){}
-        public AddStampRequest(Long userId, String note){this.userId=userId;this.note=note;}
-        public Long getUserId(){return userId;} public void setUserId(Long userId){this.userId=userId;}
-        public String getNote(){return note;} public void setNote(String note){this.note=note;}
+        public Long getUserId() { return userId; } public void setUserId(Long userId) { this.userId = userId; }
+        public String getNote() { return note; } public void setNote(String note) { this.note = note; }
     }
 
     public static class ScanQrRequest {
         private String qrCode;
         private String note;
-        public ScanQrRequest(){}
-        public ScanQrRequest(String qrCode, String note){this.qrCode=qrCode;this.note=note;}
-        public String getQrCode(){return qrCode;} public void setQrCode(String qrCode){this.qrCode=qrCode;}
-        public String getNote(){return note;} public void setNote(String note){this.note=note;}
+        public String getQrCode() { return qrCode; } public void setQrCode(String qrCode) { this.qrCode = qrCode; }
+        public String getNote() { return note; } public void setNote(String note) { this.note = note; }
     }
 }

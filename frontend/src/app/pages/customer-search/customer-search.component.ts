@@ -15,116 +15,205 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
   template: `
     <app-navbar></app-navbar>
 
-    <div class="container-wide" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'ADMIN.CUSTOMERS_LIST' | translate }}</h1>
-      </div>
+    <div class="page-wrapper">
+      <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
 
-      <!-- Search -->
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" [(ngModel)]="searchQuery"
-               (ngModelChange)="onSearch($event)"
-               [placeholder]="'ADMIN.SEARCH_PLACEHOLDER' | translate" />
-      </div>
-
-      <!-- Success alert -->
-      <div *ngIf="success" class="alert alert-success fade-in">✅ {{ 'ADMIN.STAMP_ADDED' | translate }}</div>
-      <div *ngIf="error" class="alert alert-error fade-in">⚠️ {{ error }}</div>
-
-      <!-- Selected customer detail -->
-      <div *ngIf="selectedCard" class="card fade-in" style="margin-bottom: 20px; border: 2px solid var(--primary);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <h3 style="font-size: 1.1rem;">{{ selectedCard.customerName }}</h3>
-            <div style="font-size: 0.85rem; color: var(--text-muted);">{{ selectedCard.customerEmail }}</div>
-          </div>
-          <button class="btn btn-outline btn-sm" (click)="selectedCard = null">{{ 'COMMON.CLOSE' | translate }}</button>
+        <div class="page-header">
+          <h1 class="page-title">{{ 'admin.customersList' | translate }}</h1>
+          <p class="page-subtitle">{{ filteredCustomers.length }} {{ 'admin.registered' | translate }}</p>
         </div>
 
-        <div class="loyalty-card-visual" style="margin-bottom: 16px;">
-          <div class="loyalty-card-business">{{ selectedCard.businessName }}</div>
-          <div class="loyalty-card-name">{{ selectedCard.customerName }}</div>
-          <div class="loyalty-card-reward">🏆 {{ selectedCard.rewardDescription }}</div>
-          <div class="stamp-grid">
-            <div *ngFor="let i of getStampArray(selectedCard)" class="stamp-cell"
-                 [class.filled]="i < selectedCard.currentStamps" [class.empty]="i >= selectedCard.currentStamps">
-              <span *ngIf="i < selectedCard.currentStamps">☕</span>
-              <span *ngIf="i >= selectedCard.currentStamps" style="font-size:0.9rem;">{{ i+1 }}</span>
+        <!-- Search -->
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input"
+                 [(ngModel)]="searchQuery"
+                 (ngModelChange)="onSearch($event)"
+                 [placeholder]="'admin.searchPlaceholder' | translate" />
+        </div>
+
+        <!-- Alerts -->
+        <div *ngIf="success" class="alert alert-success fade-in">
+          ✅ {{ 'admin.stampAdded' | translate }}
+        </div>
+        <div *ngIf="error" class="alert alert-error fade-in">⚠️ {{ error }}</div>
+
+        <!-- Selected customer detail -->
+        <div *ngIf="selectedCard" class="card fade-in selected-card">
+          <div class="selected-header">
+            <div>
+              <div class="selected-name">{{ selectedCard.customerName }}</div>
+              <div class="selected-email">{{ selectedCard.customerEmail }}</div>
             </div>
+            <button class="btn btn-outline btn-sm" (click)="selectedCard = null">✕</button>
           </div>
-          <div class="progress-bar" style="margin-top: 16px;">
-            <div class="progress-fill" [style.width.%]="getProgress(selectedCard)"></div>
-          </div>
-        </div>
 
-        <!-- Add stamp -->
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="text" class="form-control" [(ngModel)]="stampNote" placeholder="Note (optional)" style="flex:1" />
-          <button class="btn btn-primary" [disabled]="addingStamp" (click)="addStamp(selectedCard.userId)">
-            <span *ngIf="!addingStamp">☕ Add Stamp</span>
-            <span *ngIf="addingStamp">...</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Customer list -->
-      <div *ngIf="loading" style="text-align:center; padding: 40px;"><div class="spinner"></div></div>
-
-      <div *ngIf="!loading" class="customer-list">
-        <div *ngFor="let customer of filteredCustomers" class="customer-card-item" style="margin-bottom: 10px; cursor: pointer;" (click)="viewCustomer(customer)">
-          <div class="avatar">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600;">{{ customer.firstName }} {{ customer.lastName }}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ customer.email }}</div>
-            <div style="margin-top: 4px;">
-              <div class="progress-bar" style="height: 6px; width: 120px;">
-                <div class="progress-fill" [style.width.%]="(customer.currentStamps / customer.totalStamps) * 100"></div>
+          <div class="loyalty-card-visual" style="margin-bottom: 16px;">
+            <div class="loyalty-card-business">{{ selectedCard.businessName }}</div>
+            <div class="loyalty-card-name">{{ selectedCard.customerName }}</div>
+            <div class="loyalty-card-reward">🏆 {{ selectedCard.rewardDescription }}</div>
+            <div class="stamp-grid">
+              <div *ngFor="let i of getStampArray(selectedCard)"
+                   class="stamp-cell"
+                   [class.filled]="i < selectedCard.currentStamps"
+                   [class.empty]="i >= selectedCard.currentStamps">
+                <span *ngIf="i < selectedCard.currentStamps">☕</span>
+                <span *ngIf="i >= selectedCard.currentStamps" class="stamp-num">{{ i+1 }}</span>
               </div>
             </div>
-          </div>
-          <div style="text-align: right; flex-shrink: 0;">
-            <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary);">
-              {{ customer.currentStamps }}/{{ customer.totalStamps }}
+            <div class="progress-bar" style="margin-top:16px;">
+              <div class="progress-fill" [style.width.%]="getProgress(selectedCard)"></div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ customer.completedCards }} completed</div>
-            <span class="badge" style="margin-top: 4px;"
-                  [class.badge-success]="customer.cardStatus === 'ACTIVE'"
-                  [class.badge-warning]="customer.cardStatus === 'REWARD_PENDING'">
-              {{ customer.cardStatus }}
-            </span>
+          </div>
+
+          <div class="stamp-action-row">
+            <input type="text" class="form-control" [(ngModel)]="stampNote"
+                   placeholder="Nota (opcional)" style="flex:1" />
+            <button class="btn btn-primary" [disabled]="addingStamp"
+                    (click)="addStamp(selectedCard.userId)">
+              <span *ngIf="!addingStamp">☕ {{ 'admin.addStamp' | translate }}</span>
+              <span *ngIf="addingStamp" class="spinner"
+                    style="width:18px;height:18px;border-width:2px;margin:0;"></span>
+            </button>
           </div>
         </div>
 
-        <div *ngIf="filteredCustomers.length === 0" style="text-align: center; padding: 40px; color: var(--text-muted);">
-          {{ 'ADMIN.NO_CUSTOMERS' | translate }}
+        <!-- Loading -->
+        <div *ngIf="loading" style="text-align:center; padding:40px;">
+          <div class="spinner"></div>
         </div>
+
+        <!-- Customer list -->
+        <div *ngIf="!loading" class="customer-list-wrap">
+          <div *ngFor="let c of filteredCustomers"
+               class="cust-item"
+               (click)="viewCustomer(c)">
+            <div class="avatar">{{ c.firstName[0] }}{{ c.lastName[0] }}</div>
+
+            <div class="cust-info">
+              <div class="cust-name">{{ c.firstName }} {{ c.lastName }}</div>
+              <div class="cust-email">{{ c.email }}</div>
+              <div class="cust-progress-wrap">
+                <div class="cust-progress-track">
+                  <div class="cust-progress-fill"
+                       [style.width.%]="((c.currentStamps ?? 0) / (c.totalStamps ?? 1)) * 100">
+                  </div>
+                </div>
+                <span class="cust-stamps">{{ c.currentStamps }}/{{ c.totalStamps }}</span>
+              </div>
+            </div>
+
+            <div class="cust-right">
+              <span class="badge"
+                    [class.badge-success]="c.cardStatus === 'ACTIVE'"
+                    [class.badge-warning]="c.cardStatus === 'REWARD_PENDING'">
+                {{ c.cardStatus }}
+              </span>
+              <div class="cust-completed">{{ c.completedCards }} completadas</div>
+            </div>
+          </div>
+
+          <div *ngIf="filteredCustomers.length === 0" class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">{{ 'admin.noCustomers' | translate }}</div>
+          </div>
+        </div>
+
       </div>
     </div>
   `,
   styles: [`
-    .search-bar {
-      position: relative;
-      margin-bottom: 20px;
+    .selected-card  { margin-bottom: 20px; border: 2px solid var(--primary); }
+    .selected-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
     }
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1rem;
+    .selected-name  { font-weight: 700; font-size: 1rem; }
+    .selected-email { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+    .stamp-action-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
-    .search-input {
-      width: 100%;
-      padding: 12px 16px 12px 44px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
+
+    /* Customer list */
+    .customer-list-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .search-input:focus { border-color: var(--primary); }
+    .cust-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      cursor: pointer;
+      transition: all 0.18s;
+      box-shadow: var(--shadow-xs);
+    }
+    .cust-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .cust-info { flex: 1; min-width: 0; }
+    .cust-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cust-email {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+    .cust-progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cust-progress-track {
+      flex: 1;
+      height: 5px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      max-width: 100px;
+    }
+    .cust-progress-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .cust-stamps {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    .cust-right {
+      text-align: right;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .cust-completed {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
   `]
 })
 export class CustomerSearchComponent implements OnInit {
@@ -140,9 +229,14 @@ export class CustomerSearchComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   constructor(private loyaltyService: LoyaltyService) {
-    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(q => {
       if (q.length > 1) {
-        this.loyaltyService.searchCustomers(q).subscribe(data => this.filteredCustomers = data);
+        this.loyaltyService.searchCustomers(q).subscribe(
+          data => this.filteredCustomers = data
+        );
       } else {
         this.filteredCustomers = this.customers;
       }
@@ -151,21 +245,15 @@ export class CustomerSearchComponent implements OnInit {
 
   ngOnInit() {
     this.loyaltyService.getAllCustomers().subscribe({
-      next: (data) => {
-        this.customers = data;
-        this.filteredCustomers = data;
-        this.loading = false;
-      },
-      error: () => { this.loading = false; }
+      next: (data) => { this.customers = data; this.filteredCustomers = data; this.loading = false; },
+      error: ()    => { this.loading = false; }
     });
   }
 
-  onSearch(query: string) {
-    this.searchSubject.next(query);
-  }
+  onSearch(q: string) { this.searchSubject.next(q); }
 
-  viewCustomer(customer: Customer) {
-    this.loyaltyService.getCustomerCard(customer.id).subscribe({
+  viewCustomer(c: Customer) {
+    this.loyaltyService.getCustomerCard(c.id).subscribe({
       next: (card) => { this.selectedCard = card; }
     });
   }
@@ -179,7 +267,6 @@ export class CustomerSearchComponent implements OnInit {
         this.success = true;
         this.addingStamp = false;
         this.stampNote = '';
-        // Refresh list
         this.loyaltyService.getAllCustomers().subscribe(data => {
           this.customers = data;
           this.filteredCustomers = data;
@@ -187,7 +274,7 @@ export class CustomerSearchComponent implements OnInit {
         setTimeout(() => this.success = false, 3000);
       },
       error: (err) => {
-        this.error = err.error?.error || 'Failed to add stamp';
+        this.error = err.error?.error || 'Error al agregar stamp';
         this.addingStamp = false;
       }
     });

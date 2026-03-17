@@ -1,7 +1,7 @@
 package com.loyalty.entity;
 
 import jakarta.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +28,12 @@ public class Business {
     @Column(nullable = false)
     private String rewardDescription;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LoyaltyCard> loyaltyCards = new ArrayList<>();
 

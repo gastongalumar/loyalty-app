@@ -22,6 +22,11 @@ export interface AppTheme {
   backgroundSize: 'cover' | 'contain';
   backgroundBlur: boolean;
   cardOpacity: number;
+  // ── Nuevas propiedades de tipografía ──
+  bodyTextColor: string;
+  headingTextColor: string;
+  bodyFontSize: number;
+  loginLogoSize: number;
 }
 
 const DEFAULT_THEME: AppTheme = {
@@ -40,6 +45,11 @@ const DEFAULT_THEME: AppTheme = {
   backgroundSize: 'cover',
   backgroundBlur: false,
   cardOpacity: 85,
+  // ── Defaults tipografía ──
+  bodyTextColor: '#111118',
+  headingTextColor: '#111118',
+  bodyFontSize: 16,
+  loginLogoSize: 80,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -101,7 +111,12 @@ export class ThemeService {
       navbarTextColor: this.theme.navbarTextColor,
       backgroundSize: this.theme.backgroundSize,
       backgroundBlur: this.theme.backgroundBlur,
-      cardOpacity: this.theme.cardOpacity
+      cardOpacity: this.theme.cardOpacity,
+      // ── Nuevos campos ──
+      bodyTextColor: this.theme.bodyTextColor,
+      headingTextColor: this.theme.headingTextColor,
+      bodyFontSize: this.theme.bodyFontSize,
+      loginLogoSize: this.theme.loginLogoSize,
     };
 
     return firstValueFrom(this.http.put<AppTheme>(this.apiUrl, configToSave));
@@ -109,8 +124,8 @@ export class ThemeService {
 
   applyPreset(mode: ThemeMode): void {
     const presets = {
-      light: { primaryColor: '#FF6B35', secondaryColor: '#1A1A2E', accentColor: '#FFD166' },
-      dark: { primaryColor: '#7C6AF7', secondaryColor: '#0D0D1A', accentColor: '#00E5FF' },
+      light:    { primaryColor: '#FF6B35', secondaryColor: '#1A1A2E', accentColor: '#FFD166' },
+      dark:     { primaryColor: '#7C6AF7', secondaryColor: '#0D0D1A', accentColor: '#00E5FF' },
       colorful: { primaryColor: '#E040FB', secondaryColor: '#1DE9B6', accentColor: '#FFAB40' },
     };
     this.theme = { ...this.theme, ...presets[mode], mode };
@@ -125,11 +140,9 @@ export class ThemeService {
   async uploadLogo(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
-
     const response = await firstValueFrom(
       this.http.post<{ url: string }>(`${this.apiUrl}/upload-logo`, formData)
     );
-
     this.theme.logoUrl = response.url;
     this.apply();
     return response.url;
@@ -138,11 +151,9 @@ export class ThemeService {
   async uploadBackground(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
-
     const response = await firstValueFrom(
       this.http.post<{ url: string }>(`${this.apiUrl}/upload-background`, formData)
     );
-
     this.theme.backgroundUrl = response.url;
     this.apply();
     return response.url;
@@ -150,20 +161,14 @@ export class ThemeService {
 
   removeLogo() {
     this.http.delete(`${this.apiUrl}/remove-logo`).subscribe({
-      next: () => {
-        this.theme.logoUrl = '';
-        this.apply();
-      },
+      next: () => { this.theme.logoUrl = ''; this.apply(); },
       error: (err) => console.error('Error removing logo', err)
     });
   }
 
   removeBackground() {
     this.http.delete(`${this.apiUrl}/remove-background`).subscribe({
-      next: () => {
-        this.theme.backgroundUrl = '';
-        this.apply();
-      },
+      next: () => { this.theme.backgroundUrl = ''; this.apply(); },
       error: (err) => console.error('Error removing background', err)
     });
   }
@@ -173,53 +178,66 @@ export class ThemeService {
     const t = this.theme;
 
     root.setAttribute('data-theme', t.mode);
-    root.style.setProperty('--primary', t.primaryColor);
+    root.style.setProperty('--primary',      t.primaryColor);
     root.style.setProperty('--primary-dark', this.darken(t.primaryColor, 15));
     root.style.setProperty('--primary-light', this.lighten(t.primaryColor, 90));
-    root.style.setProperty('--secondary', t.secondaryColor);
-    root.style.setProperty('--accent', t.accentColor);
-    root.style.setProperty('--navbar-text', t.navbarTextColor);
+    root.style.setProperty('--secondary',    t.secondaryColor);
+    root.style.setProperty('--accent',       t.accentColor);
+    root.style.setProperty('--navbar-text',  t.navbarTextColor);
 
     const opacity = t.cardOpacity / 100;
 
     if (t.mode === 'dark') {
-      root.style.setProperty('--bg', '#0D0D1A');
-      root.style.setProperty('--surface', `rgba(22, 22, 42, ${opacity})`);
-      root.style.setProperty('--surface-2', `rgba(30, 30, 53, ${opacity})`);
-      root.style.setProperty('--border', '#2A2A45');
-      root.style.setProperty('--text-primary', '#F0F0FF');
+      root.style.setProperty('--bg',             '#0D0D1A');
+      root.style.setProperty('--surface',        `rgba(22, 22, 42, ${opacity})`);
+      root.style.setProperty('--surface-2',      `rgba(30, 30, 53, ${opacity})`);
+      root.style.setProperty('--border',         '#2A2A45');
+      root.style.setProperty('--text-primary',   t.bodyTextColor    || '#F0F0FF');
+      root.style.setProperty('--text-heading',   t.headingTextColor || '#F0F0FF');
       root.style.setProperty('--text-secondary', '#9090B0');
-      root.style.setProperty('--text-muted', '#5A5A80');
+      root.style.setProperty('--text-muted',     '#5A5A80');
     } else {
-      root.style.setProperty('--bg', '#F8F7F4');
-      root.style.setProperty('--surface', `rgba(255, 255, 255, ${opacity})`);
-      root.style.setProperty('--surface-2', `rgba(243, 242, 239, ${opacity})`);
-      root.style.setProperty('--border', '#E8E6E1');
-      root.style.setProperty('--text-primary', '#1A1A2E');
+      root.style.setProperty('--bg',             '#F8F7F4');
+      root.style.setProperty('--surface',        `rgba(255, 255, 255, ${opacity})`);
+      root.style.setProperty('--surface-2',      `rgba(243, 242, 239, ${opacity})`);
+      root.style.setProperty('--border',         '#E8E6E1');
+      root.style.setProperty('--text-primary',   t.bodyTextColor    || '#1A1A2E');
+      root.style.setProperty('--text-heading',   t.headingTextColor || '#1A1A2E');
       root.style.setProperty('--text-secondary', '#6B6B7B');
-      root.style.setProperty('--text-muted', '#9B9BAB');
+      root.style.setProperty('--text-muted',     '#9B9BAB');
     }
 
+    // Tamaño base de fuente
+    root.style.setProperty('--font-size-base', `${t.bodyFontSize || 16}px`);
+
+    // Font map extendido
     const fontMap: Record<string, string> = {
-      'Syne': "'Syne', sans-serif",
-      'DM Sans': "'DM Sans', sans-serif",
-      'Outfit': "'Outfit', sans-serif",
-      'Space Grotesk': "'Space Grotesk', sans-serif",
-      'Plus Jakarta Sans': "'Plus Jakarta Sans', sans-serif",
+      'Syne':               "'Syne', sans-serif",
+      'DM Sans':            "'DM Sans', sans-serif",
+      'Outfit':             "'Outfit', sans-serif",
+      'Space Grotesk':      "'Space Grotesk', sans-serif",
+      'Plus Jakarta Sans':  "'Plus Jakarta Sans', sans-serif",
+      'Raleway':            "'Raleway', sans-serif",
+      'Josefin Sans':       "'Josefin Sans', sans-serif",
+      'Playfair Display':   "'Playfair Display', serif",
+      'Cormorant Garamond': "'Cormorant Garamond', serif",
+      'Crimson Pro':        "'Crimson Pro', serif",
+      'Bebas Neue':         "'Bebas Neue', cursive",
+      'Cabin':              "'Cabin', sans-serif",
     };
     root.style.setProperty('--font-display', fontMap[t.fontFamily] || fontMap['Syne']);
 
+    // Fondo
     if (t.backgroundUrl) {
       const bgUrl = this.getImageUrl(t.backgroundUrl);
       const bgValue = t.backgroundBlur
         ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${bgUrl}')`
         : `url('${bgUrl}')`;
-
-      root.style.backgroundImage = bgValue;
-      root.style.backgroundSize = t.backgroundSize;
+      root.style.backgroundImage      = bgValue;
+      root.style.backgroundSize       = t.backgroundSize;
       root.style.backgroundAttachment = 'fixed';
-      root.style.backgroundPosition = 'center';
-      root.style.backgroundRepeat = 'no-repeat';
+      root.style.backgroundPosition   = 'center';
+      root.style.backgroundRepeat     = 'no-repeat';
     } else {
       root.style.backgroundImage = '';
     }
