@@ -38,6 +38,44 @@ import { ThemeService, AppTheme, ThemeMode } from '../../services/theme.service'
         </div>
       </div>
 
+      <!-- ── EMOJI PARA STAMPS (NUEVO) ─────────────────── -->
+      <div class="ap-card fade-in">
+        <div class="ap-section-title">🎨 Emoji de sellos</div>
+        <p class="form-label">Elegí el emoji que aparece en los stamps de la tarjeta</p>
+
+        <div class="emoji-grid">
+          <button
+            *ngFor="let item of stampEmojis"
+            class="emoji-btn"
+            [class.active]="theme.stampEmoji === item.emoji"
+            (click)="theme.stampEmoji = item.emoji; onColorChange()"
+            [title]="item.name"
+            type="button">
+            <span style="font-size: 1.8rem;">{{ item.emoji }}</span>
+          </button>
+        </div>
+
+        <!-- Vista previa -->
+        <div class="stamp-preview" style="margin-top: 16px; padding: 16px; background: var(--surface-2); border-radius: var(--r-md);">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Vista previa:</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="display: flex; gap: 4px;">
+                <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--primary-light); border-radius: var(--r-sm); border: 1px solid var(--primary);">
+                  <span style="font-size: 1.5rem;">{{ theme.stampEmoji || '☕' }}</span>
+                </div>
+                <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); border-radius: var(--r-sm); opacity: 0.5; border: 1px dashed var(--border);">
+                  <span style="font-size: 1.5rem; opacity: 0.3;">{{ theme.stampEmoji || '☕' }}</span>
+                </div>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Stamp lleno / vacío
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── COLORES ──────────────────────────────── -->
       <div class="ap-card fade-in">
         <div class="ap-section-title">🖌️ {{ 'appearance.colors' | translate }}</div>
@@ -328,6 +366,35 @@ import { ThemeService, AppTheme, ThemeMode } from '../../services/theme.service'
     .preset-btn:hover  { border-color: var(--primary); }
     .preset-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
 
+    /* Emoji grid (NUEVO) */
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .emoji-btn {
+      aspect-ratio: 1;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .emoji-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .emoji-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
     /* Color rows */
     .color-row {
       display: flex;
@@ -546,6 +613,32 @@ export class AppearanceComponent implements OnInit {
   fontPickerOpen = false;
   Math = Math;
 
+  // Lista de emojis para stamps (NUEVO)
+  stampEmojis = [
+    { emoji: '☕', name: 'Café' },
+    { emoji: '⭐', name: 'Estrella' },
+    { emoji: '🌟', name: 'Estrella brillante' },
+    { emoji: '🎁', name: 'Regalo' },
+    { emoji: '🏆', name: 'Trofeo' },
+    { emoji: '🪙', name: 'Moneda' },
+    { emoji: '💎', name: 'Diamante' },
+    { emoji: '✅', name: 'Check' },
+    { emoji: '❤️', name: 'Corazón' },
+    { emoji: '🔥', name: 'Fuego' },
+    { emoji: '⚡', name: 'Rayo' },
+    { emoji: '🍔', name: 'Hamburguesa' },
+    { emoji: '🍕', name: 'Pizza' },
+    { emoji: '🍦', name: 'Helado' },
+    { emoji: '🍺', name: 'Cerveza' },
+    { emoji: '🍷', name: 'Vino' },
+    { emoji: '🛒', name: 'Carrito' },
+    { emoji: '🛍️', name: 'Compras' },
+    { emoji: '🎫', name: 'Ticket' },
+    { emoji: '🎟️', name: 'Entrada' },
+    { emoji: '👑', name: 'Corona' },
+    { emoji: '💫', name: 'Brillo' },
+  ];
+
   fonts = [
     { name: 'Syne',               tag: 'Display' },
     { name: 'DM Sans',            tag: 'Sans-serif' },
@@ -569,6 +662,7 @@ export class AppearanceComponent implements OnInit {
     if (!this.theme.bodyTextColor)    this.theme.bodyTextColor    = '#111118';
     if (!this.theme.headingTextColor) this.theme.headingTextColor = '#111118';
     if (!this.theme.bodyFontSize)     this.theme.bodyFontSize     = 16;
+    if (!this.theme.stampEmoji)       this.theme.stampEmoji       = '☕';  // NUEVO
   }
 
   getImageUrl(path: string): string {

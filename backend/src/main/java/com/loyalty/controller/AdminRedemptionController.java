@@ -38,12 +38,24 @@ public class AdminRedemptionController {
 
             // Buscar rewards de tarjetas
             List<Reward> cardRewards;
-            if ("pending".equals(status)) {
-                cardRewards = rewardRepository.findByStatus(Reward.RewardStatus.REQUESTED);
-            } else if ("approved".equals(status)) {
-                cardRewards = rewardRepository.findByStatus(Reward.RewardStatus.REDEEMED);
-            } else {
-                cardRewards = new ArrayList<>();
+            List<FidelityReward> fidelityRewards;
+            switch (status) {
+                case "pending" -> {
+                    cardRewards = rewardRepository.findByStatus(Reward.RewardStatus.REQUESTED);
+                    fidelityRewards = fidelityRewardRepository.findByStatus(FidelityReward.RewardStatus.REQUESTED);
+                }
+                case "approved" -> {
+                    cardRewards = rewardRepository.findByStatus(Reward.RewardStatus.REDEEMED);
+                    fidelityRewards = fidelityRewardRepository.findByStatus(FidelityReward.RewardStatus.REDEEMED);
+                }
+                case "rejected" -> {
+                    cardRewards = rewardRepository.findByStatus(Reward.RewardStatus.REJECTED);
+                    fidelityRewards = fidelityRewardRepository.findByStatus(FidelityReward.RewardStatus.REJECTED);
+                }
+                default -> {
+                    cardRewards = new ArrayList<>();
+                    fidelityRewards = new ArrayList<>();
+                }
             }
 
             for (Reward r : cardRewards) {
@@ -60,15 +72,6 @@ public class AdminRedemptionController {
             }
 
             // Buscar rewards de fidelidad
-            List<FidelityReward> fidelityRewards;
-            if ("pending".equals(status)) {
-                fidelityRewards = fidelityRewardRepository.findByStatus(FidelityReward.RewardStatus.REQUESTED);
-            } else if ("approved".equals(status)) {
-                fidelityRewards = fidelityRewardRepository.findByStatus(FidelityReward.RewardStatus.REDEEMED);
-            } else {
-                fidelityRewards = new ArrayList<>();
-            }
-
             for (FidelityReward fr : fidelityRewards) {
                 LoyaltyCard card = fr.getLoyaltyCard();
                 result.add(Map.of(
@@ -97,11 +100,25 @@ public class AdminRedemptionController {
             @RequestBody(required = false) Map<String, Object> body) {
 
         try {
-            // Intentar en Reward primero
-            Reward reward = rewardRepository.findById(id).orElse(null);
-            if (reward != null) {
+            String rewardType = body != null ? (String) body.get("rewardType") : null;
+            if ("FIDELITY".equals(rewardType)) {
+                FidelityReward fr = fidelityRewardRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Fidelity reward not found: " + id));
+                if (fr.getStatus() != FidelityReward.RewardStatus.REQUESTED) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "The reward is not in requested state"));
+                }
+                fr.setStatus(FidelityReward.RewardStatus.REDEEMED);
+                fr.setApprovedAt(LocalDateTime.now());
+                fr.setRedeemedAt(LocalDateTime.now());
+                fidelityRewardRepository.save(fr);
+                return ResponseEntity.ok(Map.of("message", "Fidelity reward approved"));
+            } else {
+                Reward reward = rewardRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Reward not found: " + id));
                 if (reward.getStatus() != Reward.RewardStatus.REQUESTED) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Reward not in requested state"));
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "The reward is not in requested state"));
                 }
                 reward.setStatus(Reward.RewardStatus.REDEEMED);
                 reward.setApprovedAt(LocalDateTime.now());
@@ -109,21 +126,6 @@ public class AdminRedemptionController {
                 rewardRepository.save(reward);
                 return ResponseEntity.ok(Map.of("message", "Reward approved"));
             }
-
-            // Si no, buscar en FidelityReward
-            FidelityReward fidelityReward = fidelityRewardRepository.findById(id).orElse(null);
-            if (fidelityReward != null) {
-                if (fidelityReward.getStatus() != FidelityReward.RewardStatus.REQUESTED) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Reward not in requested state"));
-                }
-                fidelityReward.setStatus(FidelityReward.RewardStatus.REDEEMED);
-                fidelityReward.setApprovedAt(LocalDateTime.now());
-                fidelityReward.setRedeemedAt(LocalDateTime.now());
-                fidelityRewardRepository.save(fidelityReward);
-                return ResponseEntity.ok(Map.of("message", "Fidelity reward approved"));
-            }
-
-            return ResponseEntity.notFound().build();
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -138,14 +140,28 @@ public class AdminRedemptionController {
 
         try {
             String reason = body != null ? body.get("reason") : null;
-
-            // Intentar en Reward primero
-            Reward reward = rewardRepository.findById(id).orElse(null);
-            if (reward != null) {
-                if (reward.getStatus() != Reward.RewardStatus.REQUESTED) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Reward not in requested state"));
+            String rewardType = body != null ? body.get("rewardType") : null;
+            if ("FIDELITY".equals(rewardType)) {
+                FidelityReward fr = fidelityRewardRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Fidelity reward not found: " + id));
+                if (fr.getStatus() != FidelityReward.RewardStatus.REQUESTED) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "The reward is not in requested state"));
                 }
-                reward.setStatus(Reward.RewardStatus.AVAILABLE);
+                fr.setStatus(FidelityReward.RewardStatus.REJECTED);
+                fr.setRejectedAt(LocalDateTime.now());
+                fr.setRejectionReason(reason);
+                fr.setRequestedAt(null);
+                fidelityRewardRepository.save(fr);
+                return ResponseEntity.ok(Map.of("message", "Fidelity reward rejected"));
+            } else {
+                Reward reward = rewardRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Reward not found: " + id));
+                if (reward.getStatus() != Reward.RewardStatus.REQUESTED) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("error", "The reward is not in requested state"));
+                }
+                reward.setStatus(Reward.RewardStatus.REJECTED);
                 reward.setRejectedAt(LocalDateTime.now());
                 reward.setRejectionReason(reason);
                 reward.setRequestedAt(null);
@@ -153,21 +169,6 @@ public class AdminRedemptionController {
                 return ResponseEntity.ok(Map.of("message", "Reward rejected"));
             }
 
-            // Si no, buscar en FidelityReward
-            FidelityReward fidelityReward = fidelityRewardRepository.findById(id).orElse(null);
-            if (fidelityReward != null) {
-                if (fidelityReward.getStatus() != FidelityReward.RewardStatus.REQUESTED) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Reward not in requested state"));
-                }
-                fidelityReward.setStatus(FidelityReward.RewardStatus.AVAILABLE);
-                fidelityReward.setRejectedAt(LocalDateTime.now());
-                fidelityReward.setRejectionReason(reason);
-                fidelityReward.setRequestedAt(null);
-                fidelityRewardRepository.save(fidelityReward);
-                return ResponseEntity.ok(Map.of("message", "Fidelity reward rejected"));
-            }
-
-            return ResponseEntity.notFound().build();
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

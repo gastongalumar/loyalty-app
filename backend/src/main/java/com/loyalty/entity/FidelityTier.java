@@ -2,6 +2,8 @@ package com.loyalty.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -29,6 +31,11 @@ public class FidelityTier {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    // 👇 NUEVO: Relación con FidelityReward para permitir borrado en cascada
+    @JsonIgnore
+    @OneToMany(mappedBy = "tier", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FidelityReward> fidelityRewards = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
@@ -62,4 +69,22 @@ public class FidelityTier {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    // 👇 NUEVOS getters y setters para fidelityRewards
+    public List<FidelityReward> getFidelityRewards() { return fidelityRewards; }
+    public void setFidelityRewards(List<FidelityReward> fidelityRewards) {
+        this.fidelityRewards = fidelityRewards;
+    }
+
+    // Método helper para agregar recompensas (opcional pero útil)
+    public void addFidelityReward(FidelityReward reward) {
+        fidelityRewards.add(reward);
+        reward.setTier(this);
+    }
+
+    // Método helper para remover recompensas (opcional pero útil)
+    public void removeFidelityReward(FidelityReward reward) {
+        fidelityRewards.remove(reward);
+        reward.setTier(null);
+    }
 }

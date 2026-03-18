@@ -5,29 +5,45 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fb546d16-e4b4-4f0a-a832-55f01d665f66" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cambios.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/fix10.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-profile/customer-profile.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/AdminRedemptionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/AdminRedemptionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/CustomerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/controller/ThemeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/dto/LoyaltyCardDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Business.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Business.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/BusinessTheme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityReward.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityReward.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/FidelityTier.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/LoyaltyCard.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/LoyaltyCard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/Reward.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/entity/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/LoyaltyCardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/uploads/backgrounds/111d7816-6140-4314-b308-b73fbbeb86a5.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/uploads/logos/1466914a-39f8-4e97-b81a-3b3639b8e020.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/FileStorageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/loyalty/service/FileStorageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/components/loading.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/components/loading.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/components/navbar.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/models/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/models/models.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/admin-dashboard/admin-dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/admin-dashboard/admin-dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/admin-redemptions/admin-redemptions.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/admin-redemptions/admin-redemptions.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/appearance/appearance.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-card/customer-card.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/customer-search/customer-search.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/customer-search/customer-search.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/fidelity-tiers/fidelity-tiers.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/fidelity-tiers/fidelity-tiers.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/login/login.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/loyalty.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/qr-display/qr-display.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/qr-display/qr-display.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/services/theme.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/assets/i18n/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/i18n/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/assets/i18n/es.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/assets/i18n/es.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project2-snapshot.json" beforeDir="false" afterPath="$PROJECT_DIR$/project2-snapshot.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project3-snapshot.json" beforeDir="false" afterPath="$PROJECT_DIR$/project3-snapshot.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project4-snapshot.json" beforeDir="false" afterPath="$PROJECT_DIR$/project4-snapshot.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/loyalty/repository/BusinessRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/loyalty/repository/LoyaltyCardRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/loyalty/repository/RewardRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/loyalty/repository/StampRepository.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,23 +86,23 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHELLCHECK.PATH": "C:\\Users\\user\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe",
-    "git-widget-placeholder": "test-online",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/TPS 2026/loyalty-app/loyalty-app/frontend/src/app/pages/customer-card",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.16420358",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;C:\\Users\\user\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;test-online&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/TPS 2026/loyalty-app/loyalty-app/frontend/src/app/pages/customer-card&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.16420358&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\TPS 2026\loyalty-app\loyalty-app\frontend\src\app\pages\customer-card" />

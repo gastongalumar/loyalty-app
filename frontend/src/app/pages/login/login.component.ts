@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { LogoComponent } from '../../components/logo.component';
@@ -61,13 +63,15 @@ import { LogoComponent } from '../../components/logo.component';
     </div>
   `
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   email = '';
   password = '';
   loading = false;
   error = '';
   currentLang = 'en';
   loginLogoSize = 80;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -78,8 +82,17 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.currentLang = localStorage.getItem('lang') || 'en';
-    const theme = this.themeService.getTheme();
-    this.loginLogoSize = theme.loginLogoSize || 80;
+    // Suscripción reactiva — se actualiza cuando el tema llega del servidor
+    this.themeService.theme$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(theme => {
+        this.loginLogoSize = theme.loginLogoSize || 80;
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setLang(lang: string) {

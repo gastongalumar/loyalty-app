@@ -78,7 +78,13 @@
     "enterCode": "Enter QR code",
     "customers_zero": "No customers",
     "customers_one": "1 customer",
-    "customers_other": "{{count}} customers"
+    "customers_other": "{{count}} customers",
+    "appearance": "Appearance",
+    "fidelity": "Loyalty Tiers",
+    "fidelityTiers": "Loyalty Tiers",
+    "recentCustomers": "Recent customers",
+    "stampsGiven": "Stamps given",
+    "rewardsEarned": "Rewards earned"
   },
   "appearance": {
     "title": "Appearance",

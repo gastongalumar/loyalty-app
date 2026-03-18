@@ -1,5 +1,7 @@
 <!-- frontend/src/app/pages/customer-card/customer-card.component.html -->
 
+<app-navbar></app-navbar>
+
 <div class="wallet-shell">
 
   <!-- ════════════════════ LOADING ════════════════════ -->
@@ -23,23 +25,15 @@
         <span class="greeting-label">Welcome back</span>
         <span class="greeting-name">{{ card.customerName }}</span>
       </div>
-      <button class="qr-fab" (click)="openQr()" aria-label="Show QR code">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7" rx="1"/>
-          <rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/>
-        </svg>
-        <span>QR</span>
-      </button>
+      <!-- BOTÓN QR FLOTANTE ELIMINADO -->
     </header>
 
-    <!-- ── SUCCESS TOAST ────────────────────────────────────── -->
+    <!-- ════════════════════ SUCCESS TOAST ════════════════════ -->
     <div *ngIf="successMsg" class="toast toast-success" role="alert">
       {{ successMsg }}
     </div>
 
-    <!-- ── LOYALTY CARD ──────────────────────────────────────── -->
+    <!-- ════════════════════ LOYALTY CARD ════════════════════ -->
     <section class="loyalty-card-hero" aria-label="Your loyalty card">
 
       <div class="card-chip">
@@ -51,7 +45,7 @@
       <div class="card-brand">{{ card.businessName }}</div>
       <div class="card-reward-label">{{ card.rewardDescription }}</div>
 
-      <!-- Stamp grid -->
+      <!-- Stamp grid con emoji dinámico -->
       <div class="stamp-grid" role="list" [attr.aria-label]="card.currentStamps + ' of ' + card.totalStamps + ' stamps collected'">
         <div
           *ngFor="let i of stampArray"
@@ -61,7 +55,7 @@
           role="listitem"
           [attr.aria-label]="i < card.currentStamps ? 'Stamp ' + (i+1) + ' collected' : 'Stamp ' + (i+1) + ' empty'"
         >
-          <span *ngIf="i < card.currentStamps" class="stamp-icon">☕</span>
+          <span *ngIf="i < card.currentStamps" class="stamp-icon">{{ themeService.getTheme().stampEmoji || '☕' }}</span>
           <span *ngIf="i >= card.currentStamps" class="stamp-num">{{ i + 1 }}</span>
         </div>
       </div>
@@ -100,7 +94,6 @@
         <span class="bonus-cards-left">{{ cardsToNextBonus }} cards left</span>
       </div>
 
-      <!-- ✅ BUG FIX: Bonus progress bar uses bonusProgressPercent getter -->
       <div class="bonus-track" role="progressbar"
            [attr.aria-valuenow]="bonusProgressPercent"
            aria-valuemin="0" aria-valuemax="100"
@@ -142,7 +135,6 @@
         role="tab"
         [attr.aria-selected]="activeTab === 'fidelity'">
         Bonuses
-        <!-- ✅ BUG FIX: Badge now driven by availableFidelityRewards count -->
         <span *ngIf="fidelityRewardsBadgeCount > 0" class="badge badge-gold">{{ fidelityRewardsBadgeCount }}</span>
       </button>
     </nav>
@@ -150,12 +142,14 @@
     <!-- ── STAMPS TAB ────────────────────────────────────────── -->
     <section *ngIf="activeTab === 'stamps'" class="tab-panel" role="tabpanel">
       <div *ngIf="!card.recentStamps?.length" class="empty-state">
-        <div class="empty-icon">☕</div>
+        <!-- Empty state con emoji dinámico -->
+        <div class="empty-icon">{{ themeService.getTheme().stampEmoji || '☕' }}</div>
         <p>No stamps yet. Visit us to get your first!</p>
       </div>
       <ul *ngIf="card.recentStamps?.length" class="activity-list">
         <li *ngFor="let stamp of card.recentStamps" class="activity-item glass-card">
-          <div class="activity-icon">☕</div>
+          <!-- Activity icon con emoji dinámico -->
+          <div class="activity-icon">{{ themeService.getTheme().stampEmoji || '☕' }}</div>
           <div class="activity-body">
             <span class="activity-title">Stamp added</span>
             <span *ngIf="stamp.note" class="activity-note">{{ stamp.note }}</span>
@@ -227,11 +221,6 @@
     </section>
 
     <!-- ── FIDELITY BONUSES TAB ───────────────────────────────── -->
-    <!--
-      ✅ BUG FIX: This entire section was missing from the original component.
-      fidelityRewards were never rendered. Now they display with proper status
-      handling and a working redemption button.
-    -->
     <section *ngIf="activeTab === 'fidelity'" class="tab-panel" role="tabpanel">
 
       <div *ngIf="!card.fidelityRewards?.length" class="empty-state">
@@ -318,7 +307,7 @@
     </div>
   </div>
 
-  <!-- ════════════════════ BOTTOM NAV ════════════════════ -->
+  <!-- ═════════════════════════════════════ BOTTOM NAV ═════════════════════════════════════ -->
   <nav class="bottom-nav" aria-label="Main navigation">
     <button class="bottom-nav-item active" aria-current="page">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -336,7 +325,7 @@
       </div>
       <span>QR</span>
     </button>
-    <a class="bottom-nav-item" routerLink="/customer/qr">
+    <a class="bottom-nav-item" routerLink="/customer/profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>
@@ -344,5 +333,4 @@
       <span *ngIf="totalRewardsBadgeCount > 0" class="nav-badge">{{ totalRewardsBadgeCount }}</span>
     </a>
   </nav>
-
 </div>

@@ -27,6 +27,6 @@ import { TranslateModule } from '@ngx-translate/core';
   `]
 })
 export class LoadingComponent {
-  @Input() message = 'COMMON.LOADING';
+  @Input() message = 'common.loading';
   @Input() padding = '40px 0';
 }

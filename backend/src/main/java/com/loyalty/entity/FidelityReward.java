@@ -42,7 +42,7 @@ public class FidelityReward {
     }
 
     public enum RewardStatus {
-        AVAILABLE, REDEEMED, REQUESTED
+        AVAILABLE, REDEEMED, REQUESTED, REJECTED
     }
 
     // Getters y Setters

@@ -1,1002 +1,448 @@
-// frontend/src/app/pages/customer-card/customer-card.component.scss
-//
-// Design language: "Midnight Wallet" — deep navy with liquid gold accents.
-// Glassmorphism cards float on a layered dark canvas.
-// Typography: DM Sans (body) + Syne (display numerals/headings)
+/* ══════════════════════════════════════════════════════════════════
+CUSTOMER CARD — Estilos que respetan el tema configurado por admin
+Todos los colores usan CSS variables de theme.service.ts → apply()
+══════════════════════════════════════════════════════════════════ */
 
-// ── Design tokens ────────────────────────────────────────────────────────────
-:host {
-  --navy:        #0d0d1a;
-  --navy-mid:    #1a1a2e;
-  --navy-light:  #22223b;
-  --navy-card:   #16213e;
-  --gold:        #fbc531;
-  --gold-light:  #ffd369;
-  --gold-dim:    rgba(251,197,49,0.18);
-  --gold-border: rgba(251,197,49,0.35);
-  --white:       #ffffff;
-  --white-60:    rgba(255,255,255,0.6);
-  --white-30:    rgba(255,255,255,0.3);
-  --white-10:    rgba(255,255,255,0.06);
-  --white-08:    rgba(255,255,255,0.08);
-  --glass-bg:    rgba(255,255,255,0.05);
-  --glass-border:rgba(255,255,255,0.12);
-  --success:     #2ecc71;
-  --radius-sm:   8px;
-  --radius-md:   14px;
-  --radius-lg:   20px;
-  --radius-xl:   28px;
-  --shadow-card: 0 8px 32px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.06) inset;
-  --shadow-glow: 0 0 24px rgba(251,197,49,0.22);
-  --font-display:'Syne', 'DM Sans', system-ui, sans-serif;
-  --font-body:   'DM Sans', 'Inter', system-ui, sans-serif;
-  --transition:  0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-// ── Shell ────────────────────────────────────────────────────────────────────
+/* ── Shell ────────────────────────────────────────────────────── */
 .wallet-shell {
-  display:         flex;
-  flex-direction:  column;
-  min-height:      100svh;
-  background:      var(--navy);
-  // Subtle grid texture
-  background-image:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(251,197,49,0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(26,26,46,0.9) 0%, transparent 60%);
-  font-family:     var(--font-body);
-  color:           var(--white);
-  padding-bottom:  84px; // space for bottom nav
-  overflow-x:      hidden;
+  min-height: 100vh;
+  background: transparent;
+  padding-top: calc(var(--nav-height, 60px) + 8px);
+  padding-bottom: calc(var(--bottom-nav-h, 68px) + var(--safe-bottom, 0px) + 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-// ── Loading ──────────────────────────────────────────────────────────────────
+/* ── Loading / Error ─────────────────────────────────────────── */
 .loading-screen {
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  height:          100svh;
-  gap:             20px;
+  min-height: 60vh;
+  gap: 16px;
 }
 
 .loader-ring {
-  width:  48px;
-  height: 48px;
-  border: 3px solid var(--white-10);
-  border-top-color: var(--gold);
+  width: 44px; height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-
-  &.small {
-    width:  32px;
-    height: 32px;
-    border-width: 2px;
-  }
+  animation: spin 0.75s linear infinite;
 }
 
-.loader-label {
-  font-size:   0.85rem;
-  color:       var(--white-60);
-  letter-spacing: 0.5px;
-}
+.loader-label { color: var(--text-muted); font-size: 0.875rem; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-// ── Error banner ──────────────────────────────────────────────────────────────
 .error-banner {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-  margin:          16px;
-  padding:         14px 16px;
-  background:      rgba(231, 76, 60, 0.15);
-  border:          1px solid rgba(231,76,60,0.4);
-  border-radius:   var(--radius-md);
-  font-size:       0.875rem;
-
-  button {
-    background: none;
-    border:     none;
-    color:      var(--white-60);
-    cursor:     pointer;
-    padding:    4px 8px;
-    font-size:  1rem;
-  }
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 12px 16px;
+  background: rgba(239,71,111,0.1);
+  border: 1px solid rgba(239,71,111,0.25);
+  border-radius: var(--r-md);
+  color: var(--danger, #EF476F);
+  font-size: 0.875rem;
 }
 
-// ── Toast ────────────────────────────────────────────────────────────────────
-.toast {
-  margin:        0 16px 12px;
-  padding:       14px 18px;
-  border-radius: var(--radius-md);
-  font-size:     0.875rem;
-  font-weight:   500;
-  animation:     slideDown 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+.error-banner button { background: none; border: none; cursor: pointer; color: inherit; font-size: 1rem; }
 
-  &.toast-success {
-    background: rgba(46,204,113,0.15);
-    border:     1px solid rgba(46,204,113,0.4);
-    color:      #2ecc71;
-  }
+/* ── Toast ───────────────────────────────────────────────────── */
+.toast {
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+.toast-success {
+  background: rgba(6,214,160,0.12);
+  color: var(--success, #06D6A0);
+  border: 1px solid rgba(6,214,160,0.25);
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity:0; transform: translateY(-8px); }
+  to { opacity:1; transform: translateY(0); }
 }
 
-// ── Header ───────────────────────────────────────────────────────────────────
+/* ── Wallet Header ───────────────────────────────────────────── */
 .wallet-header {
-  display:         flex;
-  align-items:     center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding:         20px 20px 12px;
+  padding: 4px 0 8px;
 }
 
-.header-greeting {
-  display:        flex;
-  flex-direction: column;
-  gap:            2px;
-}
+.header-greeting { display: flex; flex-direction: column; gap: 2px; }
 
 .greeting-label {
-  font-size:      0.72rem;
-  letter-spacing: 1.2px;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  color:          var(--white-60);
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .greeting-name {
-  font-family:    var(--font-display);
-  font-size:      1.3rem;
-  font-weight:    700;
-  letter-spacing: -0.3px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-heading);
 }
 
 .qr-fab {
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  gap:             3px;
-  padding:         10px 14px;
-  background:      var(--glass-bg);
-  border:          1px solid var(--glass-border);
-  border-radius:   var(--radius-md);
-  backdrop-filter: blur(12px);
-  color:           var(--gold);
-  cursor:          pointer;
-  font-size:       0.65rem;
-  font-weight:     600;
-  letter-spacing:  0.8px;
-  text-transform:  uppercase;
-  transition:      all 0.2s ease;
-  min-width:       56px;
-  min-height:      56px;
-
-  svg {
-    width:  22px;
-    height: 22px;
-  }
-
-  &:hover, &:focus-visible {
-    background:  rgba(251,197,49,0.1);
-    border-color:var(--gold-border);
-    transform:   translateY(-1px);
-    box-shadow:  var(--shadow-glow);
-  }
-
-  &:active { transform: scale(0.97); }
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px var(--primary-glow, rgba(0,0,0,0.2));
 }
 
-// ── Glassmorphism card ────────────────────────────────────────────────────────
-.glass-card {
-  background:      var(--glass-bg);
-  border:          1px solid var(--glass-border);
-  border-radius:   var(--radius-lg);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  box-shadow:      var(--shadow-card);
-  position:        relative;
-  overflow:        hidden;
-}
+.qr-fab svg { width: 22px; height: 22px; }
 
-// ── Loyalty card hero ─────────────────────────────────────────────────────────
+.qr-fab:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* ── Loyalty Card Hero ───────────────────────────────────────── */
+/* Usa var(--secondary) como color base del fondo de la tarjeta. */
+/* Si el admin elige un secondary color oscuro, la tarjeta se verá */
+/* en ese tono. Si elige uno claro, se adaptará automáticamente. */
 .loyalty-card-hero {
-  margin:          0 16px 16px;
-  padding:         24px 22px 20px;
-  border-radius:   var(--radius-xl);
-  background:      linear-gradient(135deg, #1a2a4a 0%, #0d1b2e 60%, #0a0a1a 100%);
-  border:          1px solid rgba(255,255,255,0.1);
-  box-shadow:      0 16px 48px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.08) inset;
-  position:        relative;
-  overflow:        hidden;
-  animation:       cardEntrance 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+  border-radius: var(--r-xl);
+  padding: 24px 20px 18px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.07) inset;
 
-  // Decorative glow
-  &::before {
-    content:  '';
-    position: absolute;
-    top:      -40%;
-    right:    -20%;
-    width:    200px;
-    height:   200px;
-    background: radial-gradient(circle, rgba(251,197,49,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  // Card stripe
-  &::after {
-    content:  '';
-    position: absolute;
-    bottom:   0;
-    left:     0;
-    right:    0;
-    height:   3px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    opacity:  0.5;
-  }
+  /* ✅ FIX: fondo basado en var(--secondary) del tema del admin */
+  background: linear-gradient(
+    135deg,
+    var(--secondary) 0%,
+    color-mix(in srgb, var(--secondary) 70%, #000000) 60%,
+    color-mix(in srgb, var(--secondary) 45%, #000000) 100%
+  );
 }
 
-@keyframes cardEntrance {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+/* Glow decorativo usando el color primario del tema */
+.loyalty-card-hero::before {
+  content: '';
+  position: absolute; top: -40%; right: -15%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--primary-glow, rgba(255,107,53,0.15)) 0%,
+    transparent 70%);
+  pointer-events: none;
+}
+
+/* Línea inferior del color accent/gold del tema */
+.loyalty-card-hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.6;
 }
 
 .card-chip {
-  display:     flex;
-  gap:         5px;
-  margin-bottom: 14px;
+  display: flex; gap: 5px; margin-bottom: 16px;
 }
 
 .chip-dot {
-  width:         8px;
-  height:        8px;
-  border-radius: 50%;
-  background:    var(--gold);
-  opacity:       0.7;
-
-  &:nth-child(2) { opacity: 0.5; }
-  &:nth-child(3) { opacity: 0.3; }
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.35);
 }
 
 .card-brand {
-  font-size:      0.72rem;
-  letter-spacing: 1.4px;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  color:          var(--white-60);
-  margin-bottom:  4px;
+  letter-spacing: 2px;
+  opacity: 0.55;
+  margin-bottom: 4px;
 }
 
 .card-reward-label {
-  font-family:    var(--font-display);
-  font-size:      1.1rem;
-  font-weight:    700;
-  color:          var(--gold-light);
-  margin-bottom:  20px;
-  letter-spacing: -0.2px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-bottom: 18px;
 }
 
-// Stamp grid — siempre 5×2 simétrico
+/* ── Stamp Grid ──────────────────────────────────────────────── */
 .stamp-grid {
-  display:               grid;
+  display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-template-rows:    repeat(2, 1fr);
-  gap:                   8px;
-  margin-bottom:         18px;
-  width:                 100%;
+  gap: 7px;
+  margin-bottom: 14px;
 }
 
 .stamp-cell {
   aspect-ratio: 1;
-  border-radius: var(--radius-sm);
-  display:       flex;
-  align-items:   center;
-  justify-content: center;
-  font-size:     1.1rem;
-  transition:    all var(--transition);
-
-  &.stamp-filled {
-    background: rgba(251,197,49,0.18);
-    border:     1px solid var(--gold-border);
-    box-shadow: 0 0 10px rgba(251,197,49,0.15);
-    animation:  stampPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-  }
-
-  &.stamp-empty {
-    background:  var(--white-08);
-    border:      1px solid rgba(255,255,255,0.08);
-    color:       rgba(255,255,255,0.2);
-
-    .stamp-num { font-size: 0.75rem; }
-  }
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  transition: all 0.25s;
 }
+
+/* ✅ FIX: stamp filled usa var(--accent) del tema en vez de gold fijo */
+.stamp-filled {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 30%, transparent);
+  animation: stampPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.stamp-empty {
+  color: rgba(255,255,255,0.2);
+  font-size: 0.65rem;
+}
+
+.stamp-icon { font-size: 1.1rem; }
+.stamp-num { font-size: 0.65rem; opacity: 0.4; }
 
 @keyframes stampPop {
-  from { transform: scale(0.6); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-// ── Progress bars ─────────────────────────────────────────────────────────────
-.progress-track,
-.bonus-track {
-  height:        6px;
-  border-radius: 999px;
-  background:    rgba(255,255,255,0.1);
-  overflow:      visible;
-  position:      relative;
-}
-
-.progress-fill,
-.bonus-fill {
-  height:        100%;
-  border-radius: 999px;
-  position:      relative;
-  // ✅ Smooth CSS transition for progress bar animation
-  transition:    width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-
-  .progress-fill {
-    background: linear-gradient(90deg, #4fc3f7, #1976d2);
-  }
-}
-
-.progress-fill {
-  background: linear-gradient(90deg, #4fc3f7 0%, #7c4dff 100%);
-  box-shadow:  0 0 8px rgba(76,195,247,0.4);
-}
-
-.gold-fill {
-  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-  box-shadow:  0 0 12px rgba(251,197,49,0.35);
-
-  .bonus-fill-glow {
-    position: absolute;
-    right:    -4px;
-    top:      50%;
-    transform: translateY(-50%);
-    width:    12px;
-    height:   12px;
-    background: var(--gold-light);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
-    animation: pulseGlow 1.8s ease-in-out infinite;
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
-  50%       { opacity: 0.7; transform: translateY(-50%) scale(1.3); }
-}
-
-.card-footer-row {
-  display:         flex;
-  justify-content: space-between;
-  align-items:     center;
-  margin-top:      10px;
-}
-
-.stamp-count {
-  font-size: 0.78rem;
-  color:     var(--white-60);
-}
-
-.stamp-away {
-  font-size:   0.78rem;
-  color:       rgba(76,195,247,0.9);
-}
-
-.reward-ready-badge {
-  font-size:    0.78rem;
-  color:        var(--gold-light);
-  font-weight:  600;
-  animation:    pulseOpacity 1.5s ease-in-out infinite;
-}
-
-@keyframes pulseOpacity {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.65; }
-}
-
-.card-completed-row {
-  display:     flex;
-  align-items: center;
-  gap:         6px;
-  margin-top:  14px;
-  font-size:   0.75rem;
-  color:       var(--white-60);
-
-  svg {
-    width:  14px;
-    height: 14px;
-    color:  var(--success);
-    flex-shrink: 0;
-  }
-}
-
-// ── Bonus block ───────────────────────────────────────────────────────────────
-.bonus-block {
-  margin:   0 16px 16px;
-  padding:  18px 20px;
-  animation: fadeUp 0.5s ease 0.2s both;
-}
-
-.bonus-header {
-  display:     flex;
-  align-items: center;
-  gap:         12px;
-  margin-bottom: 14px;
-}
-
-.bonus-icon {
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
-.bonus-title {
-  font-size:   0.7rem;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-  color:       var(--white-60);
-  margin-bottom: 2px;
-}
-
-.bonus-desc {
-  font-family: var(--font-display);
-  font-size:   0.95rem;
-  font-weight: 700;
-  color:       var(--gold-light);
-}
-
-.bonus-cards-left {
-  margin-left: auto;
-  font-size:   0.78rem;
-  color:       var(--white-60);
-  white-space: nowrap;
-}
-
-.bonus-meta {
-  display:         flex;
-  justify-content: space-between;
-  margin-top:      8px;
-  font-size:       0.72rem;
-  color:           var(--white-60);
-}
-
-// ── Tab nav ───────────────────────────────────────────────────────────────────
-.tab-nav {
-  display:     flex;
-  gap:         4px;
-  padding:     0 16px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-
-.tab-btn {
-  position:    relative;
-  display:     flex;
-  align-items: center;
-  gap:         6px;
-  padding:     12px 16px;
-  background:  none;
-  border:      none;
-  color:       var(--white-60);
-  font-family: var(--font-body);
-  font-size:   0.875rem;
-  font-weight: 500;
-  cursor:      pointer;
-  border-bottom: 2px solid transparent;
-  transition:  all 0.2s ease;
-  white-space: nowrap;
-
-  &.tab-active {
-    color:        var(--white);
-    border-bottom-color: var(--gold);
-  }
-
-  &:hover:not(.tab-active) {
-    color: rgba(255,255,255,0.8);
-  }
-}
-
-.badge {
-  display:        inline-flex;
-  align-items:    center;
-  justify-content:center;
-  width:          18px;
-  height:         18px;
-  border-radius:  50%;
-  background:     #e74c3c;
-  color:          white;
-  font-size:      0.65rem;
-  font-weight:    700;
-  line-height:    1;
-
-  &.badge-gold {
-    background: var(--gold);
-    color:      var(--navy);
-  }
-}
-
-// ── Tab panel ─────────────────────────────────────────────────────────────────
-.tab-panel {
-  padding:   12px 16px 8px;
-  animation: fadeUp 0.3s ease both;
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-// ── Empty state ───────────────────────────────────────────────────────────────
-.empty-state {
-  text-align:  center;
-  padding:     36px 24px;
-  color:       var(--white-60);
-  font-size:   0.9rem;
-
-  p { margin: 4px 0; }
-}
-
-.empty-icon {
-  font-size:     2.5rem;
+/* ── Progress bar de sellos ──────────────────────────────────── */
+.progress-track {
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 99px;
+  overflow: hidden;
   margin-bottom: 12px;
 }
 
-.empty-sub {
-  font-size: 0.82rem;
-  color:     rgba(251,197,49,0.7);
-  margin-top: 8px !important;
+/* ✅ FIX: barra de progreso usa var(--primary) del tema */
+.progress-fill {
+  height: 100%; border-radius: 99px;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary-glow, rgba(255,107,53,0.4));
+  transition: width 0.7s cubic-bezier(0.16,1,0.3,1);
 }
 
-// ── Activity list ─────────────────────────────────────────────────────────────
-.activity-list {
-  list-style: none;
-  padding:    0;
-  margin:     0;
-  display:    flex;
-  flex-direction: column;
-  gap:        8px;
+.card-footer-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.78rem; opacity: 0.75;
+  margin-bottom: 8px;
 }
 
-.activity-item {
-  display:     flex;
-  align-items: center;
-  gap:         12px;
-  padding:     14px 16px;
+.stamp-count { font-weight: 600; }
+.stamp-away { opacity: 0.7; }
+
+.reward-ready-badge {
+  font-size: 0.78rem; font-weight: 700;
+
+  /* ✅ FIX: color del badge de recompensa lista usa var(--accent) */
+  color: var(--accent);
 }
 
-.activity-icon {
-  font-size:  1.2rem;
+.card-completed-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem; opacity: 0.55;
+}
+
+.card-completed-row svg { width: 14px; height: 14px; opacity: 0.7; }
+
+/* ── Glass card (bonus block) ────────────────────────────────── */
+.glass-card {
+  /* ✅ FIX: usa var(--surface) y var(--border) del tema */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Bonus block ─────────────────────────────────────────────── */
+.bonus-block { }
+
+.bonus-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+
+.bonus-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+.bonus-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem; font-weight: 700;
+  color: var(--text-heading);
+}
+
+.bonus-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+.bonus-cards-left {
+  margin-left: auto; font-size: 0.75rem; font-weight: 700;
+
+  /* ✅ FIX: usa var(--accent) en vez de gold hardcodeado */
+  color: var(--accent);
   flex-shrink: 0;
 }
 
-.activity-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.bonus-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px; overflow: hidden; margin-bottom: 8px;
 }
 
-.activity-title {
-  font-size:   0.875rem;
-  font-weight: 500;
+/* ✅ FIX: barra de bonus usa var(--accent) del tema */
+.bonus-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%,
+    white));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: width 0.7s cubic-bezier(0.16,1,0.3,1);
+  position: relative;
 }
 
-.activity-note {
-  font-size: 0.75rem;
-  color:     var(--white-60);
-  font-style: italic;
+.gold-fill { /* alias para compatibilidad con el HTML existente */ }
+
+.bonus-fill-glow {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: white; opacity: 0.6;
+  box-shadow: 0 0 6px 2px var(--accent);
 }
 
-.activity-time {
-  font-size: 0.72rem;
-  color:     var(--white-60);
-  white-space: nowrap;
+.bonus-meta {
+  display: flex; justify-content: space-between;
+  font-size: 0.72rem; color: var(--text-muted);
 }
 
-// ── Reward cards ─────────────────────────────────────────────────────────────
-.rewards-group {
-  margin-bottom: 20px;
+/* ── Tab Nav ─────────────────────────────────────────────────── */
+.tab-nav {
+  display: flex; gap: 4px;
+
+  /* ✅ FIX: usa var(--surface) y var(--border) del tema */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 4px;
 }
+
+.tab-btn {
+  flex: 1; padding: 9px 8px;
+  border: none; border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+
+.tab-btn:hover { color: var(--text-primary); }
+
+/* ✅ FIX: tab activo usa var(--primary) del tema */
+.tab-active {
+  background: var(--primary) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px var(--primary-glow, rgba(0,0,0,0.2));
+}
+
+.badge {
+  background: rgba(255,255,255,0.25);
+  color: white;
+  font-size: 0.65rem; font-weight: 700;
+  padding: 1px 6px; border-radius: 99px;
+  min-width: 18px; text-align: center;
+}
+
+.badge-gold {
+  /* ✅ FIX: badge gold usa var(--accent) */
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* ── Tab panels ──────────────────────────────────────────────── */
+.tab-panel { }
+
+.empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); }
+
+.empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+.empty-sub { font-size: 0.8rem; margin-top: 6px; color: var(--text-muted); }
+
+/* Activity list */
+.activity-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction:
+  column; gap: 8px; }
+
+.activity-item { display: flex; align-items: center; gap: 12px; padding: 12px; }
+
+.activity-icon {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+
+  /* ✅ FIX: fondo del icono usa var(--primary-light) */
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+
+.activity-body { flex: 1; min-width: 0; }
+
+.activity-title { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); display:
+  block; }
+
+.activity-note { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top:
+  2px; }
+
+.activity-time { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
+
+/* Rewards */
+.rewards-group { margin-bottom: 16px; }
 
 .group-label {
-  font-size:      0.68rem;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color:          var(--white-60);
-  margin-bottom:  10px;
-  padding-left:   4px;
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 8px;
 }
 
 .reward-card {
-  margin-bottom: 10px;
-  padding:       16px 18px;
-  transition:    transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-
-  &.reward-available {
-    border-color: rgba(46,204,113,0.25);
-  }
-
-  &.reward-pending {
-    border-color: rgba(241,196,15,0.2);
-  }
-
-  &.reward-used {
-    opacity: 0.55;
-  }
-
-  &.fidelity-reward {
-    border-color: var(--gold-border);
-    box-shadow:   var(--shadow-card), 0 0 16px rgba(251,197,49,0.08);
-  }
-}
-
-.fidelity-badge {
-  position:       absolute;
-  top:            -1px;
-  right:          16px;
-  background:     var(--gold);
-  color:          var(--navy);
-  font-size:      0.62rem;
-  font-weight:    700;
-  letter-spacing: 0.5px;
-  padding:        3px 8px;
-  border-radius:  0 0 6px 6px;
-  text-transform: uppercase;
+  margin-bottom: 8px; position: relative; overflow: hidden;
 }
 
 .reward-card-inner {
-  display:     flex;
-  align-items: center;
-  gap:         12px;
-  position:    relative;
-  z-index:     1;
+  display: flex; align-items: center; gap: 12px; position: relative; z-index: 1;
 }
 
-.reward-emoji {
-  font-size:   1.3rem;
-  flex-shrink: 0;
+.reward-emoji { font-size: 1.5rem; flex-shrink: 0; }
+
+.reward-body { flex: 1; min-width: 0; }
+
+.reward-title { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); display:
+  block; }
+
+.reward-date { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top:
+  2px; }
+
+.reward-status-label { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px; }
+
+/* ✅ FIX: reward-available usa var(--primary-light) y var(--primary) */
+.reward-available {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
 }
 
-.reward-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.reward-pending {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warning, #FFB703);
+  opacity: 0.85;
 }
 
-.reward-title {
-  font-size:   0.9rem;
-  font-weight: 600;
-  color:       var(--white);
-}
-
-.reward-date,
-.reward-status-label {
-  font-size: 0.72rem;
-  color:     var(--white-60);
-}
-
-// Shimmer effect on available rewards
-.reward-shimmer {
-  position:   absolute;
-  inset:      0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(46,204,113,0.05) 50%,
-    transparent 60%
-  );
-  background-size: 200% 100%;
-  animation:  shimmer 3s ease infinite;
-  pointer-events: none;
-
-  &.shimmer-gold {
-    background: linear-gradient(
-      105deg,
-      transparent 40%,
-      rgba(251,197,49,0.07) 50%,
-      transparent 60%
-    );
-    background-size: 200% 100%;
-  }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
-// Status pills
-.status-pill {
-  font-size:     0.68rem;
-  font-weight:   700;
-  letter-spacing:0.5px;
-  text-transform:uppercase;
-  padding:       4px 10px;
-  border-radius: 999px;
-  white-space:   nowrap;
-
-  &.pending {
-    background: rgba(241,196,15,0.15);
-    border:     1px solid rgba(241,196,15,0.35);
-    color:      #f1c40f;
-  }
-
-  &.used {
-    background: var(--white-08);
-    border:     1px solid rgba(255,255,255,0.1);
-    color:      var(--white-60);
-  }
-}
-
-// Redeem button
-.redeem-btn {
-  padding:       10px 16px;
-  border:        1px solid rgba(46,204,113,0.4);
-  border-radius: var(--radius-sm);
-  background:    rgba(46,204,113,0.12);
-  color:         #2ecc71;
-  font-size:     0.78rem;
-  font-weight:   700;
-  cursor:        pointer;
-  white-space:   nowrap;
-  transition:    all 0.2s ease;
-  min-height:    44px; // touch target
-
-  &:hover:not([disabled]) {
-    background:  rgba(46,204,113,0.22);
-    transform:   translateY(-1px);
-  }
-
-  &:active:not([disabled]) { transform: scale(0.97); }
-
-  &[disabled] {
-    opacity: 0.45;
-    cursor:  not-allowed;
-  }
-
-  &.redeem-btn-gold {
-    border-color:var(--gold-border);
-    background:  var(--gold-dim);
-    color:       var(--gold-light);
-
-    &:hover:not([disabled]) {
-      background: rgba(251,197,49,0.28);
-    }
-  }
-}
-
-// ── QR Modal ─────────────────────────────────────────────────────────────────
-.qr-overlay {
-  position:        fixed;
-  inset:           0;
-  background:      rgba(0,0,0,0.75);
-  backdrop-filter: blur(8px);
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  z-index:         200;
-  padding:         24px;
-  animation:       fadeIn 0.25s ease both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.qr-modal {
-  width:      100%;
-  max-width:  340px;
-  padding:    28px 24px 32px;
-  text-align: center;
-  animation:  modalPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-}
-
-@keyframes modalPop {
-  from { opacity: 0; transform: scale(0.8) translateY(20px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.qr-modal-close {
-  position:    absolute;
-  top:         14px;
-  right:       14px;
-  background:  var(--white-08);
-  border:      1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  color:       var(--white-60);
-  cursor:      pointer;
-  padding:     6px 10px;
-  font-size:   0.85rem;
-  min-height:  36px;
-  min-width:   36px;
-  transition:  all 0.2s ease;
-
-  &:hover { color: var(--white); background: rgba(255,255,255,0.1); }
-}
-
-.qr-modal-title {
-  font-family:   var(--font-display);
-  font-size:     1.25rem;
-  font-weight:   700;
-  margin-bottom: 4px;
-}
-
-.qr-modal-sub {
-  font-size:     0.8rem;
-  color:         var(--white-60);
-  margin-bottom: 24px;
-}
-
-.qr-frame {
-  display:        inline-flex;
-  align-items:    center;
-  justify-content:center;
-  padding:        16px;
-  background:     white;
-  border-radius:  var(--radius-md);
-  box-shadow:     0 8px 32px rgba(0,0,0,0.4), var(--shadow-glow);
-  margin-bottom:  20px;
-  min-width:      220px;
-  min-height:     220px;
-}
-
-.qr-image {
-  display:    block;
-  max-width:  192px;
-  max-height: 192px;
-  width:      100%;
-}
-
-.qr-placeholder {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           192px;
-  height:          192px;
-}
-
-.qr-code-text {
-  font-family:    var(--font-display);
-  font-size:      1.1rem;
-  font-weight:    700;
-  letter-spacing: 3px;
-  color:          var(--gold);
-}
-
-// ── Bottom Navigation ─────────────────────────────────────────────────────────
-.bottom-nav {
-  position:        fixed;
-  bottom:          0;
-  left:            0;
-  right:           0;
-  height:          72px;
-  display:         flex;
-  align-items:     center;
-  background:      rgba(13,13,26,0.92);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-top:      1px solid rgba(255,255,255,0.08);
-  z-index:         100;
-  padding:         0 8px;
-  // Safe area for notched phones
-  padding-bottom:  env(safe-area-inset-bottom, 0px);
-}
-
-.bottom-nav-item {
-  flex:            1;
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  justify-content: center;
-  gap:             3px;
-  padding:         8px 4px;
-  background:      none;
-  border:          none;
-  color:           var(--white-60);
-  font-size:       0.62rem;
-  font-weight:     500;
-  letter-spacing:  0.4px;
-  text-transform:  uppercase;
-  cursor:          pointer;
-  text-decoration: none;
-  position:        relative;
-  min-height:      56px; // touch target
-  transition:      color 0.2s ease;
-
-  svg {
-    width:  22px;
-    height: 22px;
-    transition: transform 0.2s ease;
-  }
-
-  &.active {
-    color: var(--gold);
-    svg { transform: translateY(-1px); }
-  }
-
-  &:hover:not(.active):not(.qr-center-btn) { color: rgba(255,255,255,0.85); }
-}
-
-.qr-center-btn {
-  flex: 0 0 72px;
-  color: var(--gold) !important;
-}
-
-.qr-center-ring {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           48px;
-  height:          48px;
-  border-radius:   50%;
-  background:      linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-  box-shadow:      0 4px 20px rgba(251,197,49,0.45);
-  margin-bottom:   2px;
-  transition:      all var(--transition);
-
-  svg {
-    width:  22px;
-    height: 22px;
-    color:  var(--navy);
-    stroke: var(--navy);
-  }
-
-  .qr-center-btn:hover & {
-    transform:  scale(1.08);
-    box-shadow: 0 6px 28px rgba(251,197,49,0.6);
-  }
-
-  .qr-center-btn:active & { transform: scale(0.95); }
-}
-
-.nav-badge {
-  position:      absolute;
-  top:           6px;
-  right:         calc(50% - 18px);
-  display:       inline-flex;
-  align-items:   center;
-  justify-content:center;
-  min-width:     16px;
-  height:        16px;
-  padding:       0 4px;
-  border-radius: 999px;
-  background:    #e74c3c;
-  color:         white;
-  font-size:     0.6rem;
-  font-weight:   700;
-  border:        2px solid var(--navy);
-}
-
-// ── Responsive fine-tuning ────────────────────────────────────────────────────
-@media (min-width: 480px) {
-  // stamp-grid no cambia — siempre 5×2
-  .loyalty-card-hero { padding: 28px 28px 24px; }
-}
-
-@media (min-width: 768px) {
-  .wallet-shell { max-width: 440px; margin: 0 auto; }
-  .bottom-nav   { max-width: 440px; left: 50%; transform: translateX(-50%); }
-}
-
-// ── Accessibility ─────────────────────────────────────────────────────────────
-@media (prefers-reduced-motion: reduce) {
-  .loyalty-card-hero,
-  .stamp-cell,
-  .progress-fill,
-  .gold-fill,
-  .reward-shimmer,
-  .toast { animation: none !important; transition: none !important; }
-}
-
-// Focus-visible rings (keyboard nav)
-:focus-visible {
-  outline:        2px solid var(--gold);
-  outline-offset: 3px;
-  border-radius:  var(--radius-sm);
-}
+/* Continued... */

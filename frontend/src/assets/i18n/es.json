@@ -78,7 +78,13 @@
     "enterCode": "Ingresá el código QR",
     "customers_zero": "Sin clientes",
     "customers_one": "1 cliente",
-    "customers_other": "{{count}} clientes"
+    "customers_other": "{{count}} clientes",
+    "appearance": "Apariencia",
+    "fidelity": "Niveles de fidelidad",
+    "fidelityTiers": "Niveles de fidelidad",
+    "recentCustomers": "Clientes recientes",
+    "stampsGiven": "Sellos otorgados",
+    "rewardsEarned": "Recompensas ganadas"
   },
   "appearance": {
     "title": "Apariencia",

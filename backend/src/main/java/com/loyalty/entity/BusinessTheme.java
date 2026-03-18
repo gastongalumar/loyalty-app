@@ -17,6 +17,9 @@ public class BusinessTheme {
     @JsonIgnoreProperties({"loyaltyCards", "owner", "stamps", "rewards"})
     private Business business;
 
+    @Column(length = 10)
+    private String stampEmoji = "☕";
+
     @Column(length = 20)
     private String mode = "light";
 
@@ -35,7 +38,7 @@ public class BusinessTheme {
     @Column(length = 100)
     private String appName = "LoyaltyCard";
 
-    @Column(length = 500)  // 🔹 CAMBIADO: ahora guarda RUTA, no base64
+    @Column(length = 500)
     private String logoUrl = "";
 
     private Integer logoSize = 32;
@@ -44,7 +47,7 @@ public class BusinessTheme {
     @Column(length = 10)
     private String navbarTextColor = "#FFFFFF";
 
-    @Column(length = 500)  // 🔹 CAMBIADO: ahora guarda RUTA, no base64
+    @Column(length = 500)
     private String backgroundUrl = "";
 
     @Column(length = 10)
@@ -53,7 +56,6 @@ public class BusinessTheme {
     private Boolean backgroundBlur = false;
     private Integer cardOpacity = 85;
 
-    // 🔹 NUEVAS PROPIEDADES PARA PERSONALIZACIÓN AVANZADA
     @Column(length = 10)
     private String bodyTextColor = "#111118";
 
@@ -82,7 +84,10 @@ public class BusinessTheme {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters y Setters (incluyendo los nuevos)
+    // Getters y Setters
+    public String getStampEmoji() { return stampEmoji; }
+    public void setStampEmoji(String stampEmoji) { this.stampEmoji = stampEmoji; }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -131,7 +136,6 @@ public class BusinessTheme {
     public Integer getCardOpacity() { return cardOpacity; }
     public void setCardOpacity(Integer cardOpacity) { this.cardOpacity = cardOpacity; }
 
-    // 🔹 GETTERS Y SETTERS PARA LAS NUEVAS PROPIEDADES
     public String getBodyTextColor() { return bodyTextColor; }
     public void setBodyTextColor(String bodyTextColor) { this.bodyTextColor = bodyTextColor; }
 

@@ -85,30 +85,31 @@ interface FidelityTier {
           No hay niveles configurados aún.
         </div>
 
-        <div *ngFor="let tier of tiers" class="tier-item"
-             style="display: flex; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid var(--border);">
+        <div *ngFor="let tier of tiers" class="tier-item">
 
-          <div style="min-width: 60px; text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">{{ tier.cardsRequired }}</div>
-            <div style="font-size: 0.7rem; color: var(--text-muted);">tarjetas</div>
-          </div>
-
-          <div style="flex: 1;">
-            <div style="font-weight: 600; margin-bottom: 4px;">{{ tier.rewardDescription }}</div>
-            <div style="display: flex; gap: 16px; align-items: center;">
+          <!-- Fila superior: número + descripción + badge -->
+          <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+            <div style="flex-shrink:0; width:52px; text-align:center;">
+              <div style="font-size:1.5rem; font-weight:800; color:var(--primary); line-height:1;">
+                {{ tier.cardsRequired }}
+              </div>
+              <div style="font-size:0.68rem; color:var(--text-muted);">tarjetas</div>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-weight:600; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                {{ tier.rewardDescription }}
+              </div>
               <span class="badge" [class.badge-success]="tier.isActive" [class.badge-secondary]="!tier.isActive">
                 {{ tier.isActive ? 'Activo' : 'Inactivo' }}
               </span>
             </div>
           </div>
-
-          <div style="display: flex; gap: 8px;">
-            <button class="btn btn-outline btn-sm" (click)="toggleActive(tier)">
+          <!-- Fila inferior: botones siempre visibles -->
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="btn btn-outline btn-sm" style="flex:1;" (click)="toggleActive(tier)">
               {{ tier.isActive ? 'Desactivar' : 'Activar' }}
             </button>
-            <button class="btn btn-danger btn-sm" (click)="deleteTier(tier)">
-              🗑️
-            </button>
+            <button class="btn btn-danger btn-sm" (click)="deleteTier(tier)">🗑️</button>
           </div>
         </div>
       </div>
@@ -125,7 +126,15 @@ interface FidelityTier {
       </div>
     </div>
   `,
-  styles: [``]
+  styles: [`
+ .tier-item {
+ padding: 14px 0;
+ border-bottom: 1px solid var(--border);
+ display: flex;
+ flex-direction: column;
+ }
+ .tier-item:last-child { border-bottom: none; }
+ `]
 })
 export class FidelityTiersComponent implements OnInit {
   private apiUrl = `${environment.apiUrl}/admin/fidelity-tiers`;

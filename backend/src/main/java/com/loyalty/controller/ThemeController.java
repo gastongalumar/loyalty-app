@@ -112,13 +112,13 @@ public class ThemeController {
             theme.setBackgroundBlur(updatedTheme.getBackgroundBlur());
             theme.setCardOpacity(updatedTheme.getCardOpacity());
 
-            // 🔥 NUEVAS PROPIEDADES - AGREGADAS AQUÍ 🔥
             theme.setBodyTextColor(updatedTheme.getBodyTextColor());
             theme.setHeadingTextColor(updatedTheme.getHeadingTextColor());
             theme.setBodyFontSize(updatedTheme.getBodyFontSize());
             theme.setLoginLogoSize(updatedTheme.getLoginLogoSize());
 
-            // IMPORTANTE: NO tocamos logoUrl ni backgroundUrl aquí
+            // ✅ AGREGAR ESTA LÍNEA PARA EL EMOJI
+            theme.setStampEmoji(updatedTheme.getStampEmoji());
 
             BusinessTheme saved = themeRepository.save(theme);
             return ResponseEntity.ok(saved);

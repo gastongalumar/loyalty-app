@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 
 export type ThemeMode = 'light' | 'dark' | 'colorful';
 
@@ -27,6 +27,8 @@ export interface AppTheme {
   headingTextColor: string;
   bodyFontSize: number;
   loginLogoSize: number;
+  // ── NUEVO: Emoji para stamps ──
+  stampEmoji: string;
 }
 
 const DEFAULT_THEME: AppTheme = {
@@ -50,6 +52,8 @@ const DEFAULT_THEME: AppTheme = {
   headingTextColor: '#111118',
   bodyFontSize: 16,
   loginLogoSize: 80,
+  // ── NUEVO: Emoji por defecto ──
+  stampEmoji: '☕',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -57,21 +61,37 @@ export class ThemeService {
   private theme: AppTheme = { ...DEFAULT_THEME };
   private apiUrl = `${environment.apiUrl}/admin/theme`;
 
+  // Observable para que los componentes reaccionen al tema
+  private themeSubject = new BehaviorSubject<AppTheme>({ ...DEFAULT_THEME });
+  public theme$: Observable<AppTheme> = this.themeSubject.asObservable();
+
   constructor(private http: HttpClient) {
     this.loadFromServer();
   }
 
   async loadFromServer() {
+    // Paso 1: Aplicar cache guardado inmediatamente
+    const saved = localStorage.getItem('app-theme');
+    if (saved) {
+      try {
+        this.theme = { ...DEFAULT_THEME, ...JSON.parse(saved) } as AppTheme;
+        this.apply();
+      } catch {
+        // cache corrupto, continúa con default
+      }
+    }
+
+    // Paso 2: Actualizar desde el servidor en segundo plano
     try {
       const serverTheme = await firstValueFrom(
         this.http.get<AppTheme>(`${environment.apiUrl}/admin/theme/public`)
       );
-      this.theme = { ...DEFAULT_THEME, ...serverTheme };
+      this.theme = { ...DEFAULT_THEME, ...serverTheme } as AppTheme;
       this.apply();
       localStorage.setItem('app-theme', JSON.stringify(this.theme));
     } catch (error) {
       console.error('Error loading theme from server', error);
-      this.loadFromLocalStorage();
+      // Si no había cache tampoco, apply ya fue llamado con DEFAULT_THEME
     }
   }
 
@@ -79,7 +99,7 @@ export class ThemeService {
     const saved = localStorage.getItem('app-theme');
     if (saved) {
       try {
-        this.theme = { ...DEFAULT_THEME, ...JSON.parse(saved) };
+        this.theme = { ...DEFAULT_THEME, ...JSON.parse(saved) } as AppTheme;
       } catch {
         this.theme = { ...DEFAULT_THEME };
       }
@@ -117,6 +137,8 @@ export class ThemeService {
       headingTextColor: this.theme.headingTextColor,
       bodyFontSize: this.theme.bodyFontSize,
       loginLogoSize: this.theme.loginLogoSize,
+      // ── NUEVO: Emoji para stamps ──
+      stampEmoji: this.theme.stampEmoji,
     };
 
     return firstValueFrom(this.http.put<AppTheme>(this.apiUrl, configToSave));
@@ -128,7 +150,7 @@ export class ThemeService {
       dark:     { primaryColor: '#7C6AF7', secondaryColor: '#0D0D1A', accentColor: '#00E5FF' },
       colorful: { primaryColor: '#E040FB', secondaryColor: '#1DE9B6', accentColor: '#FFAB40' },
     };
-    this.theme = { ...this.theme, ...presets[mode], mode };
+    this.theme = { ...this.theme, ...presets[mode], mode } as AppTheme;
     this.apply();
   }
 
@@ -184,6 +206,10 @@ export class ThemeService {
     root.style.setProperty('--secondary',    t.secondaryColor);
     root.style.setProperty('--accent',       t.accentColor);
     root.style.setProperty('--navbar-text',  t.navbarTextColor);
+
+    // Valores auxiliares para gradientes (fallback sin color-mix)
+    root.style.setProperty('--card-gradient-start', t.secondaryColor);
+    root.style.setProperty('--card-gradient-end', this.darken(t.secondaryColor, 20));
 
     const opacity = t.cardOpacity / 100;
 
@@ -241,6 +267,9 @@ export class ThemeService {
     } else {
       root.style.backgroundImage = '';
     }
+
+    // Notificar cambios a suscriptores
+    this.themeSubject.next({ ...this.theme });
   }
 
   private darken(hex: string, amount: number): string {

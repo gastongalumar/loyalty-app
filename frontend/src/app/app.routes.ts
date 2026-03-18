@@ -30,6 +30,10 @@ export const routes: Routes = [
         path: 'qr',
         loadComponent: () => import('./pages/qr-display/qr-display.component').then(m => m.QrDisplayComponent)
       },
+      {
+        path: 'profile',
+        loadComponent: () => import('./pages/customer-profile/customer-profile.component').then(m => m.CustomerProfileComponent)
+      },
       { path: '', redirectTo: 'card', pathMatch: 'full' }
     ]
   },

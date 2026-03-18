@@ -13,15 +13,18 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Servir archivos estáticos desde uploads con permisos
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir)
-                .setCachePeriod(3600)
-                .resourceChain(true);
 
-        // También servir desde la raíz (por las dudas)
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("file:" + uploadDir)
+        String path = uploadDir;
+
+        // 🔥 Normalizar path (clave para Windows y VPS)
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+
+        path = path.replace("\\", "/");
+
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + path)
                 .setCachePeriod(3600);
     }
 }

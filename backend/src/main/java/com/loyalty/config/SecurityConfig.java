@@ -5,6 +5,7 @@ import com.loyalty.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,11 +47,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // 🌍 RUTAS PÚBLICAS - ORDEN IMPORTANTE: primero las específicas
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/files/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll() // EXPLÍCITO PARA GET
                         .requestMatchers("/api/admin/theme/public").permitAll()
+                        .requestMatchers("/api/admin/theme/**").permitAll()
+                        .requestMatchers("/api/theme/**").permitAll()
+
+                        // 🔐 RUTAS PROTEGIDAS POR ROL
                         .requestMatchers("/api/admin/**").hasRole("BUSINESS_OWNER")
                         .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+
+                        // 🚫 TODO LO DEMÁS REQUIERE AUTENTICACIÓN
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

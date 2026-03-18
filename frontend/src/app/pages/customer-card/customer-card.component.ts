@@ -8,12 +8,14 @@ import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoyaltyService } from '../../services/loyalty.service';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';  // 👈 IMPORT AGREGADO
 import { FidelityReward, LoyaltyCard } from '../../models/models';
+import { NavbarComponent } from '../../components/navbar.component';
 
 @Component({
   selector: 'app-customer-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, NavbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './customer-card.component.html',
   styleUrls: ['./customer-card.component.scss']
@@ -34,7 +36,8 @@ export class CustomerCardComponent implements OnInit, OnDestroy {
   constructor(
     private loyaltyService: LoyaltyService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public themeService: ThemeService  // 👈 AGREGADO como PUBLIC
   ) {}
 
   ngOnInit(): void {
@@ -173,12 +176,13 @@ export class CustomerCardComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
   }
 
-  rewardStatusLabel(status: string): string {
-    switch (status) {
-      case 'AVAILABLE': return 'Redeem';
-      case 'REQUESTED': return 'Pending';
-      case 'REDEEMED':  return 'Used';
-      default:          return status;
-    }
-  }
+ rewardStatusLabel(status: string): string {
+   switch (status) {
+     case 'AVAILABLE': return 'Redeem';
+     case 'REQUESTED': return 'Pending';
+     case 'REDEEMED':  return 'Used';
+     case 'REJECTED':  return 'Rejected';  // 👈 AGREGADO
+     default:          return status;
+   }
+ }
 }

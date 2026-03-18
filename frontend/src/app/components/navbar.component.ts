@@ -137,6 +137,11 @@ import { filter, Subscription } from 'rxjs';
           <span class="nav-drawer-icon">📱</span>
           Mi Código QR
         </a>
+        <a class="nav-drawer-item" routerLink="/customer/profile"
+           routerLinkActive="active" (click)="closeDrawer()">
+          <span class="nav-drawer-icon">👤</span>
+          Mi Perfil
+        </a>
       </ng-container>
 
       <!-- Footer with lang + logout -->

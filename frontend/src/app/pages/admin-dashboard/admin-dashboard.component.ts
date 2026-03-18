@@ -220,8 +220,11 @@ import { Customer } from '../../models/models';
 
     /* Responsive */
     @media (max-width: 400px) {
-      .dash-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-      .stat-tile  { padding: 12px 8px; }
+      .dash-stats { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+      .stat-tile { padding: 10px 4px; }
+      .stat-tile-icon { font-size: 1.1rem; margin-bottom: 3px; }
+      .stat-tile-value { font-size: 1.25rem !important; line-height: 1; }
+      .stat-tile-label { font-size: 0.55rem; letter-spacing: 0; line-height: 1.2; }
       .dash-actions { grid-template-columns: 1fr 1fr; }
     }
   `]

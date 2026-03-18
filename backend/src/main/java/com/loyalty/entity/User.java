@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String qrCode;
 
+    @Column
+    private String avatarUrl;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -80,6 +83,9 @@ public class User implements UserDetails {
 
     public String getQrCode() { return qrCode; }
     public void setQrCode(String qrCode) { this.qrCode = qrCode; }
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -123,6 +129,7 @@ public class User implements UserDetails {
         private String phone;
         private Role role;
         private String qrCode;
+        private String avatarUrl;
 
         public Builder id(Long id) { this.id = id; return this; }
         public Builder email(String email) { this.email = email; return this; }
@@ -132,6 +139,7 @@ public class User implements UserDetails {
         public Builder phone(String phone) { this.phone = phone; return this; }
         public Builder role(Role role) { this.role = role; return this; }
         public Builder qrCode(String qrCode) { this.qrCode = qrCode; return this; }
+        public Builder avatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; return this; }
 
         public User build() {
             User u = new User();
@@ -143,6 +151,7 @@ public class User implements UserDetails {
             u.setPhone(this.phone);
             u.setRole(this.role);
             u.setQrCode(this.qrCode);
+            u.setAvatarUrl(this.avatarUrl);
             return u;
         }
     }

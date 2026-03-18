@@ -13,7 +13,7 @@ export interface Stamp {
 export interface Reward {
   id: number;
   description: string;
-  status: 'AVAILABLE' | 'REQUESTED' | 'REDEEMED';
+  status: 'AVAILABLE' | 'REQUESTED' | 'REDEEMED' | 'REJECTED';
   earnedAt: string;
   redeemedAt?: string;
 }
@@ -23,7 +23,7 @@ export interface FidelityReward {
   id: number;
   description: string;
   /** AVAILABLE = can be requested; REQUESTED = pending admin approval; REDEEMED = used */
-  status: 'AVAILABLE' | 'REQUESTED' | 'REDEEMED';
+  status: 'AVAILABLE' | 'REQUESTED' | 'REDEEMED' | 'REJECTED';
   /** Completed-card count required to earn this reward (from FidelityTier) */
   cardsRequired: number;
   earnedAt: string;

@@ -42,7 +42,7 @@ import { AuthService } from '../../services/auth.service';
         </div>
 
         <a routerLink="/customer/card" class="btn btn-outline btn-full">
-          ← {{ 'COMMON.BACK' | translate }}
+          ← {{ 'common.back' | translate }}
         </a>
       </div>
     </div>

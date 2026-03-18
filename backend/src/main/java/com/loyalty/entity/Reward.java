@@ -101,7 +101,7 @@ public class Reward {
     }
 
     public enum RewardStatus {
-        AVAILABLE, REDEEMED, REQUESTED
+        AVAILABLE, REDEEMED, REQUESTED, REJECTED
     }
 
     // Minimal builder
