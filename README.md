@@ -271,11 +271,16 @@ devuelven el esquema a la forma de V1.
 ```powershell
 mvn -pl backend verify                 # 52 tests (unit + aislamiento + canje + branding + PWA)
 cd frontend; npm run build
+cd frontend; npm run test:ci           # 19 specs (guards, interceptor, theme, auth)
+node scripts/check-contrast.mjs        # AA en ambos temas
 ```
 
 Los tests usan H2 con `ddl-auto=create-drop` y Flyway deshabilitado (las migraciones son
 MySQL-específicas). La cobertura real de las migraciones la da `scripts/verify-migrations.sh` +
 CI (`.github/workflows/backend-ci.yml`).
+
+Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 8.0.43**
+(migraciones V1..V5 + rollbacks).
 
 ## Branding por tenant (R2)
 

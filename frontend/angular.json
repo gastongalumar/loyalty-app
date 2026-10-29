@@ -71,6 +71,7 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "css",
+            "karmaConfig": "karma.conf.js",
             "assets": [
               { "glob": "**/*", "input": "src/assets", "output": "assets" }
             ],

@@ -4,9 +4,10 @@
 |---|---|
 | Repo | `loyalty-app` (Spring Boot 3.5.16 + Angular 17 + MySQL 8) |
 | Objetivo | Multi-tenant shared-DB / shared-schema con jerarquía `PLATFORM_ADMIN` → `BUSINESS_ADMIN` → `CUSTOMER` |
-| Alcance | R1 = multi-tenant funcional y aislado · R1.5 = canje de recompensas · R2 branding y R3 PWA solo resumidos |
+| Alcance | R1, R1.5, R2 y R3 **implementados y commiteados**. La migración al sistema de tokens es un extra posterior |
 | Presupuesto | Máx. 35 tareas totales / máx. 25 en R1 (este plan v1.1: 35 / 25) |
 | Versión | **v1.1** (aprobada v1.0 + 4 ajustes: EP-06 a R1.5, FND-05, decisión de datos en DB-03, R-07 con FND-06) |
+| Estado de ejecución | **R1 25/25 · R1.5 1/1 · R2 5/5 · R3 4/4** (commits `7de302d`, `9982d54`, `a3e27ed`). Verificado con Temurin **21.0.13 LTS** y MySQL **8.0.43** |
 | Estado | Documento de arquitectura. No contiene código de la app |
 
 ---
@@ -201,8 +202,8 @@ Convenciones: `NUEVO` = columna/tabla que no existe hoy; `MOD` = columna existen
 | `slug` | `VARCHAR(80)` | no | **NUEVO** | `UNIQUE uk_businesses_slug`; `CHECK slug REGEXP '^[a-z0-9]+(-[a-z0-9]+)*$'`; inmutable post-creación |
 | `description` | `TEXT` | sí | MOD | Se alinea con la entidad (`Business.java:20-21` la declara NOT NULL) |
 | `logo_url` | `VARCHAR(500)` | sí | — | R2 lo usa para branding |
-| `color_primary` | `CHAR(7)` | sí | **NUEVO** | `#RRGGBB`; R2 |
-| `color_secondary` | `CHAR(7)` | sí | **NUEVO** | `#RRGGBB`; R2 |
+| `color_primary` | `VARCHAR(7)` | sí | **NUEVO** | `#RRGGBB`; R2 |
+| `color_secondary` | `VARCHAR(7)` | sí | **NUEVO** | `#RRGGBB`; R2 |
 | `stamps_required` | `INT` | no | — | default 10 |
 | `reward_description` | `VARCHAR(500)` | no | — | |
 | `status` | `VARCHAR(16)` | no | **NUEVO** | `ACTIVE` / `SUSPENDED` / `DELETED`, default `ACTIVE`; `INDEX idx_businesses_status` |
@@ -442,9 +443,12 @@ Los mappings viejos se **eliminan** (no se dejan como alias): el frontend se des
 
 ---
 
-## 6. Plan de tareas — Release 1 (25 tareas)
+## 6. Plan de tareas — Release 1 (25 tareas) — **EJECUTADO 25/25**
 
 Puntos permitidos: 1/2/3/5. DoD siempre verificable con un comando, un test o un status HTTP.
+
+> **Estado de ejecución:** las 25 tareas están implementadas y verificadas (commit `7de302d`).
+> Los puntos entregados coinciden con el resumen 6.1 (75 pts).
 
 ### Fase A — Fundaciones (6 tareas · 17 pts)
 
@@ -529,7 +533,7 @@ Orden de ejecución de la fase: **FND-01 → FND-02 → FND-05 → FND-03 → FN
 | I — Tests y cierre | 1 | 5 |
 | **Total R1** | **25** | **75** |
 
-### 6.2 R1.5 — Canje de recompensas (1 tarea · 3 pts)
+### 6.2 R1.5 — Canje de recompensas (1 tarea · 3 pts) — **EJECUTADO**
 
 Release intermedio entre R1 y R2. No forma parte del tope de 25 tareas de R1, pero sí del presupuesto global de 35.
 
@@ -541,7 +545,10 @@ Release intermedio entre R1 y R2. No forma parte del tope de 25 tareas de R1, pe
 
 ---
 
-## 7. Releases 2 y 3 (resumen)
+## 7. Releases 2 y 3 (resumen) — **EJECUTADOS**
+
+> R2 quedó implementado en el commit `9982d54` y R3 en `a3e27ed`. Los IDs `R2-xx` / `R3-xx`
+> se conservan como referencia de alcance.
 
 ### R2 — Branding por tenant (~5 tareas, 12 pts)
 

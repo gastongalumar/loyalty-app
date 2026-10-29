@@ -40,6 +40,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Tests unitarios
+        working-directory: frontend
+        run: npm run test:ci
+
       - name: Build
         working-directory: frontend
         run: npm run build
+
+      - name: Contraste AA
+        run: node scripts/check-contrast.mjs
