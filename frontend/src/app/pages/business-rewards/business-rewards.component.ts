@@ -38,8 +38,8 @@ import { Reward } from '../../models/models';
         <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
           <div>
             <strong>{{ reward.customerName }}</strong>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">{{ reward.description }}</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem;">{{ reward.earnedAt | date:'short' }}</div>
+            <div style="color: var(--color-text-muted); font-size: 0.9rem;">{{ reward.description }}</div>
+            <div style="color: var(--color-text-subtle); font-size: 0.8rem;">{{ reward.earnedAt | date:'short' }}</div>
           </div>
           <span class="badge badge-primary">{{ reward.status }}</span>
           <button *ngIf="reward.status === 'AVAILABLE'" class="btn btn-primary btn-sm"

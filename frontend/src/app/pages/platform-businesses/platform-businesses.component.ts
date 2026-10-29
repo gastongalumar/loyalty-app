@@ -43,7 +43,7 @@ import { BusinessSummary } from '../../models/models';
         </button>
       </div>
 
-      <table class="table">
+      <table class="data-table">
         <thead>
           <tr>
             <th>{{ 'COMMON.NAME' | translate }}</th>
@@ -69,12 +69,7 @@ import { BusinessSummary } from '../../models/models';
         </tbody>
       </table>
     </div>
-  `,
-  styles: [`
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; }
-    .table th, .table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
-  `]
+  `
 })
 export class PlatformBusinessesComponent implements OnInit {
   businesses: BusinessSummary[] = [];

@@ -31,12 +31,12 @@ import { LoyaltyCard } from '../../models/models';
             <div class="progress-fill" [style.width.%]="progress"></div>
           </div>
           <p>{{ 'CUSTOMER.COMPLETED' | translate }}: {{ card.completedCards }}</p>
-          <p style="color: var(--text-secondary);">{{ card.rewardDescription }}</p>
+          <p style="color: var(--color-text-muted);">{{ card.rewardDescription }}</p>
         </div>
 
         <div class="card" style="margin-top: 16px;">
           <h3>{{ 'CUSTOMER.REWARDS' | translate }}</h3>
-          <p *ngIf="card.rewards.length === 0" style="color: var(--text-secondary);">
+          <p *ngIf="card.rewards.length === 0" style="color: var(--color-text-muted);">
             {{ 'CUSTOMER.NO_REWARDS' | translate }}
           </p>
           <ul>

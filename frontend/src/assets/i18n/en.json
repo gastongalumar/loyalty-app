@@ -83,6 +83,10 @@
   "PWA": {
     "INSTALL": "Install app"
   },
+  "THEME": {
+    "LIGHT": "Switch to light theme",
+    "DARK": "Switch to dark theme"
+  },
   "COMMON": {
     "LOADING": "Loading...",
     "SAVE": "Save",

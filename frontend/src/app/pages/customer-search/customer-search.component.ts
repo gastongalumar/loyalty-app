@@ -36,7 +36,7 @@ import { Customer } from '../../models/models';
         <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
           <div>
             <strong>{{ customer.firstName }} {{ customer.lastName }}</strong>
-            <div style="color: var(--text-secondary); font-size: 0.9rem;">{{ customer.email }}</div>
+            <div style="color: var(--color-text-muted); font-size: 0.9rem;">{{ customer.email }}</div>
           </div>
           <div>{{ customer.currentStamps }} / {{ customer.totalStamps }} · {{ customer.cardStatus }}</div>
           <button class="btn btn-primary btn-sm" (click)="addStamp(customer)">

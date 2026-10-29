@@ -69,8 +69,8 @@ import { Business } from '../../models/models';
 
         <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
           <span class="badge badge-primary">Aa</span>
-          <span style="color: var(--primary); font-weight:700;">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</span>
-          <span style="color: var(--secondary); font-weight:700;">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</span>
+          <span style="color: var(--color-accent); font-weight:700;">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</span>
+          <span style="color: var(--color-text); font-weight:700;">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</span>
         </div>
       </div>
 
@@ -88,7 +88,7 @@ import { Business } from '../../models/models';
 export class BusinessSettingsComponent implements OnInit {
   form: Partial<Business> = {
     name: '', description: '', logoUrl: '', stampsRequired: 10, rewardDescription: '',
-    colorPrimary: '#FF6B35', colorSecondary: '#1A1A2E'
+    colorPrimary: '', colorSecondary: ''
   };
   saving = false;
   saved = false;
@@ -111,8 +111,8 @@ export class BusinessSettingsComponent implements OnInit {
           logoUrl: business.logoUrl,
           stampsRequired: business.stampsRequired,
           rewardDescription: business.rewardDescription,
-          colorPrimary: business.colorPrimary || '#FF6B35',
-          colorSecondary: business.colorSecondary || '#1A1A2E'
+          colorPrimary: business.colorPrimary || this.token('--color-accent'),
+          colorSecondary: business.colorSecondary || this.token('--color-text')
         };
         this.onLogoChange();
       },
@@ -163,6 +163,10 @@ export class BusinessSettingsComponent implements OnInit {
         this.saving = false;
       }
     });
+  }
+
+  private token(name: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
   private applyPreview(business?: Business): void {

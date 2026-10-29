@@ -25,7 +25,7 @@ import { LoyaltyCard } from '../../models/models';
 
       <div *ngIf="card" class="card" style="margin-bottom:16px;">
         <strong>{{ card.customerName }}</strong>
-        <div style="color: var(--text-secondary);">{{ card.customerEmail }}</div>
+        <div style="color: var(--color-text-muted);">{{ card.customerEmail }}</div>
         <div class="progress-bar" style="margin: 12px 0;">
           <div class="progress-fill" [style.width.%]="progress"></div>
         </div>

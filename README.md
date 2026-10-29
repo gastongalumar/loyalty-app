@@ -154,6 +154,16 @@ npm start
 Frontend: `http://localhost:4200` · Backend: `http://localhost:8080` · Swagger (solo `dev`):
 `http://localhost:8080/swagger-ui.html`
 
+## Sistema de diseño
+
+- Tokens en `frontend/src/styles/tokens.css`; **ningún otro archivo tiene hex/rgba**.
+- Dos temas: `light-neumorphic` (Bone) y `dark-purple` (Noche), persistidos en
+  `localStorage['loyalty.theme']` con anti-FOUC en `index.html`.
+- El branding del tenant ajusta el acento y la tarjeta manteniendo AA.
+- Guía: [`docs/DESIGN_DIRECTION.md`](docs/DESIGN_DIRECTION.md) · reglas para agentes:
+  [`frontend/AGENTS.md`](frontend/AGENTS.md).
+- Verificación de contraste: `node scripts/check-contrast.mjs`.
+
 ## Rutas del frontend (path-based)
 
 | Ruta | Acceso |

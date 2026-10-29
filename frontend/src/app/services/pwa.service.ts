@@ -64,7 +64,11 @@ export class PwaService {
       this.themeColorMeta.name = 'theme-color';
       document.head.appendChild(this.themeColorMeta);
     }
-    this.themeColorMeta.content = info.colorPrimary || '#FF6B35';
+    const accent = info.colorPrimary
+      || getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim();
+    if (accent) {
+      this.themeColorMeta.content = accent;
+    }
   }
 
   async install(): Promise<void> {

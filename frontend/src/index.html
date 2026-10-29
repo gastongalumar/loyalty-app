@@ -1,13 +1,34 @@
 ﻿<!doctype html>
-<html lang="en">
+<html lang="es" data-theme="light-neumorphic">
 <head>
   <meta charset="utf-8">
-  <title>LoyaltyCard â€” Rewards that keep you coming back</title>
+  <title>Loyalty Card · Recompensas que te hacen volver</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>
+    // Anti-FOUC: aplica el tema persistido antes del primer paint.
+    (function () {
+      try {
+        var mode = localStorage.getItem('loyalty.theme') || 'system';
+        var theme = mode;
+        if (mode === 'system') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark-purple'
+            : 'light-neumorphic';
+        } else if (mode === 'dark') {
+          theme = 'dark-purple';
+        } else {
+          theme = 'light-neumorphic';
+        }
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.themeMode = mode;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light-neumorphic';
+      }
+    })();
+  </script>
 </head>
 <body>
   <app-root></app-root>

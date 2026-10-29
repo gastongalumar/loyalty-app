@@ -1,0 +1,223 @@
+/* ============================================================
+   Loyalty — tokens
+   Nivel 1: global (valores crudos)
+   Nivel 2: semántico (propósito)
+   Nivel 3: componente (solo lo específico)
+   Ningún componente debe usar valores de color fuera de este archivo.
+   ============================================================ */
+
+:root {
+  /* Tipografía */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: clamp(2rem, 4vw, 3rem);
+  --leading-tight: 1.2;
+  --leading-base: 1.55;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+  --tracking-label: 0.04em;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Layout */
+  --container: 1160px;
+  --container-narrow: 760px;
+  --container-form: 460px;
+  --gutter: 24px;
+  --nav-height: 64px;
+
+  /* Radios */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
+  --radius-full: 999px;
+
+  /* Movimiento */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-reduced: 0.01ms;
+
+  /* Foco y bordes */
+  --focus-ring: 2px;
+  --focus-offset: 3px;
+  --border-width: 1px;
+  --z-nav: 100;
+  --z-skip: 120;
+  --z-overlay: 200;
+  --z-toast: 300;
+
+  /* Neutros crudos */
+  --neutral-0: #ffffff;
+  --neutral-50: #f7f4ee;
+  --neutral-100: #efeae1;
+  --neutral-200: #e2dcd1;
+  --neutral-300: #cfc6b8;
+  --neutral-500: #6e665a;
+  --neutral-700: #423d36;
+  --neutral-900: #211f1c;
+  --neutral-950: #151310;
+
+  /* Semántico — tema claro neumórfico (Bone) */
+  color-scheme: light;
+  --color-bg: #ece7df;
+  --color-surface: #f4f0e8;
+  --color-surface-raised: #faf7f1;
+  --color-surface-sunken: #e3ddd2;
+  --color-text: #211f1c;
+  --color-text-muted: #5f584d;
+  --color-text-subtle: #6e665a;
+  --color-border: #d6cec1;
+  --color-border-strong: #bfb5a6;
+  --color-accent: #a63a12;
+  --color-accent-hover: #82290a;
+  --color-accent-contrast: #ffffff;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-success: #1f6f4a;
+  --color-success-soft: #dcece3;
+  --color-warning: #7a4e00;
+  --color-warning-soft: #f2e5c8;
+  --color-danger: #8f0e1c;
+  --color-danger-soft: #f1d9d6;
+  --color-focus: #a63a12;
+  --color-overlay: rgba(20, 18, 16, 0.52);
+  --color-selection: #efd3c6;
+
+  --shadow-raised-sm: 0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    2px 2px 5px rgba(120, 112, 100, 0.18),
+    -2px -2px 5px rgba(255, 253, 248, 0.7);
+  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    5px 5px 12px rgba(120, 112, 100, 0.2),
+    -5px -5px 12px rgba(255, 253, 248, 0.8);
+  --shadow-inset: inset 2px 2px 5px rgba(120, 112, 100, 0.22),
+    inset -2px -2px 5px rgba(255, 253, 248, 0.7);
+  --shadow-overlay: 0 24px 60px rgba(20, 18, 16, 0.18);
+  --shadow-accent: 0 4px 12px color-mix(in srgb, var(--color-accent) 30%, transparent);
+  --focus-shadow: 0 0 0 var(--space-1) var(--color-accent-soft);
+
+  /* Navegación (shell oscuro en ambos temas) */
+  --color-nav-bg: #211f1c;
+  --color-nav-text: #f7f4ee;
+  --color-nav-text-muted: rgba(247, 244, 238, 0.74);
+  --color-nav-hover-bg: rgba(247, 244, 238, 0.1);
+  --color-nav-active-bg: rgba(247, 244, 238, 0.16);
+
+  /* Tarjeta de fidelidad */
+  --loyalty-card-from: #211f1c;
+  --loyalty-card-to: #3a342b;
+  --loyalty-card-text: #f7f4ee;
+  --loyalty-card-muted: rgba(247, 244, 238, 0.66);
+  --loyalty-card-accent: #ffd166;
+  --loyalty-card-accent-soft: rgba(255, 209, 102, 0.14);
+  --loyalty-card-accent-border: rgba(255, 209, 102, 0.3);
+
+  /* QR: siempre sobre blanco para que el escáner lea */
+  --qr-surface: #ffffff;
+
+  /* Componente */
+  --button-bg: var(--color-surface-raised);
+  --button-bg-hover: var(--color-surface);
+  --button-text: var(--color-text);
+  --button-primary-bg: var(--color-accent);
+  --button-primary-bg-hover: var(--color-accent-hover);
+  --button-primary-text: var(--color-accent-contrast);
+  --input-bg: var(--color-surface-sunken);
+  --input-border: var(--color-border);
+  --nav-bg: var(--color-surface);
+  --card-bg: var(--color-surface-raised);
+  --modal-bg: var(--color-surface-raised);
+  --toast-bg: var(--neutral-900);
+  --toast-text: var(--neutral-0);
+  --gradient-progress: linear-gradient(90deg, var(--color-accent), var(--color-warning));
+  --gradient-loyalty: linear-gradient(135deg, var(--loyalty-card-from) 0%, var(--loyalty-card-to) 100%);
+}
+
+[data-theme='light-neumorphic'] {
+  color-scheme: light;
+}
+
+[data-theme='dark-purple'] {
+  color-scheme: dark;
+  --color-bg: #121014;
+  --color-surface: #1a161e;
+  --color-surface-raised: #221c28;
+  --color-surface-sunken: #0d0b0f;
+  --color-text: #f1ecf5;
+  --color-text-muted: #c3b8cd;
+  --color-text-subtle: #a99cb5;
+  --color-border: rgba(241, 236, 245, 0.14);
+  --color-border-strong: rgba(241, 236, 245, 0.3);
+  --color-accent: #ff9e7a;
+  --color-accent-hover: #ffb9a0;
+  --color-accent-contrast: #2a0e05;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --color-success: #6ee7b7;
+  --color-success-soft: rgba(110, 231, 183, 0.12);
+  --color-warning: #fcd34d;
+  --color-warning-soft: rgba(252, 211, 77, 0.12);
+  --color-danger: #ff8a93;
+  --color-danger-soft: rgba(255, 138, 147, 0.12);
+  --color-focus: #ffb9a0;
+  --color-overlay: rgba(0, 0, 0, 0.66);
+  --color-selection: rgba(255, 158, 122, 0.22);
+
+  --shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    2px 2px 6px rgba(0, 0, 0, 0.38);
+  --shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    6px 6px 16px rgba(0, 0, 0, 0.46);
+  --shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-overlay: 0 24px 60px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 14px color-mix(in srgb, var(--color-accent) 32%, transparent);
+
+  --color-nav-bg: #0d0b0f;
+  --color-nav-text: #f1ecf5;
+  --color-nav-text-muted: rgba(241, 236, 245, 0.74);
+  --color-nav-hover-bg: rgba(241, 236, 245, 0.1);
+  --color-nav-active-bg: rgba(241, 236, 245, 0.16);
+
+  --loyalty-card-from: #221c28;
+  --loyalty-card-to: #121014;
+  --loyalty-card-text: #f1ecf5;
+  --loyalty-card-muted: rgba(241, 236, 245, 0.62);
+  --loyalty-card-accent: #ff9e7a;
+  --loyalty-card-accent-soft: rgba(255, 158, 122, 0.14);
+  --loyalty-card-accent-border: rgba(255, 158, 122, 0.3);
+
+  --button-bg: var(--color-surface-raised);
+  --button-bg-hover: var(--color-surface);
+  --button-text: var(--color-text);
+  --button-primary-bg: var(--color-accent);
+  --button-primary-bg-hover: var(--color-accent-hover);
+  --button-primary-text: var(--color-accent-contrast);
+  --input-bg: #0f0d12;
+  --input-border: var(--color-border);
+  --nav-bg: #17131b;
+  --card-bg: var(--color-surface-raised);
+  --modal-bg: var(--color-surface-raised);
+  --toast-bg: #f1ecf5;
+  --toast-text: #17131b;
+}
