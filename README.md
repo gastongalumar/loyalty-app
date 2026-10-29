@@ -21,6 +21,8 @@ registro público por slug, panel de plataforma y panel de negocio. **Release 1.
 canje de recompensas (`POST /api/v1/rewards/{id}/redeem`) con auditoría y control de concurrencia.
 **Release 2** agrega branding por tenant: colores y logo dinámicos expuestos por
 `GET /api/public/tenants/{slug}` y aplicados como CSS custom properties.
+**Release 3** agrega PWA por tenant: manifest dinámico, service worker con caches
+particionadas por slug y prompt de instalación.
 
 ## Jerarquía de roles
 
@@ -174,6 +176,7 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 | `POST` | `/api/auth/register` | `X-Tenant-Slug` **obligatorio** | crea **solo** `CUSTOMER`; `role` distinto de `CUSTOMER` → 400 |
 | `POST` | `/api/auth/login` | `X-Tenant-Slug` opcional | con slug: usuario del tenant; sin slug: solo `PLATFORM_ADMIN` |
 | `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status,colorPrimary,colorSecondary,logoUrl}` |
+| `GET` | `/api/public/tenants/{slug}/manifest.webmanifest` | — | manifest PWA del tenant (`start_url` y `scope` con el slug) |
 
 ### Platform (`PLATFORM_ADMIN`)
 
@@ -256,7 +259,7 @@ devuelven el esquema a la forma de V1.
 ## Tests y build
 
 ```powershell
-mvn -pl backend verify                 # 51 tests (unit + aislamiento multi-tenant + canje + branding)
+mvn -pl backend verify                 # 52 tests (unit + aislamiento + canje + branding + PWA)
 cd frontend; npm run build
 ```
 
@@ -274,6 +277,22 @@ CI (`.github/workflows/backend-ci.yml`).
 - El logo es una **URL remota** (sin MinIO ni BLOB en MySQL); la vista previa usa cache busting
   con `?v=<timestamp>`.
 - Un admin de A no puede cambiar el branding de B: el `tenant_id` sale del JWT.
+
+## PWA por tenant (R3)
+
+- `GET /api/public/tenants/{slug}/manifest.webmanifest` arma el manifest en runtime con
+  `name`, `theme_color`, `background_color`, `start_url: /{slug}/login` y `scope: /{slug}/`.
+- Un **único service worker** (`/sw.js`, scope `/`) cachea:
+  - assets de la app → `loyalty-shell-v1` (compartido, sin datos de negocio);
+  - navegación de cada tenant → `loyalty-tenant-<slug>-v1`.
+- No hay fallback cruzado: la caché se elige por el primer segmento de la URL y `/api/**`,
+  `/actuator/**` y `/platform/**` no se cachean nunca. Un tenant no puede servir HTML de otro.
+- El manifest y el `theme-color` se inyectan en runtime solo cuando hay slug, y se limpian al
+  entrar a `/platform`.
+- El botón **Instalar app** aparece cuando el navegador dispara `beforeinstallprompt`.
+- El SW se registra **solo en producción** (`environment.production`), para no interferir con
+  `ng serve`. Para probar la PWA: `npm run build` y servir `dist/loyalty-frontend/browser`
+  (por ejemplo con el nginx del Compose o cualquier servidor estático en `localhost`).
 
 ## Docker
 
@@ -295,8 +314,8 @@ Servicios: `db` (MySQL 8), `backend` (temurin 21, health `/actuator/health`), `f
 
 ## Limitaciones conocidas
 
-1. PWA por tenant: R3 (manifest y service worker con scope por slug).
-2. Sin paginación infinita ni búsqueda full-text; listas paginadas simples.
-3. `X-Tenant-Slug` puede convivir con subdominios en el futuro: solo hay que agregar otra
+1. Sin paginación infinita ni búsqueda full-text; listas paginadas simples.
+2. `X-Tenant-Slug` puede convivir con subdominios en el futuro: solo hay que agregar otra
    implementación de `TenantResolver`.
-4. El logo se referencia por URL; no hay upload ni almacenamiento de archivos.
+3. El logo se referencia por URL; no hay upload ni almacenamiento de archivos.
+4. La PWA se registra solo en builds de producción (decisión para no cachear en `ng serve`).

@@ -22,7 +22,8 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
             "assets": [
-              { "glob": "**/*", "input": "src/assets", "output": "assets" }
+              { "glob": "**/*", "input": "src/assets", "output": "assets" },
+              { "glob": "sw.js", "input": "src", "output": "/" }
             ],
             "styles": ["src/styles.css"],
             "scripts": []

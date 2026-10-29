@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { SlugService } from '../../services/slug.service';
 import { ThemeService } from '../../services/theme.service';
+import { PwaService } from '../../services/pwa.service';
 
 @Component({
   selector: 'app-platform-login',
@@ -45,11 +46,13 @@ export class PlatformLoginComponent {
     private auth: AuthService,
     private slugService: SlugService,
     private themeService: ThemeService,
+    private pwaService: PwaService,
     private router: Router
   ) {
-    // A platform login must never carry a tenant slug or branding from a previous session.
+    // A platform login must never carry a tenant slug, branding or manifest from a previous session.
     this.slugService.clear();
     this.themeService.reset();
+    this.pwaService.applyTenant(null);
   }
 
   login(): void {

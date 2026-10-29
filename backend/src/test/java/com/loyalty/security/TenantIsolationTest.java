@@ -289,6 +289,22 @@ class TenantIsolationTest {
     }
 
     @Test
+    void perTenantManifestUsesTenantBranding() throws Exception {
+        mockMvc.perform(get("/api/public/tenants/cafe-a/manifest.webmanifest"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("application/manifest+json"))
+                .andExpect(jsonPath("$.start_url").value("/cafe-a/login"))
+                .andExpect(jsonPath("$.scope").value("/cafe-a/"))
+                .andExpect(jsonPath("$.theme_color").value("#FF6B35"))
+                .andExpect(jsonPath("$.background_color").value("#1A1A2E"));
+
+        mockMvc.perform(get("/api/public/tenants/gym-b/manifest.webmanifest"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.start_url").value("/gym-b/login"))
+                .andExpect(jsonPath("$.scope").value("/gym-b/"));
+    }
+
+    @Test
     void platformAdminCanListBusinesses() throws Exception {
         mockMvc.perform(get("/api/v1/platform/businesses").header("Authorization", bearer(platformToken)))
                 .andExpect(status().isOk())

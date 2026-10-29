@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { SlugService } from '../services/slug.service';
+import { PwaService } from '../services/pwa.service';
 
 @Component({
   selector: 'app-navbar',
@@ -39,6 +40,9 @@ import { SlugService } from '../services/slug.service';
           <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
           <button class="lang-btn" [class.active]="currentLang === 'es'" (click)="setLang('es')">ES</button>
         </div>
+        <button *ngIf="pwa.canInstall$ | async" class="btn btn-outline btn-sm" (click)="pwa.install()">
+          {{ 'PWA.INSTALL' | translate }}
+        </button>
         <button class="btn btn-ghost btn-sm" (click)="logout()">{{ 'NAV.LOGOUT' | translate }}</button>
       </div>
     </nav>
@@ -57,6 +61,7 @@ export class NavbarComponent {
   constructor(
     private auth: AuthService,
     private slugService: SlugService,
+    public readonly pwa: PwaService,
     private translate: TranslateService
   ) {}
 

@@ -80,6 +80,9 @@
     "SUSPEND": "Suspend",
     "ACTIVATE": "Activate"
   },
+  "PWA": {
+    "INSTALL": "Install app"
+  },
   "COMMON": {
     "LOADING": "Loading...",
     "SAVE": "Save",

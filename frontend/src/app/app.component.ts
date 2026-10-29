@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { PwaService } from './services/pwa.service';
 
 @Component({
   selector: 'app-root',
@@ -9,11 +10,12 @@ import { TranslateService } from '@ngx-translate/core';
   template: `<router-outlet></router-outlet>`
 })
 export class AppComponent implements OnInit {
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService, private pwa: PwaService) {}
 
   ngOnInit() {
     const savedLang = localStorage.getItem('lang') || 'en';
     this.translate.setDefaultLang('en');
     this.translate.use(savedLang);
+    this.pwa.register();
   }
 }
