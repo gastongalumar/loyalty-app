@@ -1,3 +1,5 @@
+export type Role = 'PLATFORM_ADMIN' | 'BUSINESS_ADMIN' | 'CUSTOMER';
+
 export interface AuthRequest {
   email: string;
   password: string;
@@ -9,7 +11,8 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   phone?: string;
-  role: string;
+  /** Only CUSTOMER is accepted. Kept optional so the UI never sends it. */
+  role?: 'CUSTOMER';
 }
 
 export interface AuthResponse {
@@ -17,8 +20,57 @@ export interface AuthResponse {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  role: Role;
   userId: number;
+  tenantId?: number | null;
+  tenantSlug?: string | null;
+}
+
+export interface TenantInfo {
+  slug: string;
+  name: string;
+  status: 'ACTIVE' | 'SUSPENDED';
+}
+
+export interface Business {
+  id: number;
+  slug: string;
+  name: string;
+  description?: string;
+  logoUrl?: string;
+  colorPrimary?: string;
+  colorSecondary?: string;
+  stampsRequired: number;
+  rewardDescription: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
+  ownerId?: number;
+  totalCustomers: number;
+  totalAdmins: number;
+  createdAt: string;
+}
+
+export interface BusinessSummary {
+  id: number;
+  slug: string;
+  name: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
+  totalCustomers: number;
+  createdAt: string;
+}
+
+export interface Admin {
+  userId: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+}
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  number: number;
+  size: number;
 }
 
 export interface LoyaltyCard {
@@ -42,16 +94,19 @@ export interface LoyaltyCard {
 export interface Stamp {
   id: number;
   addedByName: string;
-  note: string;
+  note?: string;
   createdAt: string;
 }
 
 export interface Reward {
   id: number;
+  cardId?: number;
+  customerName?: string;
   description: string;
   status: 'AVAILABLE' | 'REDEEMED';
   earnedAt: string;
   redeemedAt?: string;
+  redeemedBy?: string;
 }
 
 export interface Customer {

@@ -1,10 +1,15 @@
 package com.loyalty.service;
 
-import com.loyalty.dto.BusinessDto;
+import com.loyalty.dto.business.BusinessUpdateRequest;
+import com.loyalty.dto.platform.BusinessResponse;
 import com.loyalty.entity.Business;
 import com.loyalty.entity.User;
+import com.loyalty.exception.NotFoundException;
+import com.loyalty.mapper.BusinessMapper;
 import com.loyalty.repository.BusinessRepository;
 import com.loyalty.repository.LoyaltyCardRepository;
+import com.loyalty.repository.UserRepository;
+import com.loyalty.tenant.TenantContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,51 +18,58 @@ public class BusinessService {
 
     private final BusinessRepository businessRepository;
     private final LoyaltyCardRepository loyaltyCardRepository;
+    private final UserRepository userRepository;
+    private final BusinessMapper businessMapper;
 
-    public BusinessService(BusinessRepository businessRepository, LoyaltyCardRepository loyaltyCardRepository) {
+    public BusinessService(BusinessRepository businessRepository,
+                           LoyaltyCardRepository loyaltyCardRepository,
+                           UserRepository userRepository,
+                           BusinessMapper businessMapper) {
         this.businessRepository = businessRepository;
         this.loyaltyCardRepository = loyaltyCardRepository;
+        this.userRepository = userRepository;
+        this.businessMapper = businessMapper;
     }
 
-    public BusinessDto getMyBusiness(User owner) {
-        Business business = businessRepository.findByOwner(owner)
-                .orElseThrow(() -> new RuntimeException("No business found for this owner"));
-        return mapToDto(business);
+    @Transactional(readOnly = true)
+    public BusinessResponse getMyBusiness() {
+        return toResponse(requireTenantBusiness());
     }
 
     @Transactional
-    public BusinessDto updateBusiness(User owner, BusinessDto request) {
-        Business business = businessRepository.findByOwner(owner)
-                .orElseThrow(() -> new RuntimeException("No business found for this owner"));
+    public BusinessResponse updateMyBusiness(BusinessUpdateRequest request) {
+        Business business = requireTenantBusiness();
 
-        if (request.getName() != null)              business.setName(request.getName());
-        if (request.getDescription() != null)       business.setDescription(request.getDescription());
-        if (request.getLogoUrl() != null)           business.setLogoUrl(request.getLogoUrl());
-        if (request.getRewardDescription() != null) business.setRewardDescription(request.getRewardDescription());
+        if (request.getName() != null) {
+            business.setName(request.getName().trim());
+        }
+        if (request.getDescription() != null) {
+            business.setDescription(request.getDescription());
+        }
+        if (request.getLogoUrl() != null) {
+            business.setLogoUrl(request.getLogoUrl());
+        }
+        if (request.getRewardDescription() != null) {
+            business.setRewardDescription(request.getRewardDescription());
+        }
         if (request.getStampsRequired() != null && request.getStampsRequired() > 0) {
             business.setStampsRequired(request.getStampsRequired());
         }
 
-        Business saved = businessRepository.save(business);
-        return mapToDto(saved);
+        return toResponse(businessRepository.save(business));
     }
 
-    private BusinessDto mapToDto(Business business) {
-        long customerCount = loyaltyCardRepository.findAll().stream()
-                .filter(c -> c.getBusiness().getId().equals(business.getId()))
-                .count();
+    private Business requireTenantBusiness() {
+        Long tenantId = TenantContext.requireTenantId();
+        return businessRepository.findById(tenantId)
+                .filter(b -> b.getStatus() != Business.Status.DELETED)
+                .orElseThrow(() -> new NotFoundException("Business not found"));
+    }
 
-        return BusinessDto.builder()
-                .id(business.getId())
-                .name(business.getName())
-                .description(business.getDescription())
-                .logoUrl(business.getLogoUrl())
-                .stampsRequired(business.getStampsRequired())
-                .rewardDescription(business.getRewardDescription())
-                .ownerId(business.getOwner().getId())
-                .ownerName(business.getOwner().getFirstName() + " " + business.getOwner().getLastName())
-                .totalCustomers((int) customerCount)
-                .createdAt(business.getCreatedAt())
-                .build();
+    private BusinessResponse toResponse(Business business) {
+        BusinessResponse response = businessMapper.toResponse(business);
+        response.setTotalCustomers((int) loyaltyCardRepository.countByTenantId(business.getId()));
+        response.setTotalAdmins((int) userRepository.countByTenantIdAndRole(business.getId(), User.Role.BUSINESS_ADMIN));
+        return response;
     }
 }

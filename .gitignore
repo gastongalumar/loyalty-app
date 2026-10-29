@@ -5,7 +5,7 @@ Thumbs.db
 *.swo
 
 # ── IDE ─────────────────────────────────────────────────────
-backend/.idea/
+.idea/
 *.iml
 .classpath
 .project
@@ -17,15 +17,19 @@ backend/.idea/
 *.sln
 
 # ── Java / Maven ────────────────────────────────────────────
+target/
 backend/target/
 backend/*.jar
 backend/*.war
 backend/.mvn/wrapper/maven-wrapper.jar
 
-# ── Spring Boot local overrides ──────────────────────────────
-backend/src/main/resources/application.properties
-backend/src/main/resources/application-local.properties
-backend/src/main/resources/application-dev.properties
+# ── Spring Boot local overrides / secrets ────────────────────
+backend/src/main/resources/application-local.*
+backend/src/main/resources/application-dev-local.*
+.env
+.env.local
+*.env
+!.env.example
 
 # ── Node / Angular ───────────────────────────────────────────
 frontend/node_modules/
@@ -36,11 +40,7 @@ frontend/out-tsc/
 # ── Docker ──────────────────────────────────────────────────
 backend/.dockerignore
 
-# ── Environment / secrets ────────────────────────────────────
-.env
-.env.local
-*.env
-
-# ── Logs ────────────────────────────────────────────────────
+# ── Snapshots / logs ────────────────────────────────────────
+project-snapshot.json
 *.log
 logs/

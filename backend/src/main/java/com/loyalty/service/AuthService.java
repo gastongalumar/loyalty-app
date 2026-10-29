@@ -1,18 +1,27 @@
 package com.loyalty.service;
 
-import com.loyalty.dto.AuthDto;
+import com.loyalty.dto.auth.AuthResponse;
+import com.loyalty.dto.auth.LoginRequest;
+import com.loyalty.dto.auth.RegisterRequest;
 import com.loyalty.entity.Business;
 import com.loyalty.entity.LoyaltyCard;
 import com.loyalty.entity.User;
+import com.loyalty.exception.ConflictException;
+import com.loyalty.exception.InvalidRequestException;
+import com.loyalty.exception.NotFoundException;
+import com.loyalty.exception.TenantSuspendedException;
 import com.loyalty.repository.BusinessRepository;
 import com.loyalty.repository.LoyaltyCardRepository;
 import com.loyalty.repository.UserRepository;
 import com.loyalty.security.JwtService;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import com.loyalty.tenant.TenantContext;
+import com.loyalty.tenant.TenantRef;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Locale;
 
 @Service
 public class AuthService {
@@ -22,99 +31,115 @@ public class AuthService {
     private final LoyaltyCardRepository loyaltyCardRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
     private final QrCodeService qrCodeService;
 
-    public AuthService(UserRepository userRepository, BusinessRepository businessRepository, LoyaltyCardRepository loyaltyCardRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, QrCodeService qrCodeService) {
+    public AuthService(UserRepository userRepository,
+                       BusinessRepository businessRepository,
+                       LoyaltyCardRepository loyaltyCardRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtService jwtService,
+                       QrCodeService qrCodeService) {
         this.userRepository = userRepository;
         this.businessRepository = businessRepository;
         this.loyaltyCardRepository = loyaltyCardRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
         this.qrCodeService = qrCodeService;
     }
 
     @Transactional
-    public AuthDto.AuthResponse register(AuthDto.RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already registered");
+    public AuthResponse register(RegisterRequest request) {
+        rejectNonCustomerRole(request.getRole());
+
+        TenantRef tenant = TenantContext.get();
+        if (tenant == null || tenant.id() == null) {
+            throw new NotFoundException("Unknown business");
         }
 
-        User.Role role = User.Role.valueOf(request.getRole().toUpperCase());
-        String qrCodeId = qrCodeService.generateQrCodeId();
+        Business business = businessRepository.findById(tenant.id())
+                .filter(b -> b.getStatus() == Business.Status.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("Unknown business"));
+
+        String email = normalizeEmail(request.getEmail());
+        if (userRepository.existsByTenantIdAndEmail(business.getId(), email)) {
+            throw new ConflictException("email_taken", "Email already registered in this business");
+        }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .tenant(business)
+                .email(email)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(request.getFirstName().trim())
+                .lastName(request.getLastName().trim())
                 .phone(request.getPhone())
-                .role(role)
-                .qrCode(qrCodeId)
+                .role(User.Role.CUSTOMER)
+                .qrCode(qrCodeService.generateQrCodeId())
                 .build();
 
-        User savedUser = userRepository.save(user);
+        User saved = userRepository.save(user);
 
-        if (role == User.Role.CUSTOMER) {
-            // Get the default business (first business, or create one)
-            Business business = businessRepository.findAll().stream()
-                    .findFirst()
-                    .orElseGet(() -> createDefaultBusiness(savedUser));
+        LoyaltyCard card = LoyaltyCard.builder()
+                .tenantId(business.getId())
+                .user(saved)
+                .business(business)
+                .totalStamps(business.getStampsRequired())
+                .currentStamps(0)
+                .completedCards(0)
+                .status(LoyaltyCard.CardStatus.ACTIVE)
+                .build();
+        loyaltyCardRepository.save(card);
 
-            LoyaltyCard loyaltyCard = LoyaltyCard.builder()
-                    .user(savedUser)
-                    .business(business)
-                    .totalStamps(business.getStampsRequired())
-                    .currentStamps(0)
-                    .completedCards(0)
-                    .status(LoyaltyCard.CardStatus.ACTIVE)
-                    .build();
+        return toResponse(saved, business);
+    }
 
-            loyaltyCardRepository.save(loyaltyCard);
-        } else if (role == User.Role.BUSINESS_OWNER) {
-            Business business = Business.builder()
-                    .name(request.getFirstName() + "'s Coffee Shop")
-                    .description("Welcome to our loyalty program!")
-                    .stampsRequired(10)
-                    .rewardDescription("Buy 10 coffees, get 1 FREE!")
-                    .owner(savedUser)
-                    .build();
-            businessRepository.save(business);
+    @Transactional(readOnly = true)
+    public AuthResponse login(LoginRequest request) {
+        String email = normalizeEmail(request.getEmail());
+        TenantRef tenant = TenantContext.get();
+
+        User user;
+        if (tenant != null && tenant.slug() != null) {
+            Business business = businessRepository.findBySlug(tenant.slug())
+                    .orElseThrow(() -> new NotFoundException("Unknown business"));
+            if (business.getStatus() != Business.Status.ACTIVE) {
+                throw new TenantSuspendedException();
+            }
+            user = userRepository.findByTenantIdAndEmail(business.getId(), email)
+                    .filter(u -> u.getRole() != User.Role.PLATFORM_ADMIN)
+                    .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+        } else {
+            user = userRepository.findByEmailAndTenantIsNull(email)
+                    .filter(u -> u.getRole() == User.Role.PLATFORM_ADMIN)
+                    .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
         }
 
-        String jwtToken = jwtService.generateToken(savedUser);
-        return new AuthDto.AuthResponse(
-                jwtToken, savedUser.getEmail(),
-                savedUser.getFirstName(), savedUser.getLastName(),
-                savedUser.getRole().name(), savedUser.getId()
-        );
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
+        return toResponse(user, user.getTenant());
     }
 
-    public AuthDto.AuthResponse login(AuthDto.LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        String jwtToken = jwtService.generateToken(user);
-        return new AuthDto.AuthResponse(
-                jwtToken, user.getEmail(),
-                user.getFirstName(), user.getLastName(),
-                user.getRole().name(), user.getId()
-        );
+    private void rejectNonCustomerRole(String role) {
+        if (role != null && !role.isBlank() && !"CUSTOMER".equalsIgnoreCase(role.trim())) {
+            throw new InvalidRequestException("role is not accepted on public registration");
+        }
     }
 
-    private Business createDefaultBusiness(User owner) {
-        Business business = Business.builder()
-                .name("Loyalty Coffee Shop")
-                .description("Your neighborhood coffee shop")
-                .stampsRequired(10)
-                .rewardDescription("Buy 10 coffees, get 1 FREE!")
-                .owner(owner)
+    private String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private AuthResponse toResponse(User user, Business business) {
+        return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .role(user.getRole().name())
+                .userId(user.getId())
+                .tenantId(business != null ? business.getId() : null)
+                .tenantSlug(business != null ? business.getSlug() : null)
                 .build();
-        return businessRepository.save(business);
     }
 }

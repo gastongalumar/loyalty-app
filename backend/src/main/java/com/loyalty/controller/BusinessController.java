@@ -1,14 +1,14 @@
 package com.loyalty.controller;
 
-import com.loyalty.dto.BusinessDto;
-import com.loyalty.entity.User;
+import com.loyalty.dto.business.BusinessUpdateRequest;
+import com.loyalty.dto.platform.BusinessResponse;
 import com.loyalty.service.BusinessService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/business")
+@RequestMapping("/api/v1/business/me")
 public class BusinessController {
 
     private final BusinessService businessService;
@@ -18,14 +18,13 @@ public class BusinessController {
     }
 
     @GetMapping
-    public ResponseEntity<BusinessDto> getMyBusiness(@AuthenticationPrincipal User owner) {
-        return ResponseEntity.ok(businessService.getMyBusiness(owner));
+    public ResponseEntity<BusinessResponse> getMyBusiness() {
+        return ResponseEntity.ok(businessService.getMyBusiness());
     }
 
     @PutMapping
-    public ResponseEntity<BusinessDto> updateBusiness(
-            @AuthenticationPrincipal User owner,
-            @RequestBody BusinessDto request) {
-        return ResponseEntity.ok(businessService.updateBusiness(owner, request));
+    public ResponseEntity<BusinessResponse> updateMyBusiness(
+            @Valid @RequestBody BusinessUpdateRequest request) {
+        return ResponseEntity.ok(businessService.updateMyBusiness(request));
     }
 }

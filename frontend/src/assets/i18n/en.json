@@ -1,0 +1,94 @@
+{
+  "APP": {
+    "NAME": "Loyalty Card",
+    "TAGLINE": "Rewards that keep you coming back"
+  },
+  "NAV": {
+    "MY_CARD": "My card",
+    "MY_QR": "My QR",
+    "DASHBOARD": "Dashboard",
+    "SCANNER": "Scanner",
+    "CUSTOMERS": "Customers",
+    "REWARDS": "Rewards",
+    "SETTINGS": "Settings",
+    "BUSINESSES": "Businesses",
+    "LOGOUT": "Log out"
+  },
+  "AUTH": {
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "FIRST_NAME": "First name",
+    "LAST_NAME": "Last name",
+    "PHONE": "Phone",
+    "SIGN_IN": "Sign in",
+    "SIGN_UP": "Sign up",
+    "NO_ACCOUNT": "No account yet?",
+    "HAS_ACCOUNT": "Already have an account?",
+    "JOIN_US": "Join our loyalty program",
+    "PLATFORM_LOGIN": "Platform administration"
+  },
+  "LANDING": {
+    "SUBTITLE": "Enter your business slug to continue",
+    "SLUG": "Business slug",
+    "SLUG_PLACEHOLDER": "e.g. cafe-a",
+    "GO": "Continue"
+  },
+  "CUSTOMER": {
+    "MY_CARD": "My loyalty card",
+    "MY_QR": "My QR code",
+    "COMPLETED": "Completed cards",
+    "REWARDS": "Rewards",
+    "NO_REWARDS": "No rewards yet. Keep collecting stamps!"
+  },
+  "BUSINESS": {
+    "DASHBOARD": "Dashboard",
+    "TOTAL_CUSTOMERS": "Customers",
+    "STAMPS_REQUIRED": "Stamps required",
+    "ADMINS": "Admins",
+    "REWARD": "Reward",
+    "SEARCH_TITLE": "Customers",
+    "SEARCH_PLACEHOLDER": "Search by name or email",
+    "ADD_STAMP": "Add stamp",
+    "SCANNER_TITLE": "Scan a customer QR",
+    "SCANNER_SUBTITLE": "Scan or paste the customer code to add a stamp",
+    "QR_CODE": "QR code",
+    "NOTE": "Note (optional)",
+    "CONFIRM_SCAN": "Add stamp",
+    "STAMP_ADDED": "Stamp added",
+    "START_CAMERA": "Start camera",
+    "SETTINGS_TITLE": "Business settings",
+    "REWARDS_TITLE": "Rewards to redeem",
+    "REWARDS_SUBTITLE": "Mark a reward as redeemed when the customer claims it",
+    "AVAILABLE": "Available",
+    "REDEEMED": "Redeemed",
+    "REDEEM": "Redeem",
+    "NO_REWARDS": "No rewards to show",
+    "ALREADY_REDEEMED": "This reward was already redeemed",
+    "DESCRIPTION": "Description",
+    "LOGO_URL": "Logo URL"
+  },
+  "PLATFORM": {
+    "LOGIN_TITLE": "Platform administration",
+    "BUSINESSES": "Businesses",
+    "NEW_BUSINESS": "New business",
+    "NEW_ADMIN": "New business admin",
+    "ADMINS": "Business admins",
+    "SUSPEND": "Suspend",
+    "ACTIVATE": "Activate"
+  },
+  "COMMON": {
+    "LOADING": "Loading...",
+    "SAVE": "Save",
+    "SAVED": "Saved",
+    "CANCEL": "Cancel",
+    "SEARCH": "Search",
+    "CREATE": "Create",
+    "BACK": "Back",
+    "STATUS": "Status",
+    "ACTIONS": "Actions",
+    "NAME": "Name",
+    "SLUG": "Slug",
+    "NONE": "Nothing to show",
+    "ALL": "All"
+  }
+}

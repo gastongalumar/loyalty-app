@@ -21,7 +21,9 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "css",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              { "glob": "**/*", "input": "src/assets", "output": "assets" }
+            ],
             "styles": ["src/styles.css"],
             "scripts": []
           },
@@ -34,7 +36,7 @@
                 }
               ],
               "budgets": [
-                { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
+                { "type": "initial", "maximumWarning": "1mb", "maximumError": "2mb" },
                 { "type": "anyComponentStyle", "maximumWarning": "2kb", "maximumError": "4kb" }
               ],
               "outputHashing": "all"
@@ -68,7 +70,9 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "css",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              { "glob": "**/*", "input": "src/assets", "output": "assets" }
+            ],
             "styles": ["src/styles.css"],
             "scripts": []
           }

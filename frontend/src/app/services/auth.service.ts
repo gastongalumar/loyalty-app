@@ -3,57 +3,29 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { AuthRequest, AuthResponse, RegisterRequest, Role } from '../models/models';
 
-export interface AuthRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  role: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  userId: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = `${environment.apiUrl}/auth`;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register`, request).pipe(
-      tap(res => this.saveSession(res))
-    );
+    return this.http.post<AuthResponse>(`${this.API}/register`, request)
+      .pipe(tap(res => this.saveSession(res)));
   }
 
   login(request: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/login`, request).pipe(
-      tap(res => this.saveSession(res))
-    );
+    return this.http.post<AuthResponse>(`${this.API}/login`, request)
+      .pipe(tap(res => this.saveSession(res)));
   }
 
   logout(): void {
+    const wasPlatform = this.isPlatformAdmin();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.router.navigate(['/login']);
+    this.router.navigate(wasPlatform ? ['/platform/login'] : ['/']);
   }
 
   getToken(): string | null {
@@ -61,24 +33,45 @@ export class AuthService {
   }
 
   getUser(): AuthResponse | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) as AuthResponse : null;
+  }
+
+  getRole(): Role | null {
+    return this.getUser()?.role ?? null;
+  }
+
+  getTenantSlug(): string | null {
+    return this.getUser()?.tenantSlug ?? null;
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  getRole(): string | null {
-    return this.getUser()?.role ?? null;
-  }
-
   isCustomer(): boolean {
     return this.getRole() === 'CUSTOMER';
   }
 
-  isAdmin(): boolean {
-    return this.getRole() === 'BUSINESS_OWNER';
+  isBusinessAdmin(): boolean {
+    return this.getRole() === 'BUSINESS_ADMIN';
+  }
+
+  isPlatformAdmin(): boolean {
+    return this.getRole() === 'PLATFORM_ADMIN';
+  }
+
+  homeRoute(): string[] {
+    if (this.isPlatformAdmin()) {
+      return ['/platform/businesses'];
+    }
+    const slug = this.getTenantSlug();
+    if (!slug) {
+      return ['/'];
+    }
+    return this.isCustomer()
+      ? ['/', slug, 'customer', 'card']
+      : ['/', slug, 'business', 'dashboard'];
   }
 
   private saveSession(res: AuthResponse): void {

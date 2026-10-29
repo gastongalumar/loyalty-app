@@ -1,10 +1,13 @@
 package com.loyalty.repository;
 
 import com.loyalty.entity.Stamp;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.loyalty.tenant.TenantAwareRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.util.List;
 
-public interface StampRepository extends JpaRepository<Stamp, Long> {
-    List<Stamp> findByLoyaltyCardIdOrderByCreatedAtDesc(Long loyaltyCardId);
+public interface StampRepository extends TenantAwareRepository<Stamp, Long> {
+
+    @EntityGraph(attributePaths = {"addedBy"})
+    List<Stamp> findByLoyaltyCardIdAndTenantIdOrderByCreatedAtDesc(Long loyaltyCardId, Long tenantId);
 }

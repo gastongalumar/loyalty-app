@@ -1,203 +1,91 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyService } from '../../services/loyalty.service';
-import { Customer, LoyaltyCard } from '../../models/models';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Customer } from '../../models/models';
 
 @Component({
   selector: 'app-customer-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
   template: `
     <app-navbar></app-navbar>
 
     <div class="container-wide" style="padding-top: 24px; padding-bottom: 40px;">
       <div class="page-header">
-        <h1 class="page-title">{{ 'ADMIN.CUSTOMERS_LIST' | translate }}</h1>
+        <h1 class="page-title">{{ 'BUSINESS.SEARCH_TITLE' | translate }}</h1>
       </div>
 
-      <!-- Search -->
-      <div class="search-bar">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" [(ngModel)]="searchQuery"
-               (ngModelChange)="onSearch($event)"
-               [placeholder]="'ADMIN.SEARCH_PLACEHOLDER' | translate" />
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <input class="form-control" [(ngModel)]="query"
+               [placeholder]="'BUSINESS.SEARCH_PLACEHOLDER' | translate"
+               (keydown.enter)="search()" />
+        <button class="btn btn-primary" (click)="search()">{{ 'COMMON.SEARCH' | translate }}</button>
       </div>
 
-      <!-- Success alert -->
-      <div *ngIf="success" class="alert alert-success fade-in">✅ {{ 'ADMIN.STAMP_ADDED' | translate }}</div>
-      <div *ngIf="error" class="alert alert-error fade-in">⚠️ {{ error }}</div>
+      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+      <div *ngIf="success" class="alert alert-success">{{ success }}</div>
 
-      <!-- Selected customer detail -->
-      <div *ngIf="selectedCard" class="card fade-in" style="margin-bottom: 20px; border: 2px solid var(--primary);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div class="card" *ngIf="customers.length === 0 && !loading">
+        {{ 'COMMON.NONE' | translate }}
+      </div>
+
+      <div class="card" *ngFor="let customer of customers" style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
           <div>
-            <h3 style="font-size: 1.1rem;">{{ selectedCard.customerName }}</h3>
-            <div style="font-size: 0.85rem; color: var(--text-muted);">{{ selectedCard.customerEmail }}</div>
+            <strong>{{ customer.firstName }} {{ customer.lastName }}</strong>
+            <div style="color: var(--text-secondary); font-size: 0.9rem;">{{ customer.email }}</div>
           </div>
-          <button class="btn btn-outline btn-sm" (click)="selectedCard = null">{{ 'COMMON.CLOSE' | translate }}</button>
-        </div>
-
-        <div class="loyalty-card-visual" style="margin-bottom: 16px;">
-          <div class="loyalty-card-business">{{ selectedCard.businessName }}</div>
-          <div class="loyalty-card-name">{{ selectedCard.customerName }}</div>
-          <div class="loyalty-card-reward">🏆 {{ selectedCard.rewardDescription }}</div>
-          <div class="stamp-grid">
-            <div *ngFor="let i of getStampArray(selectedCard)" class="stamp-cell"
-                 [class.filled]="i < selectedCard.currentStamps" [class.empty]="i >= selectedCard.currentStamps">
-              <span *ngIf="i < selectedCard.currentStamps">☕</span>
-              <span *ngIf="i >= selectedCard.currentStamps" style="font-size:0.9rem;">{{ i+1 }}</span>
-            </div>
-          </div>
-          <div class="progress-bar" style="margin-top: 16px;">
-            <div class="progress-fill" [style.width.%]="getProgress(selectedCard)"></div>
-          </div>
-        </div>
-
-        <!-- Add stamp -->
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="text" class="form-control" [(ngModel)]="stampNote" placeholder="Note (optional)" style="flex:1" />
-          <button class="btn btn-primary" [disabled]="addingStamp" (click)="addStamp(selectedCard.userId)">
-            <span *ngIf="!addingStamp">☕ Add Stamp</span>
-            <span *ngIf="addingStamp">...</span>
+          <div>{{ customer.currentStamps }} / {{ customer.totalStamps }} · {{ customer.cardStatus }}</div>
+          <button class="btn btn-primary btn-sm" (click)="addStamp(customer)">
+            {{ 'BUSINESS.ADD_STAMP' | translate }}
           </button>
         </div>
       </div>
-
-      <!-- Customer list -->
-      <div *ngIf="loading" style="text-align:center; padding: 40px;"><div class="spinner"></div></div>
-
-      <div *ngIf="!loading" class="customer-list">
-        <div *ngFor="let customer of filteredCustomers" class="customer-card-item" style="margin-bottom: 10px; cursor: pointer;" (click)="viewCustomer(customer)">
-          <div class="avatar">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 600;">{{ customer.firstName }} {{ customer.lastName }}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">{{ customer.email }}</div>
-            <div style="margin-top: 4px;">
-              <div class="progress-bar" style="height: 6px; width: 120px;">
-                <div class="progress-fill" [style.width.%]="(customer.currentStamps / customer.totalStamps) * 100"></div>
-              </div>
-            </div>
-          </div>
-          <div style="text-align: right; flex-shrink: 0;">
-            <div style="font-weight: 700; font-size: 0.9rem; color: var(--primary);">
-              {{ customer.currentStamps }}/{{ customer.totalStamps }}
-            </div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ customer.completedCards }} completed</div>
-            <span class="badge" style="margin-top: 4px;"
-                  [class.badge-success]="customer.cardStatus === 'ACTIVE'"
-                  [class.badge-warning]="customer.cardStatus === 'REWARD_PENDING'">
-              {{ customer.cardStatus }}
-            </span>
-          </div>
-        </div>
-
-        <div *ngIf="filteredCustomers.length === 0" style="text-align: center; padding: 40px; color: var(--text-muted);">
-          {{ 'ADMIN.NO_CUSTOMERS' | translate }}
-        </div>
-      </div>
     </div>
-  `,
-  styles: [`
-    .search-bar {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1rem;
-    }
-    .search-input {
-      width: 100%;
-      padding: 12px 16px 12px 44px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .search-input:focus { border-color: var(--primary); }
-  `]
+  `
 })
 export class CustomerSearchComponent implements OnInit {
   customers: Customer[] = [];
-  filteredCustomers: Customer[] = [];
-  selectedCard: LoyaltyCard | null = null;
-  loading = true;
-  searchQuery = '';
-  stampNote = '';
-  addingStamp = false;
-  success = false;
+  query = '';
+  loading = false;
   error = '';
-  private searchSubject = new Subject<string>();
+  success = '';
 
-  constructor(private loyaltyService: LoyaltyService) {
-    this.searchSubject.pipe(debounceTime(300), distinctUntilChanged()).subscribe(q => {
-      if (q.length > 1) {
-        this.loyaltyService.searchCustomers(q).subscribe(data => this.filteredCustomers = data);
-      } else {
-        this.filteredCustomers = this.customers;
-      }
-    });
+  constructor(private loyalty: LoyaltyService) {}
+
+  ngOnInit(): void {
+    this.search();
   }
 
-  ngOnInit() {
-    this.loyaltyService.getAllCustomers().subscribe({
-      next: (data) => {
-        this.customers = data;
-        this.filteredCustomers = data;
+  search(): void {
+    this.loading = true;
+    this.error = '';
+    this.loyalty.getCustomers(this.query).subscribe({
+      next: (page) => {
+        this.customers = page.content;
         this.loading = false;
       },
-      error: () => { this.loading = false; }
-    });
-  }
-
-  onSearch(query: string) {
-    this.searchSubject.next(query);
-  }
-
-  viewCustomer(customer: Customer) {
-    this.loyaltyService.getCustomerCard(customer.id).subscribe({
-      next: (card) => { this.selectedCard = card; }
-    });
-  }
-
-  addStamp(userId: number) {
-    this.addingStamp = true;
-    this.error = '';
-    this.loyaltyService.addStamp({ userId, note: this.stampNote }).subscribe({
-      next: (card) => {
-        this.selectedCard = card;
-        this.success = true;
-        this.addingStamp = false;
-        this.stampNote = '';
-        // Refresh list
-        this.loyaltyService.getAllCustomers().subscribe(data => {
-          this.customers = data;
-          this.filteredCustomers = data;
-        });
-        setTimeout(() => this.success = false, 3000);
-      },
       error: (err) => {
-        this.error = err.error?.error || 'Failed to add stamp';
-        this.addingStamp = false;
+        this.error = err.error?.message || 'Could not load customers';
+        this.loading = false;
       }
     });
   }
 
-  getStampArray(card: LoyaltyCard): number[] {
-    return Array.from({ length: card.totalStamps }, (_, i) => i);
-  }
-
-  getProgress(card: LoyaltyCard): number {
-    return (card.currentStamps / card.totalStamps) * 100;
+  addStamp(customer: Customer): void {
+    this.error = '';
+    this.loyalty.addStamp({ userId: customer.id }).subscribe({
+      next: (card) => {
+        customer.currentStamps = card.currentStamps;
+        customer.totalStamps = card.totalStamps;
+        customer.cardStatus = card.status;
+        this.success = 'Stamp added';
+        setTimeout(() => this.success = '', 2500);
+      },
+      error: (err) => this.error = err.error?.message || 'Could not add stamp'
+    });
   }
 }

@@ -1,14 +1,24 @@
 package com.loyalty.service;
 
-import com.loyalty.dto.CustomerDto;
-import com.loyalty.dto.LoyaltyCardDto;
-import com.loyalty.entity.*;
-import com.loyalty.repository.*;
+import com.loyalty.dto.business.LoyaltyCardResponse;
+import com.loyalty.dto.business.RewardResponse;
+import com.loyalty.dto.business.StampResponse;
+import com.loyalty.entity.LoyaltyCard;
+import com.loyalty.entity.Reward;
+import com.loyalty.entity.Stamp;
+import com.loyalty.entity.User;
+import com.loyalty.exception.ConflictException;
+import com.loyalty.exception.NotFoundException;
+import com.loyalty.repository.LoyaltyCardRepository;
+import com.loyalty.repository.RewardRepository;
+import com.loyalty.repository.StampRepository;
+import com.loyalty.repository.UserRepository;
+import com.loyalty.security.SecurityUser;
+import com.loyalty.tenant.TenantContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LoyaltyCardService {
@@ -19,7 +29,11 @@ public class LoyaltyCardService {
     private final RewardRepository rewardRepository;
     private final QrCodeService qrCodeService;
 
-    public LoyaltyCardService(LoyaltyCardRepository loyaltyCardRepository, UserRepository userRepository, StampRepository stampRepository, RewardRepository rewardRepository, QrCodeService qrCodeService) {
+    public LoyaltyCardService(LoyaltyCardRepository loyaltyCardRepository,
+                              UserRepository userRepository,
+                              StampRepository stampRepository,
+                              RewardRepository rewardRepository,
+                              QrCodeService qrCodeService) {
         this.loyaltyCardRepository = loyaltyCardRepository;
         this.userRepository = userRepository;
         this.stampRepository = stampRepository;
@@ -27,34 +41,51 @@ public class LoyaltyCardService {
         this.qrCodeService = qrCodeService;
     }
 
-    public LoyaltyCardDto getLoyaltyCard(Long userId) {
-        LoyaltyCard card = loyaltyCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Loyalty card not found"));
-        return mapToDto(card);
+    @Transactional(readOnly = true)
+    public LoyaltyCardResponse getMyCard(SecurityUser principal) {
+        return getCard(principal.getTenantId(), principal.getId());
     }
 
-    public String getQrCodeImage(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return qrCodeService.generateQrCodeBase64(user.getQrCode());
+    @Transactional(readOnly = true)
+    public LoyaltyCardResponse getCard(Long tenantId, Long userId) {
+        requireCustomer(tenantId, userId);
+        LoyaltyCard card = loyaltyCardRepository.findByUserIdAndTenantId(userId, tenantId)
+                .orElseThrow(() -> new NotFoundException("Loyalty card not found"));
+        return toResponse(card);
+    }
+
+    @Transactional(readOnly = true)
+    public String getQrDataUri(Long tenantId, Long userId) {
+        User customer = requireCustomer(tenantId, userId);
+        return qrCodeService.generateQrCodeBase64(customer.getQrCode());
     }
 
     @Transactional
-    public LoyaltyCardDto addStamp(Long userId, String note, User addedBy) {
-        LoyaltyCard card = loyaltyCardRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Loyalty card not found"));
+    public LoyaltyCardResponse addStamp(Long tenantId, Long userId, String note, SecurityUser admin) {
+        User customer = requireCustomer(tenantId, userId);
+        User addedBy = userRepository.findByIdAndTenantId(admin.getId(), tenantId)
+                .orElseThrow(() -> new NotFoundException("Admin not found"));
+
+        LoyaltyCard card = loyaltyCardRepository.findByUserIdAndTenantId(customer.getId(), tenantId)
+                .orElseThrow(() -> new NotFoundException("Loyalty card not found"));
+
+        if (card.getStatus() == LoyaltyCard.CardStatus.COMPLETED) {
+            throw new ConflictException("card_completed", "This card is not accepting stamps");
+        }
 
         Stamp stamp = Stamp.builder()
+                .tenantId(tenantId)
                 .loyaltyCard(card)
                 .addedBy(addedBy)
                 .note(note)
                 .build();
-
         stampRepository.save(stamp);
+
         card.setCurrentStamps(card.getCurrentStamps() + 1);
 
         if (card.getCurrentStamps() >= card.getTotalStamps()) {
             Reward reward = Reward.builder()
+                    .tenantId(tenantId)
                     .loyaltyCard(card)
                     .description(card.getBusiness().getRewardDescription())
                     .status(Reward.RewardStatus.AVAILABLE)
@@ -66,55 +97,51 @@ public class LoyaltyCardService {
             card.setStatus(LoyaltyCard.CardStatus.REWARD_PENDING);
         }
 
-        loyaltyCardRepository.save(card);
-        return mapToDto(card);
+        return toResponse(loyaltyCardRepository.save(card));
     }
 
     @Transactional
-    public LoyaltyCardDto scanQrAndAddStamp(String qrCode, String note, User addedBy) {
-        User customer = userRepository.findByQrCode(qrCode)
-                .orElseThrow(() -> new RuntimeException("Invalid QR code"));
-        return addStamp(customer.getId(), note, addedBy);
+    public LoyaltyCardResponse scanQrAndAddStamp(Long tenantId, String qrCode, String note, SecurityUser admin) {
+        User customer = userRepository.findByQrCodeAndTenantId(qrCode.trim(), tenantId)
+                .filter(u -> u.getRole() == User.Role.CUSTOMER)
+                .orElseThrow(() -> new NotFoundException("Invalid QR code"));
+        return addStamp(tenantId, customer.getId(), note, admin);
     }
 
-    public List<CustomerDto> getAllCustomers() {
-        return userRepository.findAllCustomers().stream()
-                .map(this::mapUserToCustomerDto)
-                .collect(Collectors.toList());
+    private User requireCustomer(Long tenantId, Long userId) {
+        return userRepository.findByIdAndTenantId(userId, tenantId)
+                .filter(u -> u.getRole() == User.Role.CUSTOMER)
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
     }
 
-    public List<CustomerDto> searchCustomers(String query) {
-        return userRepository.searchCustomers(query).stream()
-                .map(this::mapUserToCustomerDto)
-                .collect(Collectors.toList());
-    }
+    private LoyaltyCardResponse toResponse(LoyaltyCard card) {
+        Long tenantId = card.getTenantId();
 
-    private LoyaltyCardDto mapToDto(LoyaltyCard card) {
-        List<LoyaltyCardDto.StampDto> recentStamps = stampRepository
-                .findByLoyaltyCardIdOrderByCreatedAtDesc(card.getId())
+        List<StampResponse> recentStamps = stampRepository
+                .findByLoyaltyCardIdAndTenantIdOrderByCreatedAtDesc(card.getId(), tenantId)
                 .stream()
                 .limit(10)
-                .map(s -> LoyaltyCardDto.StampDto.builder()
-                        .id(s.getId())
-                        .addedByName(s.getAddedBy().getFirstName() + " " + s.getAddedBy().getLastName())
-                        .note(s.getNote())
-                        .createdAt(s.getCreatedAt())
+                .map(stamp -> StampResponse.builder()
+                        .id(stamp.getId())
+                        .addedByName(stamp.getAddedBy().getFirstName() + " " + stamp.getAddedBy().getLastName())
+                        .note(stamp.getNote())
+                        .createdAt(stamp.getCreatedAt())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
 
-        List<LoyaltyCardDto.RewardDto> rewards = rewardRepository
-                .findByLoyaltyCardId(card.getId())
+        List<RewardResponse> rewards = rewardRepository
+                .findByLoyaltyCardIdAndTenantId(card.getId(), tenantId)
                 .stream()
-                .map(r -> LoyaltyCardDto.RewardDto.builder()
-                        .id(r.getId())
-                        .description(r.getDescription())
-                        .status(r.getStatus().name())
-                        .earnedAt(r.getEarnedAt())
-                        .redeemedAt(r.getRedeemedAt())
+                .map(reward -> RewardResponse.builder()
+                        .id(reward.getId())
+                        .description(reward.getDescription())
+                        .status(reward.getStatus().name())
+                        .earnedAt(reward.getEarnedAt())
+                        .redeemedAt(reward.getRedeemedAt())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
 
-        return LoyaltyCardDto.builder()
+        return LoyaltyCardResponse.builder()
                 .id(card.getId())
                 .userId(card.getUser().getId())
                 .customerName(card.getUser().getFirstName() + " " + card.getUser().getLastName())
@@ -130,23 +157,6 @@ public class LoyaltyCardService {
                 .updatedAt(card.getUpdatedAt())
                 .recentStamps(recentStamps)
                 .rewards(rewards)
-                .build();
-    }
-
-    private CustomerDto mapUserToCustomerDto(User user) {
-        LoyaltyCard card = loyaltyCardRepository.findByUserId(user.getId()).orElse(null);
-        return CustomerDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phone(user.getPhone())
-                .qrCode(user.getQrCode())
-                .currentStamps(card != null ? card.getCurrentStamps() : 0)
-                .totalStamps(card != null ? card.getTotalStamps() : 0)
-                .completedCards(card != null ? card.getCompletedCards() : 0)
-                .cardStatus(card != null ? card.getStatus().name() : "NO_CARD")
-                .memberSince(user.getCreatedAt())
                 .build();
     }
 }

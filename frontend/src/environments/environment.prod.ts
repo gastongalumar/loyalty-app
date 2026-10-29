@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api'  // Cambiá esto cuando esté en producción
+  // Nginx hace proxy de /api/ hacia el backend (ver nginx.conf)
+  apiUrl: '/api'
 };

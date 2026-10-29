@@ -1,18 +1,28 @@
 package com.loyalty.entity;
 
+import com.loyalty.tenant.TenantOwned;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "rewards")
-public class Reward {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Reward implements TenantOwned {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "loyalty_card_id", nullable = false)
     private LoyaltyCard loyaltyCard;
 
@@ -20,7 +30,7 @@ public class Reward {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 16)
     private RewardStatus status;
 
     @Column(nullable = false, updatable = false)
@@ -28,54 +38,19 @@ public class Reward {
 
     private LocalDateTime redeemedAt;
 
-    public Reward() {}
-
-    public Reward(Long id, LoyaltyCard loyaltyCard, String description, RewardStatus status, LocalDateTime earnedAt, LocalDateTime redeemedAt) {
-        this.id = id;
-        this.loyaltyCard = loyaltyCard;
-        this.description = description;
-        this.status = status;
-        this.earnedAt = earnedAt;
-        this.redeemedAt = redeemedAt;
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public LoyaltyCard getLoyaltyCard() { return loyaltyCard; }
-    public void setLoyaltyCard(LoyaltyCard loyaltyCard) { this.loyaltyCard = loyaltyCard; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public RewardStatus getStatus() { return status; }
-    public void setStatus(RewardStatus status) { this.status = status; }
-
-    public LocalDateTime getEarnedAt() { return earnedAt; }
-    public void setEarnedAt(LocalDateTime earnedAt) { this.earnedAt = earnedAt; }
-
-    public LocalDateTime getRedeemedAt() { return redeemedAt; }
-    public void setRedeemedAt(LocalDateTime redeemedAt) { this.redeemedAt = redeemedAt; }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "redeemed_by_id")
+    private User redeemedBy;
 
     @PrePersist
     protected void onCreate() {
         earnedAt = LocalDateTime.now();
+        if (status == null) {
+            status = RewardStatus.AVAILABLE;
+        }
     }
 
     public enum RewardStatus {
         AVAILABLE, REDEEMED
-    }
-
-    // Minimal builder
-    public static Builder builder() { return new Builder(); }
-    public static class Builder {
-        private LoyaltyCard loyaltyCard;
-        private String description;
-        private RewardStatus status;
-
-        public Builder loyaltyCard(LoyaltyCard loyaltyCard) { this.loyaltyCard = loyaltyCard; return this; }
-        public Builder description(String description) { this.description = description; return this; }
-        public Builder status(RewardStatus status) { this.status = status; return this; }
-        public Reward build() { return new Reward(null, loyaltyCard, description, status, null, null); }
     }
 }
