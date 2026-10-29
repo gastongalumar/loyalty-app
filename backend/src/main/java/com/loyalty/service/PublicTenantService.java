@@ -26,6 +26,9 @@ public class PublicTenantService {
                 .slug(business.getSlug())
                 .name(business.getName())
                 .status(business.getStatus().name())
+                .colorPrimary(business.getColorPrimary())
+                .colorSecondary(business.getColorSecondary())
+                .logoUrl(business.getLogoUrl())
                 .build();
     }
 }

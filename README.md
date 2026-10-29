@@ -19,6 +19,8 @@ negocios.
 Release 1 implementa multi-tenant funcional: jerarquía de roles, aislamiento por `tenant_id`,
 registro público por slug, panel de plataforma y panel de negocio. **Release 1.5** agrega el
 canje de recompensas (`POST /api/v1/rewards/{id}/redeem`) con auditoría y control de concurrencia.
+**Release 2** agrega branding por tenant: colores y logo dinámicos expuestos por
+`GET /api/public/tenants/{slug}` y aplicados como CSS custom properties.
 
 ## Jerarquía de roles
 
@@ -171,7 +173,7 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 |---|---|---|---|
 | `POST` | `/api/auth/register` | `X-Tenant-Slug` **obligatorio** | crea **solo** `CUSTOMER`; `role` distinto de `CUSTOMER` → 400 |
 | `POST` | `/api/auth/login` | `X-Tenant-Slug` opcional | con slug: usuario del tenant; sin slug: solo `PLATFORM_ADMIN` |
-| `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status}` |
+| `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status,colorPrimary,colorSecondary,logoUrl}` |
 
 ### Platform (`PLATFORM_ADMIN`)
 
@@ -254,13 +256,24 @@ devuelven el esquema a la forma de V1.
 ## Tests y build
 
 ```powershell
-mvn -pl backend verify                 # 48 tests (unit + aislamiento multi-tenant + canje)
+mvn -pl backend verify                 # 51 tests (unit + aislamiento multi-tenant + canje + branding)
 cd frontend; npm run build
 ```
 
 Los tests usan H2 con `ddl-auto=create-drop` y Flyway deshabilitado (las migraciones son
 MySQL-específicas). La cobertura real de las migraciones la da `scripts/verify-migrations.sh` +
 CI (`.github/workflows/backend-ci.yml`).
+
+## Branding por tenant (R2)
+
+- `GET /api/public/tenants/{slug}` devuelve `colorPrimary`, `colorSecondary` y `logoUrl`.
+- El frontend los aplica como variables CSS (`--primary`, `--secondary`, `--primary-light`,
+  `--primary-dark`) al entrar a `/:slug/**`; si el tenant no definió colores, quedan los del tema.
+- El `BUSINESS_ADMIN` los edita en **Configuración → Apariencia** (`PUT /api/v1/business/me`),
+  con validación `^#[0-9A-Fa-f]{6}$`.
+- El logo es una **URL remota** (sin MinIO ni BLOB en MySQL); la vista previa usa cache busting
+  con `?v=<timestamp>`.
+- Un admin de A no puede cambiar el branding de B: el `tenant_id` sale del JWT.
 
 ## Docker
 
@@ -282,8 +295,8 @@ Servicios: `db` (MySQL 8), `backend` (temurin 21, health `/actuator/health`), `f
 
 ## Limitaciones conocidas
 
-1. Branding por tenant (colores/logo dinámicos): R2 (las columnas ya existen).
-2. PWA por tenant: R3.
-3. Sin paginación infinita ni búsqueda full-text; listas paginadas simples.
-4. `X-Tenant-Slug` puede convivir con subdominios en el futuro: solo hay que agregar otra
+1. PWA por tenant: R3 (manifest y service worker con scope por slug).
+2. Sin paginación infinita ni búsqueda full-text; listas paginadas simples.
+3. `X-Tenant-Slug` puede convivir con subdominios en el futuro: solo hay que agregar otra
    implementación de `TenantResolver`.
+4. El logo se referencia por URL; no hay upload ni almacenamiento de archivos.

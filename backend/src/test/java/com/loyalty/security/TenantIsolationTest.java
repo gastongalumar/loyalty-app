@@ -62,7 +62,10 @@ class TenantIsolationTest {
     void setUp() {
         cafeA = businessRepository.save(Business.builder()
                 .name("Cafe A").slug("cafe-a").stampsRequired(10)
-                .rewardDescription("Free coffee").status(Business.Status.ACTIVE).build());
+                .rewardDescription("Free coffee").status(Business.Status.ACTIVE)
+                .colorPrimary("#FF6B35").colorSecondary("#1A1A2E")
+                .logoUrl("https://cdn.example.com/cafe-a.png")
+                .build());
         gymB = businessRepository.save(Business.builder()
                 .name("Gym B").slug("gym-b").stampsRequired(8)
                 .rewardDescription("Free month").status(Business.Status.ACTIVE).build());
@@ -243,6 +246,46 @@ class TenantIsolationTest {
 
         mockMvc.perform(get("/api/v1/business/me").header("Authorization", bearer(adminAToken)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void publicTenantEndpointReturnsBranding() throws Exception {
+        mockMvc.perform(get("/api/public/tenants/cafe-a"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.slug").value("cafe-a"))
+                .andExpect(jsonPath("$.colorPrimary").value("#FF6B35"))
+                .andExpect(jsonPath("$.colorSecondary").value("#1A1A2E"))
+                .andExpect(jsonPath("$.logoUrl").value("https://cdn.example.com/cafe-a.png"));
+    }
+
+    @Test
+    void adminCanUpdateOwnBrandingOnly() throws Exception {
+        String payload = objectMapper.writeValueAsString(Map.of(
+                "colorPrimary", "#00AA88",
+                "colorSecondary", "#222233"
+        ));
+
+        mockMvc.perform(put("/api/v1/business/me")
+                        .header("Authorization", bearer(adminAToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.colorPrimary").value("#00AA88"));
+
+        Business other = businessRepository.findById(gymB.getId()).orElseThrow();
+        org.assertj.core.api.Assertions.assertThat(other.getColorPrimary()).isNull();
+    }
+
+    @Test
+    void invalidBrandingColorIsRejected() throws Exception {
+        String payload = objectMapper.writeValueAsString(Map.of("colorPrimary", "red"));
+
+        mockMvc.perform(put("/api/v1/business/me")
+                        .header("Authorization", bearer(adminAToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("validation_error"));
     }
 
     @Test

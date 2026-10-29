@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
 import { PlatformService } from '../../services/platform.service';
+import { ThemeService } from '../../services/theme.service';
 import { Business } from '../../models/models';
 
 @Component({
@@ -31,10 +32,6 @@ import { Business } from '../../models/models';
           <textarea class="form-control" rows="3" [(ngModel)]="form.description"></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
-          <input class="form-control" [(ngModel)]="form.logoUrl" />
-        </div>
-        <div class="form-group">
           <label class="form-label">{{ 'BUSINESS.STAMPS_REQUIRED' | translate }}</label>
           <input type="number" class="form-control" [(ngModel)]="form.stampsRequired" min="1" max="100" />
         </div>
@@ -42,51 +39,140 @@ import { Business } from '../../models/models';
           <label class="form-label">{{ 'BUSINESS.REWARD' | translate }}</label>
           <input class="form-control" [(ngModel)]="form.rewardDescription" />
         </div>
-
-        <button class="btn btn-primary btn-full" [disabled]="saving" (click)="save()">
-          {{ saving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
-        </button>
       </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">{{ 'BUSINESS.APPEARANCE' | translate }}</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</label>
+            <input type="color" class="form-control" [(ngModel)]="form.colorPrimary"
+                   (ngModelChange)="onColorChange()" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</label>
+            <input type="color" class="form-control" [(ngModel)]="form.colorSecondary"
+                   (ngModelChange)="onColorChange()" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
+          <input class="form-control" [(ngModel)]="form.logoUrl" (ngModelChange)="onLogoChange()" />
+        </div>
+
+        <div *ngIf="logoPreview" style="margin-top:8px;">
+          <div class="form-label">{{ 'BUSINESS.LOGO_PREVIEW' | translate }}</div>
+          <img [src]="logoPreview" alt="logo" style="max-height:60px;max-width:200px;border-radius:6px;" />
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
+          <span class="badge badge-primary">Aa</span>
+          <span style="color: var(--primary); font-weight:700;">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</span>
+          <span style="color: var(--secondary); font-weight:700;">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" style="margin-top:16px;"
+              [disabled]="saving" (click)="save()">
+        {{ saving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
+      </button>
     </div>
-  `
+  `,
+  styles: [`
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input[type="color"].form-control { height: 44px; padding: 4px; }
+  `]
 })
 export class BusinessSettingsComponent implements OnInit {
   form: Partial<Business> = {
-    name: '', description: '', logoUrl: '', stampsRequired: 10, rewardDescription: ''
+    name: '', description: '', logoUrl: '', stampsRequired: 10, rewardDescription: '',
+    colorPrimary: '#FF6B35', colorSecondary: '#1A1A2E'
   };
   saving = false;
   saved = false;
   error = '';
+  logoPreview = '';
+  private slug = '';
+  private status: 'ACTIVE' | 'SUSPENDED' | 'DELETED' = 'ACTIVE';
+  private stamp = Date.now();
 
-  constructor(private platform: PlatformService) {}
+  constructor(private platform: PlatformService, private theme: ThemeService) {}
 
   ngOnInit(): void {
     this.platform.getMyBusiness().subscribe({
-      next: (business) => this.form = {
-        name: business.name,
-        description: business.description,
-        logoUrl: business.logoUrl,
-        stampsRequired: business.stampsRequired,
-        rewardDescription: business.rewardDescription
+      next: (business) => {
+        this.slug = business.slug;
+        this.status = business.status;
+        this.form = {
+          name: business.name,
+          description: business.description,
+          logoUrl: business.logoUrl,
+          stampsRequired: business.stampsRequired,
+          rewardDescription: business.rewardDescription,
+          colorPrimary: business.colorPrimary || '#FF6B35',
+          colorSecondary: business.colorSecondary || '#1A1A2E'
+        };
+        this.onLogoChange();
       },
       error: (err) => this.error = err.error?.message || 'Could not load business'
     });
+  }
+
+  onColorChange(): void {
+    this.applyPreview();
+  }
+
+  onLogoChange(): void {
+    const url = (this.form.logoUrl || '').trim();
+    if (!url) {
+      this.logoPreview = '';
+      return;
+    }
+    const separator = url.includes('?') ? '&' : '?';
+    this.logoPreview = `${url}${separator}v=${this.stamp}`;
   }
 
   save(): void {
     this.saving = true;
     this.error = '';
     this.saved = false;
-    this.platform.updateMyBusiness(this.form).subscribe({
-      next: () => {
+    this.stamp = Date.now();
+
+    const payload: Partial<Business> = {
+      name: this.form.name,
+      description: this.form.description,
+      logoUrl: this.form.logoUrl,
+      stampsRequired: this.form.stampsRequired,
+      rewardDescription: this.form.rewardDescription,
+      colorPrimary: (this.form.colorPrimary || '').toUpperCase(),
+      colorSecondary: (this.form.colorSecondary || '').toUpperCase()
+    };
+
+    this.platform.updateMyBusiness(payload).subscribe({
+      next: (business) => {
         this.saving = false;
         this.saved = true;
+        this.onLogoChange();
+        this.applyPreview(business);
         setTimeout(() => this.saved = false, 2500);
       },
       error: (err) => {
         this.error = err.error?.message || 'Could not save';
         this.saving = false;
       }
+    });
+  }
+
+  private applyPreview(business?: Business): void {
+    this.theme.apply({
+      slug: business?.slug || this.slug,
+      name: business?.name || this.form.name || '',
+      status: business?.status === 'SUSPENDED' ? 'SUSPENDED' : 'ACTIVE',
+      colorPrimary: business?.colorPrimary || this.form.colorPrimary,
+      colorSecondary: business?.colorSecondary || this.form.colorSecondary,
+      logoUrl: business?.logoUrl || this.form.logoUrl
     });
   }
 }

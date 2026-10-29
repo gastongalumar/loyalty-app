@@ -5,8 +5,8 @@ import { environment } from '../../environments/environment';
 import { TenantInfo } from '../models/models';
 
 /**
- * Resolves the tenant slug from the /:slug path segment.
- * The slug is the single source of truth for public auth calls and navigation.
+ * Resolves the tenant slug from the /:slug path segment and keeps the last
+ * validated tenant (name, branding) in memory for the shell/navbar.
  */
 @Injectable({ providedIn: 'root' })
 export class SlugService {
@@ -14,11 +14,16 @@ export class SlugService {
   private static readonly RESERVED = ['platform', 'api', 'assets', 'login', 'register', 'admin', 'customer'];
 
   private current: string | null = sessionStorage.getItem(SlugService.KEY);
+  private currentTenant: TenantInfo | null = null;
 
   constructor(private http: HttpClient) {}
 
   get(): string | null {
     return this.current;
+  }
+
+  getTenant(): TenantInfo | null {
+    return this.currentTenant;
   }
 
   isReserved(slug: string): boolean {
@@ -27,7 +32,10 @@ export class SlugService {
 
   validate(slug: string): Observable<TenantInfo> {
     return this.http.get<TenantInfo>(`${environment.apiUrl}/public/tenants/${slug}`)
-      .pipe(tap(info => this.set(info.slug)));
+      .pipe(tap(info => {
+        this.set(info.slug);
+        this.currentTenant = info;
+      }));
   }
 
   set(slug: string): void {
@@ -37,6 +45,7 @@ export class SlugService {
 
   clear(): void {
     this.current = null;
+    this.currentTenant = null;
     sessionStorage.removeItem(SlugService.KEY);
   }
 }

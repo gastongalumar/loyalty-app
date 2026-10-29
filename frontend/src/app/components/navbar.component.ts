@@ -11,7 +11,11 @@ import { SlugService } from '../services/slug.service';
   imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   template: `
     <nav class="navbar">
-      <a class="navbar-brand" [routerLink]="home"> {{ 'APP.NAME' | translate }}<span *ngIf="slug"> · {{ slug }}</span></a>
+      <a class="navbar-brand" [routerLink]="home">
+        <img *ngIf="logoUrl" [src]="logoUrl" alt="" style="height:26px;width:auto;border-radius:4px;margin-right:8px;" />
+        <span>{{ businessName || ('APP.NAME' | translate) }}</span>
+        <span *ngIf="slug" style="opacity:.6;font-weight:500;"> · {{ slug }}</span>
+      </a>
 
       <ul class="navbar-nav">
         <ng-container *ngIf="isCustomer">
@@ -47,6 +51,8 @@ export class NavbarComponent {
   slug = this.auth.getTenantSlug() ?? this.slugService.get() ?? '';
   home = this.auth.homeRoute();
   currentLang = localStorage.getItem('lang') || 'en';
+  businessName = this.slugService.getTenant()?.name ?? '';
+  logoUrl = this.slugService.getTenant()?.logoUrl ?? null;
 
   constructor(
     private auth: AuthService,

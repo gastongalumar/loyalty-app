@@ -30,6 +30,9 @@ export interface TenantInfo {
   slug: string;
   name: string;
   status: 'ACTIVE' | 'SUSPENDED';
+  colorPrimary?: string | null;
+  colorSecondary?: string | null;
+  logoUrl?: string | null;
 }
 
 export interface Business {

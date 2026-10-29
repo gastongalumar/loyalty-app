@@ -49,6 +49,12 @@ public class BusinessService {
         if (request.getLogoUrl() != null) {
             business.setLogoUrl(request.getLogoUrl());
         }
+        if (request.getColorPrimary() != null) {
+            business.setColorPrimary(request.getColorPrimary().toUpperCase());
+        }
+        if (request.getColorSecondary() != null) {
+            business.setColorSecondary(request.getColorSecondary().toUpperCase());
+        }
         if (request.getRewardDescription() != null) {
             business.setRewardDescription(request.getRewardDescription());
         }
