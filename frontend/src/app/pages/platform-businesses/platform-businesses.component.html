@@ -36,7 +36,6 @@
           <thead>
             <tr>
               <th>{{ 'COMMON.NAME' | translate }}</th>
-              <th>{{ 'COMMON.SLUG' | translate }}</th>
               <th>{{ 'COMMON.STATUS' | translate }}</th>
               <th class="num">{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</th>
               <th class="actions-col">{{ 'COMMON.ACTIONS' | translate }}</th>
@@ -47,12 +46,12 @@
               <td [attr.data-label]="'COMMON.NAME' | translate">
                 <a class="business-link" [routerLink]="['/platform/businesses', business.id]">
                   <span class="business-avatar" aria-hidden="true">{{ initial(business) }}</span>
-                  <span class="business-name">{{ business.name }}</span>
+                  <span class="business-meta">
+                    <span class="business-name">{{ business.name }}</span>
+                    <code class="slug">{{ business.slug }}</code>
+                  </span>
                   <span class="business-go" aria-hidden="true">→</span>
                 </a>
-              </td>
-              <td [attr.data-label]="'COMMON.SLUG' | translate">
-                <code class="slug">{{ business.slug }}</code>
               </td>
               <td [attr.data-label]="'COMMON.STATUS' | translate">
                 <span class="status-badge" [ngClass]="statusTone(business)">
@@ -63,7 +62,7 @@
               <td class="num" [attr.data-label]="'BUSINESS.TOTAL_CUSTOMERS' | translate">
                 <strong>{{ business.totalCustomers }}</strong>
               </td>
-              <td class="actions-col" [attr.data-label]="'COMMON.ACTIONS' | translate">
+              <td *ngIf="business.status !== 'DELETED'" class="actions-col" [attr.data-label]="'COMMON.ACTIONS' | translate">
                 <div class="row-actions">
                   <button *ngIf="business.status === 'ACTIVE'" class="btn btn-ghost btn-sm"
                           type="button" (click)="setStatus(business, 'SUSPENDED')">

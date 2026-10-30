@@ -132,7 +132,11 @@
   font-weight: var(--weight-bold);
 }
 
-.business-name {
+.business-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
   min-width: 0;
 }
 

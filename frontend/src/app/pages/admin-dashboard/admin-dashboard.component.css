@@ -388,7 +388,7 @@
 
   .customer-row .btn {
     grid-column: 2;
-    justify-self: start;
+    justify-self: stretch;
   }
 
   .reward-banner {
