@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SlugService } from '../../services/slug.service';
+import { ThemeService } from '../../services/theme.service';
+import { PlatformBrandingService } from '../../services/platform-branding.service';
 
 @Component({
   selector: 'app-landing',
@@ -12,7 +14,7 @@ import { SlugService } from '../../services/slug.service';
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   slug = '';
   loading = false;
   error = '';
@@ -20,8 +22,23 @@ export class LandingComponent {
   constructor(
     private slugService: SlugService,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private theme: ThemeService,
+    private platformBranding: PlatformBrandingService
   ) {}
+
+  ngOnInit(): void {
+    this.theme.reset();
+    this.platformBranding.loadAndApply();
+  }
+
+  get platformName(): string {
+    return this.platformBranding.appName || this.translate.instant('APP.NAME');
+  }
+
+  get platformLogo(): string | null {
+    return this.platformBranding.logoUrl;
+  }
 
   go(): void {
     const value = this.slug.trim().toLowerCase();

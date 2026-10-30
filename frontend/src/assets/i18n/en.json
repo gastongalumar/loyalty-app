@@ -92,6 +92,8 @@
     "ALREADY_REDEEMED": "This reward was already redeemed",
     "DESCRIPTION": "Description",
     "LOGO_URL": "Logo URL",
+    "UPLOAD_LOGO": "Upload logo",
+    "REMOVE_LOGO": "Remove logo",
     "LOGO_HINT": "Paste the public link to your logo (PNG, JPG or SVG).",
     "PROFILE": "Business profile",
     "PROFILE_HINT": "The name and reward your customers see",
@@ -171,7 +173,15 @@
     "ACTIVATE": "Activate",
     "SLUG_HINT": "Lowercase letters, numbers and hyphens. E.g. cafe-central",
     "EDIT_BUSINESS": "Business profile and appearance",
-    "EDIT_BUSINESS_HINT": "Edit the name, logo, background, colors and icons for this business."
+    "EDIT_BUSINESS_HINT": "Edit the name, logo, background, colors and icons for this business.",
+    "SETTINGS": "Platform",
+    "SETTINGS_TITLE": "Platform identity",
+    "SETTINGS_HINT": "The name, logo and background that landings, platform login and the master panel show.",
+    "BRANDING": "Global branding",
+    "BRANDING_HINT": "These values apply only to the platform layer, not to each business.",
+    "APP_NAME": "App name",
+    "APP_NAME_HINT": "Shown on the landing, platform login and master panel.",
+    "TAGLINE": "Tagline"
   },
   "STATUS": {
     "ACTIVE": "Active",
@@ -212,6 +222,10 @@
     "SAVE_BUSINESS": "We could not save your changes. Please try again.",
     "UPLOAD_BACKGROUND": "We could not upload the background photo. Please try again.",
     "REMOVE_BACKGROUND": "We could not remove the background photo. Please try again.",
+    "UPLOAD_LOGO": "We could not upload the logo. Please try again.",
+    "REMOVE_LOGO": "We could not remove the logo. Please try again.",
+    "LOAD_PLATFORM_SETTINGS": "We could not load the platform branding. Please try again.",
+    "SAVE_PLATFORM_SETTINGS": "We could not save the platform branding. Please try again.",
     "CREATE_BUSINESS": "We could not create the business. Check the details.",
     "CREATE_ADMIN": "We could not create the admin. Check the details.",
     "UPDATE_STATUS": "We could not update the status. Please try again.",
@@ -228,6 +242,7 @@
   "SUCCESS": {
     "BUSINESS_CREATED": "{{name}} was created successfully.",
     "BUSINESS_UPDATED": "{{name}} was updated successfully.",
+    "PLATFORM_UPDATED": "The platform was updated successfully.",
     "ADMIN_CREATED": "{{email}} can now manage this business."
   },
   "COMMON": {

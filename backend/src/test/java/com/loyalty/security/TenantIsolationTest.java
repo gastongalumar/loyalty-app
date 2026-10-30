@@ -366,6 +366,43 @@ class TenantIsolationTest {
     }
 
     @Test
+    void publicPlatformSettingsExposeDefaults() throws Exception {
+        mockMvc.perform(get("/api/public/platform"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.appName").value("Loyalty Card"));
+    }
+
+    @Test
+    void platformAdminCanUpdatePlatformBranding() throws Exception {
+        String payload = objectMapper.writeValueAsString(Map.of(
+                "appName", "Mi Plataforma",
+                "tagline", "Fidelidad para todos",
+                "colorPrimary", "#005577",
+                "backgroundVisibility", 40,
+                "backgroundBlur", 9
+        ));
+
+        mockMvc.perform(put("/api/v1/platform/settings")
+                        .header("Authorization", bearer(platformToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.appName").value("Mi Plataforma"))
+                .andExpect(jsonPath("$.colorPrimary").value("#005577"));
+
+        mockMvc.perform(get("/api/public/platform"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.appName").value("Mi Plataforma"))
+                .andExpect(jsonPath("$.tagline").value("Fidelidad para todos"));
+
+        mockMvc.perform(put("/api/v1/platform/settings")
+                        .header("Authorization", bearer(adminAToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void businessAdminCannotUsePlatformEndpoints() throws Exception {
         mockMvc.perform(get("/api/v1/platform/businesses").header("Authorization", bearer(adminAToken)))
                 .andExpect(status().isForbidden());

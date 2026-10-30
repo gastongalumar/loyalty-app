@@ -56,8 +56,8 @@ expect_zero() {
 
 echo "==> Verificando historial Flyway"
 APPLIED="$(mysql_query "SELECT COUNT(*) FROM flyway_schema_history WHERE success = 1;" | tr -d '[:space:]')"
-if [[ "$APPLIED" -lt 7 ]]; then
-  echo "FAIL: se esperaban >= 7 migraciones aplicadas, hay $APPLIED"
+if [[ "$APPLIED" -lt 8 ]]; then
+  echo "FAIL: se esperaban >= 8 migraciones aplicadas, hay $APPLIED"
   exit 1
 fi
 echo "OK: $APPLIED migraciones aplicadas"

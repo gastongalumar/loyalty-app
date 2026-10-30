@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Admin, Business, BusinessSummary, Page } from '../models/models';
+import { Admin, Business, BusinessSummary, Page, PlatformSettings } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class PlatformService {
@@ -49,6 +49,35 @@ export class PlatformService {
 
   removeBackgroundFor(id: number): Observable<Business> {
     return this.http.delete<Business>(`${this.API}/${id}/background`);
+  }
+
+  // Platform branding (PLATFORM_ADMIN)
+  getSettings(): Observable<PlatformSettings> {
+    return this.http.get<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings`);
+  }
+
+  updateSettings(payload: Partial<PlatformSettings>): Observable<PlatformSettings> {
+    return this.http.put<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings`, payload);
+  }
+
+  uploadSettingsLogo(file: File): Observable<PlatformSettings> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings/logo`, body);
+  }
+
+  removeSettingsLogo(): Observable<PlatformSettings> {
+    return this.http.delete<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings/logo`);
+  }
+
+  uploadSettingsBackground(file: File): Observable<PlatformSettings> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings/background`, body);
+  }
+
+  removeSettingsBackground(): Observable<PlatformSettings> {
+    return this.http.delete<PlatformSettings>(`${environment.apiUrl}/v1/platform/settings/background`);
   }
 
   listAdmins(id: number): Observable<Admin[]> {

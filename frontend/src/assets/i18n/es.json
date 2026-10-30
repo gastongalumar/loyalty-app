@@ -92,6 +92,8 @@
     "ALREADY_REDEEMED": "Esta recompensa ya fue canjeada",
     "DESCRIPTION": "Descripción",
     "LOGO_URL": "URL del logo",
+    "UPLOAD_LOGO": "Subir logo",
+    "REMOVE_LOGO": "Quitar logo",
     "LOGO_HINT": "Pegá el enlace público de tu logo (PNG, JPG o SVG).",
     "PROFILE": "Perfil del negocio",
     "PROFILE_HINT": "El nombre y la recompensa que ven tus clientes",
@@ -171,7 +173,15 @@
     "ACTIVATE": "Activar",
     "SLUG_HINT": "Minúsculas, números y guiones. Ej.: cafe-central",
     "EDIT_BUSINESS": "Perfil y apariencia del negocio",
-    "EDIT_BUSINESS_HINT": "Editá nombre, logo, fondo, colores e iconos de este negocio."
+    "EDIT_BUSINESS_HINT": "Editá nombre, logo, fondo, colores e iconos de este negocio.",
+    "SETTINGS": "Plataforma",
+    "SETTINGS_TITLE": "Identidad de la plataforma",
+    "SETTINGS_HINT": "El nombre, logo y fondo que muestran la landing, el login de plataforma y el panel maestro.",
+    "BRANDING": "Branding global",
+    "BRANDING_HINT": "Estos valores aplican solo a la capa maestra, no a cada negocio.",
+    "APP_NAME": "Nombre de la app",
+    "APP_NAME_HINT": "Se muestra en la landing, el login de plataforma y el panel maestro.",
+    "TAGLINE": "Frase corta"
   },
   "STATUS": {
     "ACTIVE": "Activo",
@@ -212,6 +222,10 @@
     "SAVE_BUSINESS": "No pudimos guardar los cambios. Intentá de nuevo.",
     "UPLOAD_BACKGROUND": "No pudimos subir la foto de fondo. Intentá de nuevo.",
     "REMOVE_BACKGROUND": "No pudimos quitar la foto de fondo. Intentá de nuevo.",
+    "UPLOAD_LOGO": "No pudimos subir el logo. Intentá de nuevo.",
+    "REMOVE_LOGO": "No pudimos quitar el logo. Intentá de nuevo.",
+    "LOAD_PLATFORM_SETTINGS": "No pudimos cargar el branding de la plataforma. Intentá de nuevo.",
+    "SAVE_PLATFORM_SETTINGS": "No pudimos guardar el branding de la plataforma. Intentá de nuevo.",
     "CREATE_BUSINESS": "No pudimos crear el negocio. Revisá los datos.",
     "CREATE_ADMIN": "No pudimos crear el administrador. Revisá los datos.",
     "UPDATE_STATUS": "No pudimos actualizar el estado. Intentá de nuevo.",
@@ -228,6 +242,7 @@
   "SUCCESS": {
     "BUSINESS_CREATED": "{{name}} se creó correctamente.",
     "BUSINESS_UPDATED": "{{name}} se actualizó correctamente.",
+    "PLATFORM_UPDATED": "La plataforma se actualizó correctamente.",
     "ADMIN_CREATED": "{{email}} ahora puede administrar el negocio."
   },
   "COMMON": {

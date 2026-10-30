@@ -114,6 +114,14 @@ Ratios medidos con `node scripts/check-contrast.mjs` (AA mínimo 4.5:1 para text
 - Sin branding, rigen los tokens del tema. Al entrar a `/platform` se limpian los overrides.
 - Los cambios de tema recalculan el branding (no queda un acento oscuro sobre fondo oscuro).
 
+## Branding de plataforma
+
+- La capa maestra tiene su propio branding en `platform_settings`: nombre de app, tagline, logo,
+  fondo, visibilidad/blur y colores.
+- Se aplica a landing, `/platform/login` y panel maestro; nunca a las pantallas de un tenant.
+- El `PLATFORM_ADMIN` lo edita en `/platform/settings`; el resto de los usuarios solo lo consume
+  desde `GET /api/public/platform`.
+
 ## Motion
 
 - Duraciones `--dur-fast`, `--dur-base`, `--dur-slow`; easing `--ease-out`.

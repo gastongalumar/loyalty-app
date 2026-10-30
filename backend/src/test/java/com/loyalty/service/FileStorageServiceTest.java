@@ -49,6 +49,16 @@ class FileStorageServiceTest {
     }
 
     @Test
+    void storesLogoInItsOwnFolder() {
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "logo.png", "image/png", new byte[]{1});
+
+        String url = service.storeLogo(file);
+
+        assertThat(url).startsWith("/api/files/logos/").endsWith(".png");
+    }
+
+    @Test
     void deletesOnlyManagedFiles() throws Exception {
         Path directory = Files.createDirectories(tempDir.resolve("backgrounds"));
         Path stored = Files.write(directory.resolve("photo.png"), new byte[]{1});

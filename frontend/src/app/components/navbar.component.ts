@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { SlugService } from '../services/slug.service';
 import { PwaService } from '../services/pwa.service';
+import { PlatformBrandingService } from '../services/platform-branding.service';
 import { THEME_OPTIONS, ThemeMode, ThemeService } from '../services/theme.service';
 
 @Component({
@@ -33,13 +34,28 @@ export class NavbarComponent implements OnInit {
     private slugService: SlugService,
     public readonly pwa: PwaService,
     public readonly theme: ThemeService,
+    private platformBranding: PlatformBrandingService,
     private translate: TranslateService
   ) {
     this.theme.init();
+    if (this.isPlatformAdmin) {
+      this.platformBranding.loadAndApply();
+    }
   }
 
   ngOnInit(): void {
     this.theme.init();
+  }
+
+  get displayName(): string {
+    if (this.isPlatformAdmin) {
+      return this.platformBranding.appName || this.translate.instant('APP.NAME');
+    }
+    return this.businessName || this.translate.instant('APP.NAME');
+  }
+
+  get displayLogo(): string | null {
+    return this.isPlatformAdmin ? this.platformBranding.logoUrl : this.logoUrl;
   }
 
   get currentMode(): ThemeMode {

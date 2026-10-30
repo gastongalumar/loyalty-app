@@ -1,7 +1,7 @@
 <nav class="navbar">
       <a class="navbar-brand" [routerLink]="home">
-        <img *ngIf="logoUrl" class="navbar-logo" [src]="logoUrl" alt="" />
-        <span class="navbar-name">{{ businessName || ('APP.NAME' | translate) }}</span>
+        <img *ngIf="displayLogo" class="navbar-logo" [src]="displayLogo" alt="" />
+        <span class="navbar-name">{{ displayName }}</span>
         <span *ngIf="slug" class="navbar-slug"> · {{ slug }}</span>
       </a>
 
@@ -19,6 +19,7 @@
         </ng-container>
         <ng-container *ngIf="isPlatformAdmin">
           <li><a routerLink="/platform/businesses" routerLinkActive="active">{{ 'NAV.BUSINESSES' | translate }}</a></li>
+          <li><a routerLink="/platform/settings" routerLinkActive="active">{{ 'PLATFORM.SETTINGS' | translate }}</a></li>
         </ng-container>
       </ul>
 

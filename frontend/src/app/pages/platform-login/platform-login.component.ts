@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { SlugService } from '../../services/slug.service';
 import { ThemeService } from '../../services/theme.service';
 import { PwaService } from '../../services/pwa.service';
+import { PlatformBrandingService } from '../../services/platform-branding.service';
 
 @Component({
   selector: 'app-platform-login',
@@ -26,6 +27,7 @@ export class PlatformLoginComponent {
     private slugService: SlugService,
     private themeService: ThemeService,
     private pwaService: PwaService,
+    private platformBranding: PlatformBrandingService,
     private router: Router,
     private translate: TranslateService
   ) {
@@ -33,6 +35,19 @@ export class PlatformLoginComponent {
     this.slugService.clear();
     this.themeService.reset();
     this.pwaService.applyTenant(null);
+    this.platformBranding.loadAndApply(true);
+  }
+
+  get platformName(): string {
+    return this.platformBranding.appName || this.translate.instant('APP.NAME');
+  }
+
+  get platformLogo(): string | null {
+    return this.platformBranding.logoUrl;
+  }
+
+  get platformTagline(): string {
+    return this.platformBranding.tagline || this.translate.instant('PLATFORM.LOGIN_TITLE');
   }
 
   login(): void {

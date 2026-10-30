@@ -25,6 +25,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/platform-business-detail/platform-business-detail.component').then(m => m.PlatformBusinessDetailComponent)
   },
   {
+    path: 'platform/settings',
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'PLATFORM_ADMIN' },
+    loadComponent: () => import('./pages/platform-settings/platform-settings.component').then(m => m.PlatformSettingsComponent)
+  },
+  {
     path: ':slug',
     canActivate: [slugGuard],
     children: [

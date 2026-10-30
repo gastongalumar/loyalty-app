@@ -12,7 +12,7 @@ negocios.
 | Spring Boot | 3.5.16 |
 | Maven | 3.9+ |
 | Base de datos | MySQL 8 |
-| Migraciones | **Flyway** (`db/migration/V1..V7`) |
+| Migraciones | **Flyway** (`db/migration/V1..V8`) |
 | Frontend | Angular 17, TypeScript ~5.2 |
 | Node.js | 18+ (build Docker usa 20) |
 
@@ -101,7 +101,7 @@ Copiar `.env.example` a `.env` y completar. El backend no tiene valores por defe
 
 ### 2. Base de datos y migraciones
 
-No hay que ejecutar SQL a mano: Flyway aplica `V1..V7` al arrancar el backend
+No hay que ejecutar SQL a mano: Flyway aplica `V1..V8` al arrancar el backend
 (`baseline-on-migrate=true`, `baseline-version=0`).
 
 ```powershell
@@ -133,7 +133,7 @@ FLUSH PRIVILEGES;
 ```
 
 No hace falta ejecutar el esquema a mano: Flyway corre al arrancar el backend. Para verificar
-las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V7 y valida
+las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V8 y valida
 invariantes + constraints):
 
 ```powershell
@@ -194,6 +194,7 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 | `POST` | `/api/auth/register` | `X-Tenant-Slug` **obligatorio** | crea **solo** `CUSTOMER`; `role` distinto de `CUSTOMER` → 400 |
 | `POST` | `/api/auth/login` | `X-Tenant-Slug` opcional | con slug: usuario del tenant; sin slug: solo `PLATFORM_ADMIN` |
 | `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status,colorPrimary,colorSecondary,logoUrl,backgroundUrl,backgroundVisibility,backgroundBlur,stampIcon,rewardIcon}` |
+| `GET` | `/api/public/platform` | — | branding global de la plataforma |
 | `GET` | `/api/public/tenants/{slug}/manifest.webmanifest` | — | manifest PWA del tenant (`start_url` y `scope` con el slug) |
 
 ### Platform (`PLATFORM_ADMIN`)
@@ -205,6 +206,8 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 | `PUT` | `/api/v1/platform/businesses/{id}` |
 | `POST` / `DELETE` | `/api/v1/platform/businesses/{id}/background` |
 | `PATCH` | `/api/v1/platform/businesses/{id}/status` |
+| `GET` / `PUT` | `/api/v1/platform/settings` |
+| `POST` / `DELETE` | `/api/v1/platform/settings/logo` · `/background` |
 | `POST` / `GET` | `/api/v1/platform/businesses/{id}/admins` |
 
 ### Business (`BUSINESS_ADMIN`, tenant del JWT)
@@ -254,6 +257,7 @@ de otro tenant (no se filtra existencia).
 | `V5__tenant_constraints.sql` | `NOT NULL`, `CHECK`, FKs compuestas, ENUM→VARCHAR |
 | `V6__business_visual_assets.sql` | `background_url`, `stamp_icon`, `reward_icon` por negocio |
 | `V7__background_glass_controls.sql` | `background_visibility`, `background_blur` |
+| `V8__platform_settings.sql` | tabla singleton `platform_settings` para el branding global |
 
 Rollbacks manuales en `backend/src/main/resources/db/rollback/*.down.sql` (Flyway Community no
 tiene `undo`). Antes de migrar una base con datos: `mysqldump`.
@@ -271,8 +275,8 @@ En Windows con MySQL local (sin Docker):
 ```
 
 Ambos corren `flyway:migrate`, las queries de `db/verify/V4_verification.sql`, la prueba
-negativa de constraints y exigen `flyway_schema_history` con las 7 migraciones en verde.
-Verificado sobre MySQL 8.0.43: V1..V7 aplican limpias y los seis rollbacks (`V7..V2`)
+negativa de constraints y exigen `flyway_schema_history` con las 8 migraciones en verde.
+Verificado sobre MySQL 8.0.43: V1..V8 aplican limpias y los siete rollbacks (`V8..V2`)
 devuelven el esquema a la forma de V1.
 
 > **TODO-01** — La versión actual de `V4` asume una base **sin datos a preservar** (portfolio).
@@ -293,7 +297,7 @@ MySQL-específicas). La cobertura real de las migraciones la da `scripts/verify-
 CI (`.github/workflows/backend-ci.yml`).
 
 Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 8.0.43**
-(migraciones V1..V7 + rollbacks).
+(migraciones V1..V8 + rollbacks).
 
 ## Branding por tenant (R2)
 
@@ -320,6 +324,15 @@ Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 
   con `?v=<timestamp>`.
 - Un admin de A no puede cambiar el branding de B: el `tenant_id` sale del JWT. Las imágenes
   subidas viven en el volumen `uploads_data` de Docker.
+
+## Branding de plataforma (capa maestra)
+
+- `GET /api/public/platform` devuelve `appName`, `tagline`, `logoUrl`, `backgroundUrl`,
+  `backgroundVisibility`, `backgroundBlur` y colores globales.
+- El `PLATFORM_ADMIN` los edita en **Plataforma → Plataforma** (`PUT /api/v1/platform/settings`),
+  con subida de logo/fondo en `/api/v1/platform/settings/logo` y `/background`.
+- Ese branding se aplica a la landing, el login de plataforma y el panel maestro; **no** pisa el
+  branding de cada negocio. La tabla singleton es `platform_settings` (fila `id=1`).
 
 ## PWA por tenant (R3)
 

@@ -1,0 +1,135 @@
+<app-navbar></app-navbar>
+
+<main class="platform-settings">
+  <header class="settings-head fade-in">
+    <p class="eyebrow">{{ 'PLATFORM.SETTINGS' | translate }}</p>
+    <h1 class="page-title">{{ 'PLATFORM.SETTINGS_TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'PLATFORM.SETTINGS_HINT' | translate }}</p>
+  </header>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
+
+  <section class="panel fade-in" *ngIf="!loading">
+    <header class="panel-head">
+      <div>
+        <h2>{{ 'PLATFORM.BRANDING' | translate }}</h2>
+        <p class="muted">{{ 'PLATFORM.BRANDING_HINT' | translate }}</p>
+      </div>
+      <button class="btn btn-primary" type="button" [disabled]="!canSave" (click)="save()">
+        {{ saving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
+      </button>
+    </header>
+
+    <div class="settings-columns">
+      <div class="settings-section">
+        <div class="form-group">
+          <label class="form-label" for="platform-app-name">{{ 'PLATFORM.APP_NAME' | translate }}</label>
+          <input id="platform-app-name" class="form-control" [(ngModel)]="form.appName" />
+          <p class="field-hint">{{ 'PLATFORM.APP_NAME_HINT' | translate }}</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="platform-tagline">{{ 'PLATFORM.TAGLINE' | translate }}</label>
+          <input id="platform-tagline" class="form-control" [(ngModel)]="form.tagline" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="platform-logo">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
+          <div class="asset-actions">
+            <label class="btn btn-outline btn-sm file-button">
+              {{ (uploadingLogo ? 'COMMON.LOADING' : 'BUSINESS.UPLOAD_LOGO') | translate }}
+              <input type="file" accept="image/png,image/jpeg,image/webp"
+                     [disabled]="uploadingLogo" (change)="onLogoFile($event)" />
+            </label>
+            <button *ngIf="form.logoUrl" type="button" class="btn btn-ghost btn-sm"
+                    [disabled]="removingLogo" (click)="removeLogo()">
+              {{ (removingLogo ? 'COMMON.LOADING' : 'BUSINESS.REMOVE_LOGO') | translate }}
+            </button>
+          </div>
+          <input id="platform-logo" class="form-control" [(ngModel)]="form.logoUrl"
+                 (ngModelChange)="onLogoChange()" placeholder="https://..." />
+          <p class="field-hint">{{ 'BUSINESS.LOGO_HINT' | translate }}</p>
+        </div>
+
+        <div *ngIf="logoPreview" class="logo-preview">
+          <span class="form-label">{{ 'BUSINESS.LOGO_PREVIEW' | translate }}</span>
+          <img [src]="logoPreview" [alt]="'BUSINESS.LOGO_PREVIEW' | translate" />
+        </div>
+
+        <div class="brand-preview">
+          <span class="form-label">{{ 'BUSINESS.PREVIEW' | translate }}</span>
+          <div class="brand-preview-card">
+            <img *ngIf="logoPreview" [src]="logoPreview" alt="" />
+            <div>
+              <strong>{{ form.appName || ('APP.NAME' | translate) }}</strong>
+              <span>{{ form.tagline || ('APP.TAGLINE' | translate) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="platform-primary">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</label>
+            <input id="platform-primary" type="color" class="form-control color-input"
+                   [(ngModel)]="form.colorPrimary" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="platform-secondary">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</label>
+            <input id="platform-secondary" type="color" class="form-control color-input"
+                   [(ngModel)]="form.colorSecondary" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <span class="form-label">{{ 'BUSINESS.BACKGROUND' | translate }}</span>
+          <div class="asset-actions">
+            <label class="btn btn-outline btn-sm file-button">
+              {{ (uploadingBackground ? 'COMMON.LOADING' : 'BUSINESS.UPLOAD_BACKGROUND') | translate }}
+              <input type="file" accept="image/png,image/jpeg,image/webp"
+                     [disabled]="uploadingBackground" (change)="onBackgroundFile($event)" />
+            </label>
+            <button *ngIf="form.backgroundUrl" type="button" class="btn btn-ghost btn-sm"
+                    [disabled]="removingBackground" (click)="removeBackground()">
+              {{ (removingBackground ? 'COMMON.LOADING' : 'BUSINESS.REMOVE_BACKGROUND') | translate }}
+            </button>
+          </div>
+          <input class="form-control" [(ngModel)]="form.backgroundUrl"
+                 (ngModelChange)="onBackgroundChange()" placeholder="https://..." />
+          <p class="field-hint">{{ 'BUSINESS.BACKGROUND_HINT' | translate }}</p>
+        </div>
+
+        <div *ngIf="backgroundPreview" class="background-preview">
+          <span class="form-label">{{ 'BUSINESS.BACKGROUND_PREVIEW' | translate }}</span>
+          <div class="background-thumb" role="img"
+               [style.backgroundImage]="'url(' + backgroundPreview + ')'"
+               [attr.aria-label]="'BUSINESS.BACKGROUND_PREVIEW' | translate"></div>
+        </div>
+
+        <div class="background-tuning" [class.is-disabled]="!form.backgroundUrl">
+          <div class="range-field">
+            <div class="range-head">
+              <span class="form-label">{{ 'BUSINESS.BACKGROUND_VISIBILITY' | translate }}</span>
+              <span class="range-value">{{ form.backgroundVisibility ?? 20 }}%</span>
+            </div>
+            <input type="range" min="0" max="100" step="1"
+                   [(ngModel)]="form.backgroundVisibility"
+                   [disabled]="!form.backgroundUrl" />
+          </div>
+          <div class="range-field">
+            <div class="range-head">
+              <span class="form-label">{{ 'BUSINESS.BACKGROUND_BLUR' | translate }}</span>
+              <span class="range-value">{{ form.backgroundBlur ?? 8 }}px</span>
+            </div>
+            <input type="range" min="0" max="24" step="1"
+                   [(ngModel)]="form.backgroundBlur"
+                   [disabled]="!form.backgroundUrl" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

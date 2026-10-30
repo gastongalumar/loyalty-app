@@ -1,6 +1,9 @@
 <div class="auth-page">
       <div class="auth-card fade-in">
-        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
+        <div class="auth-brand">
+          <img *ngIf="platformLogo" class="auth-brand-logo" [src]="platformLogo" alt="" />
+          <div class="auth-logo">{{ platformName }}</div>
+        </div>
         <p class="auth-tagline">{{ 'LANDING.SUBTITLE' | translate }}</p>
 
         <div *ngIf="error" class="alert alert-error">{{ error }}</div>
