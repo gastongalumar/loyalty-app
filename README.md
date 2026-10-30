@@ -333,88 +333,79 @@ Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 
 Solo se publica el frontend. MySQL y el backend quedan en la red `loyalty_net` y no son
 accesibles desde Internet.
 
-### Producción en la VM (OVH)
+### Producción en la VM (OVH) — desplegado
 
 | Dato | Valor |
 |---|---|
-| Host | `40.160.241.75` |
-| DNS | `loyalty.programandos.site` → `40.160.241.75` |
-| Puerto local del stack | **`8090`** |
-| Reverse proxy | Caddy/Nginx del host → `127.0.0.1:8090` |
+| Host | `40.160.241.75` (`vps-c0853c1c`), **Debian 11** |
+| SSH | `debian@40.160.241.75` con key `~/.ssh/id_ed25519` |
+| Ruta | `/opt/loyalty-app` |
+| Puerto local | **`8090`** (nginx del contenedor; backend 8080 y MySQL 3306 solo internos) |
+| Docker | 20.10.5 · Compose 2.24.7 |
+| Base de datos | contenedor `loyalty-db`, volumen **`loyalty-app_mysql_data`** |
+| Dominio | `loyalty.programandos.site` (Cloudflare proxied) |
+
+Estado verificado (2026-10-30):
+
+```text
+loyalty-frontend  Up (healthy)  0.0.0.0:8090->80/tcp
+loyalty-backend   Up (healthy)  8080/tcp
+loyalty-db        Up (healthy)  3306/tcp, 33060/tcp
+```
+
+- `curl http://127.0.0.1:8090/healthz` → `ok`
+- login del `PLATFORM_ADMIN` → `200`
+- `POST /api/auth/register` sin `X-Tenant-Slug` → `404`
+- `manifest.webmanifest` estático → `200`
+
+Las credenciales del admin inicial se generaron en el host (no se imprimen):
 
 ```bash
-# en la VM
-git clone https://github.com/gastongalumar/loyalty-app.git
-cd loyalty-app
-cp .env.prod.example .env
-nano .env                        # completar MYSQL_*, APP_JWT_SECRET y bootstrap
-docker compose up -d --build
-docker compose ps
+grep APP_BOOTSTRAP_PLATFORM_ADMIN /opt/loyalty-app/.env
 ```
 
-Verificación desde la VM:
+> El bootstrap es idempotente: si cambiás la password en `.env` después del primer arranque,
+> el usuario existente no se actualiza.
 
-```bash
-curl -fsS http://127.0.0.1:8090/healthz
-curl -fsS http://127.0.0.1:8090/api/public/tenants/<slug>
-docker compose exec -T backend wget -qO- http://127.0.0.1:8080/actuator/health
-docker compose logs -f backend
-```
+### Servicios que conviven en el host
 
-> `docker compose` falla a propósito si faltan `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` o
-> `APP_JWT_SECRET` (validación `${VAR:?}`). No hay valores por defecto en producción.
+| Puerto | Servicio |
+|---|---|
+| 80/443 | VM **QEMU** (MuWarlords legado) — no tocar |
+| 8080 | Portfolio 2026 |
+| 8089 | Cine Marcener |
+| **8090** | **Loyalty** |
 
-### Estado actual del host (2026-10-29)
+Cada stack tiene su propio proyecto Compose, red y volumen. Loyalty **no comparte** la base de
+portfolio ni de cine; su volumen es `loyalty-app_mysql_data`.
 
-- `loyalty.programandos.site` resuelve a `40.160.241.75`.
-- El puerto **8090 está libre**; el portfolio corre en `8080`.
-- Hoy el dominio (puerto 80) responde con un **Apache/PHP legado**, no con esta app:
-  falta apuntar el vhost/reverse proxy a `127.0.0.1:8090`.
-- El servidor es **Windows** (Apache Win32). Usar `.\scripts\update.ps1` o WSL/Git Bash
-  para los `.sh`, y abrir el puerto en el firewall:
-  ```powershell
-  New-NetFirewallRule -DisplayName "Loyalty 8090" -Direction Inbound `
-    -Protocol TCP -LocalPort 8090 -Action Allow
-  ```
-- El primer despliegue requiere acceso SSH al host (publickey o password).
+### Cloudflare Tunnel (dominio)
 
-### Reverse proxy + HTTPS
+El host publica los sitios con un **Cloudflare Tunnel token-based** (`cloudflared`,
+`network_mode: host`). Las rutas se administran en **Zero Trust → Tunnels** (dashboard), no en
+`~/.cloudflared/config.yml` (el contenedor no monta ese archivo).
 
-Caddy en el host (recomendado, TLS automático):
+- Tunnel ID: `9b12e650-f0e0-4415-a05d-7a84ddc15565`
+- Falta agregar el **Public Hostname**:
+  - Subdomain: `loyalty`
+  - Domain: `programandos.site`
+  - Service: `http://localhost:8090`
 
-```caddyfile
-loyalty.programandos.site {
-    reverse_proxy 127.0.0.1:8090
-}
-```
+Hoy `loyalty.programandos.site` es un registro A proxied al origen del VPS (QEMU en 80), por eso
+muestra el sitio legado. Al crear el public hostname, Cloudflare lo reemplaza por el CNAME del
+túnel y la app queda en `https://loyalty.programandos.site` sin abrir puertos nuevos.
 
-Nginx del host:
+### Acceso directo sin DNS (prueba)
 
-```nginx
-server {
-    listen 80;
-    server_name loyalty.programandos.site;
-    location / {
-        proxy_pass http://127.0.0.1:8090;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-Firewall (no abrir 8080, 8090 ni 3306 a Internet):
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
+```powershell
+ssh -i "$env:USERPROFILE\.ssh\id_ed25519" -N -L 8090:localhost:8090 debian@40.160.241.75
+# abrir http://localhost:8090
 ```
 
 ### Actualizar y respaldar
 
 ```bash
+cd /opt/loyalty-app
 ./scripts/update.sh     # git pull + build + up -d + prune
 ./scripts/backup.sh     # mysqldump comprimido en backups/
 ```
@@ -427,6 +418,8 @@ El backup se guarda en `backups/` (ignorado por git). Para restaurar:
 gunzip -c backups/loyalty_YYYYmmdd_HHMMSS.sql.gz | \
   docker compose exec -T db sh -c 'exec mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"'
 ```
+
+> No abrir 8090, 8080 ni 3306 a Internet: el acceso público va por el túnel.
 
 ### Desarrollo local
 
