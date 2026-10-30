@@ -9,7 +9,7 @@
  * Las rutas /api, /actuator y /platform no se cachean.
  */
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL_CACHE = `loyalty-shell-${VERSION}`;
 const TENANT_CACHE_PREFIX = 'loyalty-tenant-';
 const SHELL_ASSETS = [
@@ -73,6 +73,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  if (url.pathname.startsWith('/assets/i18n/')) {
+    // Los textos no llevan hash: network-first para que un deploy no quede
+    // sirviendo traducciones viejas desde el cache del service worker.
+    event.respondWith(networkFirstAsset(request, SHELL_CACHE));
+    return;
+  }
+
   if (url.pathname.startsWith('/assets/')) {
     event.respondWith(cacheFirst(request, SHELL_CACHE));
     return;
@@ -114,6 +121,23 @@ async function cacheFirst(request, cacheName) {
     cache.put(request, response.clone());
   }
   return response;
+}
+
+async function networkFirstAsset(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request);
+    if (cached) {
+      return cached;
+    }
+    throw error;
+  }
 }
 
 async function networkFirstNavigation(request, slug) {
