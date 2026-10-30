@@ -85,9 +85,7 @@ Escribís la password en esa ventana y seguís ahí.
 
 ---
 
-## 3. Estructura en el VPS
-
-| App | Ruta | Rama | Compose | Puerto |
+## 3. Estructura en el VPS| App | Ruta | Rama | Compose | Puerto |
 |---|---|---|---|---|
 | Loyalty | `/opt/loyalty-app` | `master` | `docker-compose.yml` | 8090 |
 | Notas | `/opt/notas-app` | `master` | `docker-compose.prod.yml` | 8091 |
@@ -99,6 +97,35 @@ Volúmenes:
 - `loyalty-app_mysql_data`
 - `notas-app_notas_mysql_data`
 - `notas-app_notas_storage` (adjuntos, storage local)
+
+### Repos privados (git pull en la VM)
+
+Si el repo es privado, `git pull` falla con `could not read Username for 'https://github.com'`.
+La VM no tiene credenciales de GitHub. Opciones:
+
+1. **Deploy key (recomendado, read-only):**
+   ```bash
+   ssh -i ~/.ssh/id_ed25519 debian@40.160.241.75
+   ssh-keygen -t ed25519 -f ~/.ssh/github_deploy -N '' -C "vps-deploy"
+   cat ~/.ssh/github_deploy.pub
+   ```
+   Pegar la pública en GitHub → repo → **Settings → Deploy keys → Add**.
+   Luego cambiar el remote:
+   ```bash
+   cd /opt/loyalty-app
+   git remote set-url origin git@github.com:gastongalumar/loyalty-app.git
+   ```
+   (repetir por repo; la misma deploy key se puede usar en varios si se elige "Allow write access" solo si hace falta).
+
+2. **PAT:** `git remote set-url origin https://<TOKEN>@github.com/...` (queda en `.git/config`, permisos 600).
+
+3. **Repo público:** la VM clona/pull sin credenciales.
+
+Si se actualizó por SCP mientras el repo estaba privado, antes del próximo `git pull`:
+```bash
+git checkout -- .   # descarta las copias locales idénticas al commit remoto
+git pull --ff-only
+```
 
 ---
 
