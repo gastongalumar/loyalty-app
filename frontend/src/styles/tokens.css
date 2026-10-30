@@ -131,6 +131,7 @@
   --loyalty-card-text: #f7f4ee;
   --loyalty-card-muted: rgba(247, 244, 238, 0.66);
   --loyalty-card-accent: #ffd166;
+  --loyalty-card-accent-contrast: #211f1c;
   --loyalty-card-accent-soft: rgba(255, 209, 102, 0.14);
   --loyalty-card-accent-border: rgba(255, 209, 102, 0.3);
 
@@ -204,6 +205,7 @@
   --loyalty-card-text: #f1ecf5;
   --loyalty-card-muted: rgba(241, 236, 245, 0.62);
   --loyalty-card-accent: #ff9e7a;
+  --loyalty-card-accent-contrast: #121014;
   --loyalty-card-accent-soft: rgba(255, 158, 122, 0.14);
   --loyalty-card-accent-border: rgba(255, 158, 122, 0.3);
 

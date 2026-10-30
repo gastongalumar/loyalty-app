@@ -9,34 +9,8 @@ import { SlugService } from '../../services/slug.service';
   selector: 'app-landing',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
-  template: `
-    <div class="auth-page">
-      <div class="auth-card fade-in">
-        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
-        <p class="auth-tagline">{{ 'LANDING.SUBTITLE' | translate }}</p>
-
-        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-        <div class="form-group">
-          <label class="form-label">{{ 'LANDING.SLUG' | translate }}</label>
-          <input class="form-control" [(ngModel)]="slug"
-                 [placeholder]="'LANDING.SLUG_PLACEHOLDER' | translate"
-                 (keydown.enter)="go()" />
-        </div>
-
-        <button class="btn btn-primary btn-full btn-lg" [disabled]="loading || !slug" (click)="go()">
-          {{ loading ? ('COMMON.LOADING' | translate) : ('LANDING.GO' | translate) }}
-        </button>
-
-        <p class="auth-link">
-          <a routerLink="/platform/login">{{ 'AUTH.PLATFORM_LOGIN' | translate }}</a>
-        </p>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .auth-link { text-align: center; margin-top: 20px; font-size: 0.9rem; }
-  `]
+  templateUrl: './landing.component.html',
+  styleUrls: ['./landing.component.css']
 })
 export class LandingComponent {
   slug = '';

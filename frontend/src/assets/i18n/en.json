@@ -38,7 +38,16 @@
     "MY_QR": "My QR code",
     "COMPLETED": "Completed cards",
     "REWARDS": "Rewards",
-    "NO_REWARDS": "No rewards yet. Keep collecting stamps!"
+    "NO_REWARDS": "No rewards yet. Keep collecting stamps!",
+    "STAMPS": "Stamps",
+    "TO_GO": "to the reward",
+    "REWARD_READY": "Reward ready",
+    "REWARDS_AVAILABLE": "Rewards available",
+    "SHOW_QR": "Show my QR",
+    "QR_HINT": "Show this code at the counter so they can add a stamp.",
+    "AVAILABLE": "Available",
+    "REDEEMED": "Redeemed",
+    "RECENT_STAMPS": "Recent stamps"
   },
   "BUSINESS": {
     "DASHBOARD": "Dashboard",
@@ -69,7 +78,29 @@
     "NO_REWARDS": "No rewards to show",
     "ALREADY_REDEEMED": "This reward was already redeemed",
     "DESCRIPTION": "Description",
-    "LOGO_URL": "Logo URL"
+    "LOGO_URL": "Logo URL",
+    "PROFILE": "Business profile",
+    "PROFILE_HINT": "The name and reward your customers see",
+    "BRANDING": "Brand and appearance",
+    "BRANDING_HINT": "The accent is adjusted automatically to keep contrast",
+    "PREVIEW": "Live preview",
+    "PREVIEW_HINT": "This is how your card looks with the current colors.",
+    "DASHBOARD_SUBTITLE": "Everything happening in your business at a glance",
+    "QUICK_ACTIONS": "Quick actions",
+    "RECENT_CUSTOMERS": "Recent customers",
+    "RECENT_CUSTOMERS_HINT": "Add stamps without leaving the dashboard",
+    "VIEW_ALL": "View all",
+    "NO_CUSTOMERS": "No customers registered yet",
+    "SCAN_QR": "Scan QR",
+    "SCAN_QR_HINT": "Add a stamp by reading the code",
+    "CUSTOMERS_HINT": "Find customers, add stamps and show their QR",
+    "SETTINGS_HINT": "Name, logo, colors and reward",
+    "REWARDS_WAITING": "rewards waiting to be redeemed",
+    "MEMBER_SINCE": "Customer since",
+    "EARNED_AT": "Earned",
+    "REDEEMED_BY": "Redeemed by",
+    "REDEEMED_AT": "Redeemed on",
+    "QR_HINT": "This code belongs to the customer in this business."
   },
   "PLATFORM": {
     "LOGIN_TITLE": "Platform administration",
@@ -101,6 +132,8 @@
     "NAME": "Name",
     "SLUG": "Slug",
     "NONE": "Nothing to show",
-    "ALL": "All"
+    "ALL": "All",
+    "CLEAR": "Clear",
+    "CLOSE": "Close"
   }
 }

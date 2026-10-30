@@ -1,0 +1,123 @@
+.qr-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: var(--container-form);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4) var(--space-12);
+}
+
+.qr-head {
+  width: 100%;
+  text-align: center;
+}
+
+.eyebrow {
+  margin-bottom: var(--space-1);
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.qr-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-raised);
+  text-align: center;
+}
+
+.qr-frame {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--qr-surface);
+  box-shadow: var(--shadow-raised-sm);
+}
+
+.qr-frame img {
+  display: block;
+  width: 280px;
+  max-width: 70vw;
+  height: auto;
+}
+
+.qr-hint {
+  max-width: 36ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.qr-stamps {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.qr-stamps-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.qr-stamps-head strong {
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.qr-progress {
+  height: var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-sunken);
+}
+
+.qr-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--gradient-progress);
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.qr-remaining {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.qr-remaining.is-ready {
+  color: var(--color-accent);
+  font-weight: var(--weight-semibold);
+}
+
+.skeleton {
+  width: 100%;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .qr-page {
+    padding: var(--space-5) var(--space-4) var(--space-10);
+  }
+
+  .qr-card {
+    padding: var(--space-4);
+  }
+}

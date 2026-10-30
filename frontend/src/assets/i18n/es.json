@@ -38,7 +38,16 @@
     "MY_QR": "Mi código QR",
     "COMPLETED": "Tarjetas completadas",
     "REWARDS": "Recompensas",
-    "NO_REWARDS": "Todavía no tenés recompensas. ¡Seguí juntando sellos!"
+    "NO_REWARDS": "Todavía no tenés recompensas. ¡Seguí juntando sellos!",
+    "STAMPS": "Sellos",
+    "TO_GO": "para el premio",
+    "REWARD_READY": "Recompensa lista",
+    "REWARDS_AVAILABLE": "Recompensas disponibles",
+    "SHOW_QR": "Mostrar mi QR",
+    "QR_HINT": "Mostrá este código en el mostrador para que te sumen un sello.",
+    "AVAILABLE": "Disponible",
+    "REDEEMED": "Canjeada",
+    "RECENT_STAMPS": "Últimos sellos"
   },
   "BUSINESS": {
     "DASHBOARD": "Panel",
@@ -69,7 +78,29 @@
     "NO_REWARDS": "No hay recompensas para mostrar",
     "ALREADY_REDEEMED": "Esta recompensa ya fue canjeada",
     "DESCRIPTION": "Descripción",
-    "LOGO_URL": "URL del logo"
+    "LOGO_URL": "URL del logo",
+    "PROFILE": "Perfil del negocio",
+    "PROFILE_HINT": "El nombre y la recompensa que ven tus clientes",
+    "BRANDING": "Marca y apariencia",
+    "BRANDING_HINT": "El acento se ajusta solo para mantener el contraste",
+    "PREVIEW": "Vista previa",
+    "PREVIEW_HINT": "Así se ve tu tarjeta con los colores actuales.",
+    "DASHBOARD_SUBTITLE": "Todo lo que pasa en tu negocio, de un vistazo",
+    "QUICK_ACTIONS": "Acciones rápidas",
+    "RECENT_CUSTOMERS": "Últimos clientes",
+    "RECENT_CUSTOMERS_HINT": "Sumá sellos sin salir del panel",
+    "VIEW_ALL": "Ver todos",
+    "NO_CUSTOMERS": "Todavía no hay clientes registrados",
+    "SCAN_QR": "Escanear QR",
+    "SCAN_QR_HINT": "Sumá un sello leyendo el código",
+    "CUSTOMERS_HINT": "Buscá clientes, sumá sellos y mostrá su QR",
+    "SETTINGS_HINT": "Nombre, logo, colores y recompensa",
+    "REWARDS_WAITING": "recompensas esperando canje",
+    "MEMBER_SINCE": "Cliente desde",
+    "EARNED_AT": "Ganada",
+    "REDEEMED_BY": "Canjeada por",
+    "REDEEMED_AT": "Canjeada el",
+    "QR_HINT": "Este código pertenece al cliente dentro de este negocio."
   },
   "PLATFORM": {
     "LOGIN_TITLE": "Administración de plataforma",
@@ -101,6 +132,8 @@
     "NAME": "Nombre",
     "SLUG": "Slug",
     "NONE": "No hay nada para mostrar",
-    "ALL": "Todas"
+    "ALL": "Todas",
+    "CLEAR": "Limpiar",
+    "CLOSE": "Cerrar"
   }
 }

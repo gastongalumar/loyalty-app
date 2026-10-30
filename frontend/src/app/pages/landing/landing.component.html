@@ -1,0 +1,23 @@
+<div class="auth-page">
+      <div class="auth-card fade-in">
+        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
+        <p class="auth-tagline">{{ 'LANDING.SUBTITLE' | translate }}</p>
+
+        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'LANDING.SLUG' | translate }}</label>
+          <input class="form-control" [(ngModel)]="slug"
+                 [placeholder]="'LANDING.SLUG_PLACEHOLDER' | translate"
+                 (keydown.enter)="go()" />
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" [disabled]="loading || !slug" (click)="go()">
+          {{ loading ? ('COMMON.LOADING' | translate) : ('LANDING.GO' | translate) }}
+        </button>
+
+        <p class="auth-link">
+          <a routerLink="/platform/login">{{ 'AUTH.PLATFORM_LOGIN' | translate }}</a>
+        </p>
+      </div>
+    </div>

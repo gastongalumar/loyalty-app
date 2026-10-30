@@ -1,0 +1,81 @@
+<app-navbar></app-navbar>
+
+<main class="rewards">
+  <header class="rewards-head fade-in">
+    <div>
+      <p class="eyebrow">{{ 'NAV.REWARDS' | translate }}</p>
+      <h1 class="page-title">{{ 'BUSINESS.REWARDS_TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'BUSINESS.REWARDS_SUBTITLE' | translate }}</p>
+    </div>
+    <span class="count-pill">
+      <strong>{{ total }}</strong>
+      {{ (status === 'REDEEMED' ? 'BUSINESS.REDEEMED' : 'BUSINESS.AVAILABLE') | translate }}
+    </span>
+  </header>
+
+  <div class="tabs fade-in" role="tablist">
+    <button *ngFor="let tab of tabs"
+            type="button"
+            role="tab"
+            class="tab"
+            [class.active]="status === tab.value"
+            [attr.aria-selected]="status === tab.value"
+            (click)="select(tab.value)">
+      {{ tab.label | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">🎉 {{ success }}</div>
+
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
+
+  <div *ngIf="!loading && rewards.length === 0" class="empty-state">
+    <span class="empty-icon" aria-hidden="true">🎁</span>
+    <p>{{ 'BUSINESS.NO_REWARDS' | translate }}</p>
+  </div>
+
+  <section class="reward-grid" *ngIf="rewards.length > 0">
+    <article class="reward-card" *ngFor="let reward of rewards"
+             [class.is-redeemed]="reward.status === 'REDEEMED'">
+      <header class="reward-head">
+        <span class="reward-icon" aria-hidden="true">
+          {{ reward.status === 'AVAILABLE' ? '🎁' : '🏆' }}
+        </span>
+        <div class="reward-identity">
+          <strong>{{ reward.customerName }}</strong>
+          <span class="muted">{{ reward.description }}</span>
+        </div>
+        <span class="badge"
+              [class.badge-success]="reward.status === 'AVAILABLE'"
+              [class.badge-secondary]="reward.status === 'REDEEMED'">
+          {{ (reward.status === 'AVAILABLE' ? 'BUSINESS.AVAILABLE' : 'BUSINESS.REDEEMED') | translate }}
+        </span>
+      </header>
+
+      <dl class="reward-meta">
+        <div>
+          <dt>{{ 'BUSINESS.EARNED_AT' | translate }}</dt>
+          <dd>{{ reward.earnedAt | date:'short' }}</dd>
+        </div>
+        <div *ngIf="reward.status === 'REDEEMED'">
+          <dt>{{ 'BUSINESS.REDEEMED_BY' | translate }}</dt>
+          <dd>{{ reward.redeemedBy || '—' }}</dd>
+        </div>
+        <div *ngIf="reward.status === 'REDEEMED' && reward.redeemedAt">
+          <dt>{{ 'BUSINESS.REDEEMED_AT' | translate }}</dt>
+          <dd>{{ reward.redeemedAt | date:'short' }}</dd>
+        </div>
+      </dl>
+
+      <footer class="reward-actions" *ngIf="reward.status === 'AVAILABLE'">
+        <button class="btn btn-primary btn-full" type="button"
+                [disabled]="redeeming === reward.id"
+                (click)="redeem(reward)">
+          <span aria-hidden="true">🎉</span>
+          {{ redeeming === reward.id ? ('COMMON.LOADING' | translate) : ('BUSINESS.REDEEM' | translate) }}
+        </button>
+      </footer>
+    </article>
+  </section>
+</main>

@@ -1,0 +1,191 @@
+.loyalty-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--space-6);
+  border: var(--border-width) solid var(--loyalty-card-accent-border);
+  border-radius: var(--radius-xl);
+  background: var(--gradient-loyalty);
+  box-shadow: var(--shadow-overlay);
+  color: var(--loyalty-card-text);
+}
+
+.loyalty-card.is-pending {
+  border-color: var(--loyalty-card-accent);
+  box-shadow: var(--shadow-overlay), 0 0 0 3px var(--loyalty-card-accent-soft);
+}
+
+.lc-glow {
+  position: absolute;
+  z-index: -1;
+  border-radius: var(--radius-full);
+  background: var(--loyalty-card-accent-soft);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.lc-glow-a {
+  top: -70px;
+  right: -50px;
+  width: 220px;
+  height: 220px;
+}
+
+.lc-glow-b {
+  bottom: -90px;
+  left: -60px;
+  width: 260px;
+  height: 260px;
+  opacity: 0.55;
+}
+
+.lc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.lc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--loyalty-card-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.lc-dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--loyalty-card-accent);
+  box-shadow: 0 0 0 4px var(--loyalty-card-accent-soft);
+}
+
+.lc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-width) solid var(--loyalty-card-accent-border);
+  border-radius: var(--radius-full);
+  background: var(--loyalty-card-accent-soft);
+  color: var(--loyalty-card-accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+}
+
+.lc-status-ready {
+  background: var(--loyalty-card-accent);
+  color: var(--loyalty-card-accent-contrast);
+}
+
+.lc-name {
+  margin: var(--space-4) 0 var(--space-3);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.lc-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--loyalty-card-accent-border);
+  border-radius: var(--radius-full);
+  background: var(--loyalty-card-accent-soft);
+  color: var(--loyalty-card-accent);
+  font-size: var(--text-sm);
+}
+
+.lc-stamps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.lc-stamp {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  border: var(--border-width) dashed color-mix(in srgb, var(--loyalty-card-text) 24%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--loyalty-card-text) 7%, transparent);
+  color: var(--loyalty-card-muted);
+  font-size: var(--text-base);
+  transition: transform var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out);
+}
+
+.lc-stamp.filled {
+  border-style: solid;
+  border-color: var(--loyalty-card-accent);
+  background: var(--loyalty-card-accent);
+  color: var(--loyalty-card-accent-contrast);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--loyalty-card-accent) 35%, transparent);
+}
+
+.lc-stamp.filled:hover {
+  transform: translateY(-2px) rotate(-4deg);
+}
+
+.lc-stamp-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.lc-progress {
+  height: var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--loyalty-card-text) 14%, transparent);
+}
+
+.lc-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--loyalty-card-accent), var(--color-warning));
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+.lc-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  color: var(--loyalty-card-muted);
+  font-size: var(--text-xs);
+}
+
+.lc-count {
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-label);
+}
+
+.lc-hint {
+  color: var(--loyalty-card-muted);
+}
+
+.lc-ready {
+  color: var(--loyalty-card-accent);
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 480px) {
+  .loyalty-card {
+    padding: var(--space-5);
+  }
+
+  .lc-stamps {
+    gap: var(--space-1);
+  }
+}

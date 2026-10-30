@@ -1,0 +1,12 @@
+.navbar-logo {
+  width: auto;
+  height: 26px;
+  margin-right: var(--space-2);
+  border-radius: var(--radius-xs);
+  object-fit: contain;
+}
+
+.navbar-slug {
+  color: var(--color-nav-text-muted);
+  font-weight: var(--weight-medium);
+}

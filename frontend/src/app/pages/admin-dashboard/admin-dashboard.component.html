@@ -1,0 +1,138 @@
+<app-navbar></app-navbar>
+
+<main class="dash">
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">☕ {{ success }}</div>
+
+  <ng-container *ngIf="business">
+    <header class="dash-head fade-in">
+      <div class="dash-head-main">
+        <p class="eyebrow">
+          {{ 'BUSINESS.DASHBOARD' | translate }} · {{ business.slug }}
+        </p>
+        <h1 class="page-title">{{ business.name }}</h1>
+        <p class="page-subtitle">
+          {{ business.description || ('BUSINESS.DASHBOARD_SUBTITLE' | translate) }}
+        </p>
+      </div>
+      <span class="status-pill" [class.is-off]="business.status !== 'ACTIVE'">
+        <span class="status-dot" aria-hidden="true"></span>
+        {{ business.status }}
+      </span>
+    </header>
+
+    <section class="stats-grid fade-in" aria-label="Resumen">
+      <article class="stat-card">
+        <span class="stat-icon" aria-hidden="true">👥</span>
+        <strong class="stat-value">{{ activeCustomers }}</strong>
+        <span class="stat-label">{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon" aria-hidden="true">☕</span>
+        <strong class="stat-value">{{ business.stampsRequired }}</strong>
+        <span class="stat-label">{{ 'BUSINESS.STAMPS_REQUIRED' | translate }}</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🎁</span>
+        <strong class="stat-value">{{ availableRewardCount }}</strong>
+        <span class="stat-label">{{ 'BUSINESS.AVAILABLE' | translate }}</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🛡️</span>
+        <strong class="stat-value">{{ business.totalAdmins }}</strong>
+        <span class="stat-label">{{ 'BUSINESS.ADMINS' | translate }}</span>
+      </article>
+    </section>
+
+    <section *ngIf="availableRewardCount > 0" class="reward-banner fade-in">
+      <span class="reward-banner-icon" aria-hidden="true">🎁</span>
+      <div class="reward-banner-body">
+        <strong>{{ availableRewardCount }} {{ 'BUSINESS.REWARDS_WAITING' | translate }}</strong>
+        <span class="muted">{{ business.rewardDescription }}</span>
+      </div>
+      <a class="btn btn-primary btn-sm" [routerLink]="['/', slug, 'business', 'rewards']">
+        {{ 'BUSINESS.REDEEM' | translate }}
+      </a>
+    </section>
+
+    <div class="dash-columns fade-in">
+      <section class="panel">
+        <header class="panel-head">
+          <div>
+            <h2>{{ 'BUSINESS.RECENT_CUSTOMERS' | translate }}</h2>
+            <p class="muted">{{ 'BUSINESS.RECENT_CUSTOMERS_HINT' | translate }}</p>
+          </div>
+          <a class="link" [routerLink]="['/', slug, 'business', 'customers']">
+            {{ 'BUSINESS.VIEW_ALL' | translate }} →
+          </a>
+        </header>
+
+        <p *ngIf="customers.length === 0" class="empty">{{ 'BUSINESS.NO_CUSTOMERS' | translate }}</p>
+
+        <ul class="customer-list">
+          <li *ngFor="let customer of customers" class="customer-row">
+            <span class="avatar" aria-hidden="true">{{ initials(customer) }}</span>
+
+            <div class="customer-main">
+              <div class="customer-line">
+                <strong>{{ customer.firstName }} {{ customer.lastName }}</strong>
+                <span class="stamp-count">{{ customer.currentStamps }}/{{ customer.totalStamps }}</span>
+              </div>
+              <span class="muted">{{ customer.email }}</span>
+              <div class="mini-progress" role="progressbar"
+                   [attr.aria-valuenow]="customer.currentStamps"
+                   [attr.aria-valuemin]="0"
+                   [attr.aria-valuemax]="customer.totalStamps">
+                <div class="mini-progress-fill" [style.width.%]="progress(customer)"></div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm" type="button"
+                    [disabled]="addingId === customer.id"
+                    (click)="addStamp(customer)">
+              <span aria-hidden="true">+</span>
+              {{ addingId === customer.id ? ('COMMON.LOADING' | translate) : ('BUSINESS.ADD_STAMP' | translate) }}
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <aside class="panel panel-actions">
+        <h2>{{ 'BUSINESS.QUICK_ACTIONS' | translate }}</h2>
+
+        <a class="action-tile action-primary" [routerLink]="['/', slug, 'business', 'scanner']">
+          <span class="action-icon" aria-hidden="true">📷</span>
+          <span class="action-body">
+            <strong>{{ 'BUSINESS.SCAN_QR' | translate }}</strong>
+            <span class="muted">{{ 'BUSINESS.SCAN_QR_HINT' | translate }}</span>
+          </span>
+        </a>
+
+        <a class="action-tile" [routerLink]="['/', slug, 'business', 'customers']">
+          <span class="action-icon" aria-hidden="true">👥</span>
+          <span class="action-body">
+            <strong>{{ 'NAV.CUSTOMERS' | translate }}</strong>
+            <span class="muted">{{ 'BUSINESS.CUSTOMERS_HINT' | translate }}</span>
+          </span>
+        </a>
+
+        <a class="action-tile" [routerLink]="['/', slug, 'business', 'rewards']">
+          <span class="action-icon" aria-hidden="true">🏆</span>
+          <span class="action-body">
+            <strong>{{ 'NAV.REWARDS' | translate }}</strong>
+            <span class="muted">{{ 'BUSINESS.REWARDS_SUBTITLE' | translate }}</span>
+          </span>
+        </a>
+
+        <a class="action-tile" [routerLink]="['/', slug, 'business', 'settings']">
+          <span class="action-icon" aria-hidden="true">⚙️</span>
+          <span class="action-body">
+            <strong>{{ 'NAV.SETTINGS' | translate }}</strong>
+            <span class="muted">{{ 'BUSINESS.SETTINGS_HINT' | translate }}</span>
+          </span>
+        </a>
+      </aside>
+    </div>
+  </ng-container>
+</main>

@@ -10,38 +10,8 @@ import { SlugService } from '../../services/slug.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
-  template: `
-    <div class="auth-page">
-      <div class="auth-card fade-in">
-        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
-        <p class="auth-tagline">{{ slug }}</p>
-
-        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-        <div class="form-group">
-          <label class="form-label">{{ 'AUTH.EMAIL' | translate }}</label>
-          <input type="email" class="form-control" [(ngModel)]="email" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'AUTH.PASSWORD' | translate }}</label>
-          <input type="password" class="form-control" [(ngModel)]="password"
-                 (keydown.enter)="onLogin()" />
-        </div>
-
-        <button class="btn btn-primary btn-full btn-lg" [disabled]="loading" (click)="onLogin()">
-          {{ loading ? ('COMMON.LOADING' | translate) : ('AUTH.SIGN_IN' | translate) }}
-        </button>
-
-        <p class="auth-link">
-          {{ 'AUTH.NO_ACCOUNT' | translate }}
-          <a [routerLink]="['/', slug, 'register']">{{ 'AUTH.SIGN_UP' | translate }}</a>
-        </p>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .auth-link { text-align: center; margin-top: 20px; font-size: 0.9rem; }
-  `]
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   email = '';

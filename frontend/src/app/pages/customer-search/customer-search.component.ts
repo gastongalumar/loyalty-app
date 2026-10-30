@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,42 +10,8 @@ import { Customer } from '../../models/models';
   selector: 'app-customer-search',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="container-wide" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'BUSINESS.SEARCH_TITLE' | translate }}</h1>
-      </div>
-
-      <div style="display:flex; gap:8px; margin-bottom:16px;">
-        <input class="form-control" [(ngModel)]="query"
-               [placeholder]="'BUSINESS.SEARCH_PLACEHOLDER' | translate"
-               (keydown.enter)="search()" />
-        <button class="btn btn-primary" (click)="search()">{{ 'COMMON.SEARCH' | translate }}</button>
-      </div>
-
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-      <div *ngIf="success" class="alert alert-success">{{ success }}</div>
-
-      <div class="card" *ngIf="customers.length === 0 && !loading">
-        {{ 'COMMON.NONE' | translate }}
-      </div>
-
-      <div class="card" *ngFor="let customer of customers" style="margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-          <div>
-            <strong>{{ customer.firstName }} {{ customer.lastName }}</strong>
-            <div style="color: var(--color-text-muted); font-size: 0.9rem;">{{ customer.email }}</div>
-          </div>
-          <div>{{ customer.currentStamps }} / {{ customer.totalStamps }} · {{ customer.cardStatus }}</div>
-          <button class="btn btn-primary btn-sm" (click)="addStamp(customer)">
-            {{ 'BUSINESS.ADD_STAMP' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './customer-search.component.html',
+  styleUrls: ['./customer-search.component.css']
 })
 export class CustomerSearchComponent implements OnInit {
   customers: Customer[] = [];
@@ -53,6 +19,13 @@ export class CustomerSearchComponent implements OnInit {
   loading = false;
   error = '';
   success = '';
+  addingId = 0;
+  total = 0;
+
+  qrCustomer: Customer | null = null;
+  qrValue = '';
+  qrLoading = false;
+  qrError = '';
 
   constructor(private loyalty: LoyaltyService) {}
 
@@ -66,6 +39,7 @@ export class CustomerSearchComponent implements OnInit {
     this.loyalty.getCustomers(this.query).subscribe({
       next: (page) => {
         this.customers = page.content;
+        this.total = page.totalElements;
         this.loading = false;
       },
       error: (err) => {
@@ -75,17 +49,76 @@ export class CustomerSearchComponent implements OnInit {
     });
   }
 
+  clear(): void {
+    this.query = '';
+    this.search();
+  }
+
+  initials(customer: Customer): string {
+    const first = customer.firstName?.trim().charAt(0) ?? '';
+    const last = customer.lastName?.trim().charAt(0) ?? '';
+    return `${first}${last}`.toUpperCase() || '?';
+  }
+
+  progress(customer: Customer): number {
+    if (!customer.totalStamps) {
+      return 0;
+    }
+    return Math.min((customer.currentStamps / customer.totalStamps) * 100, 100);
+  }
+
+  isReady(customer: Customer): boolean {
+    return customer.cardStatus === 'REWARD_PENDING';
+  }
+
   addStamp(customer: Customer): void {
     this.error = '';
+    this.addingId = customer.id;
     this.loyalty.addStamp({ userId: customer.id }).subscribe({
       next: (card) => {
         customer.currentStamps = card.currentStamps;
         customer.totalStamps = card.totalStamps;
         customer.cardStatus = card.status;
-        this.success = 'Stamp added';
+        customer.completedCards = card.completedCards;
+        this.addingId = 0;
+        this.success = `${customer.firstName}: ${card.currentStamps}/${card.totalStamps}`;
         setTimeout(() => this.success = '', 2500);
       },
-      error: (err) => this.error = err.error?.message || 'Could not add stamp'
+      error: (err) => {
+        this.addingId = 0;
+        this.error = err.error?.message || 'Could not add stamp';
+      }
     });
+  }
+
+  openQr(customer: Customer): void {
+    this.qrCustomer = customer;
+    this.qrValue = '';
+    this.qrError = '';
+    this.qrLoading = true;
+
+    this.loyalty.getCustomerQr(customer.id).subscribe({
+      next: (response) => {
+        this.qrValue = response.qrCode;
+        this.qrLoading = false;
+      },
+      error: (err) => {
+        this.qrError = err.error?.message || 'Could not load QR';
+        this.qrLoading = false;
+      }
+    });
+  }
+
+  closeQr(): void {
+    this.qrCustomer = null;
+    this.qrValue = '';
+    this.qrError = '';
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.qrCustomer) {
+      this.closeQr();
+    }
   }
 }

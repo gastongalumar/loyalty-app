@@ -1,0 +1,51 @@
+<article class="loyalty-card" [class.is-pending]="card.status === 'REWARD_PENDING'">
+  <span class="lc-glow lc-glow-a" aria-hidden="true"></span>
+  <span class="lc-glow lc-glow-b" aria-hidden="true"></span>
+
+  <header class="lc-head">
+    <div class="lc-brand">
+      <span class="lc-dot" aria-hidden="true"></span>
+      {{ card.businessName }}
+    </div>
+    <span class="lc-status" [class.lc-status-ready]="card.status === 'REWARD_PENDING'">
+      <span aria-hidden="true">{{ card.status === 'REWARD_PENDING' ? '🎁' : '✨' }}</span>
+      {{ card.status }}
+    </span>
+  </header>
+
+  <h2 class="lc-name">{{ card.customerName }}</h2>
+
+  <p class="lc-reward">
+    <span aria-hidden="true">🏆</span>
+    {{ card.rewardDescription }}
+  </p>
+
+  <div class="lc-stamps" role="list">
+    <div *ngFor="let i of stamps"
+         class="lc-stamp"
+         [class.filled]="i < card.currentStamps"
+         role="listitem">
+      <span *ngIf="i < card.currentStamps" aria-hidden="true">☕</span>
+      <span *ngIf="i >= card.currentStamps" class="lc-stamp-num">{{ i + 1 }}</span>
+    </div>
+  </div>
+
+  <div class="lc-progress" role="progressbar"
+       [attr.aria-valuenow]="card.currentStamps"
+       [attr.aria-valuemin]="0"
+       [attr.aria-valuemax]="card.totalStamps">
+    <div class="lc-progress-fill" [style.width.%]="progress"></div>
+  </div>
+
+  <footer class="lc-foot">
+    <span class="lc-count">
+      {{ card.currentStamps }} / {{ card.totalStamps }} {{ 'CUSTOMER.STAMPS' | translate }}
+    </span>
+    <span *ngIf="remaining > 0" class="lc-hint">
+      {{ remaining }} {{ 'CUSTOMER.TO_GO' | translate }}
+    </span>
+    <span *ngIf="remaining === 0" class="lc-hint lc-ready">
+      🎉 {{ 'CUSTOMER.REWARD_READY' | translate }}
+    </span>
+  </footer>
+</article>

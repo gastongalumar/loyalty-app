@@ -1,0 +1,119 @@
+<app-navbar></app-navbar>
+
+<main class="customers">
+  <header class="customers-head fade-in">
+    <div>
+      <p class="eyebrow">{{ 'NAV.CUSTOMERS' | translate }}</p>
+      <h1 class="page-title">{{ 'BUSINESS.SEARCH_TITLE' | translate }}</h1>
+      <p class="page-subtitle">{{ 'BUSINESS.CUSTOMERS_HINT' | translate }}</p>
+    </div>
+    <span class="count-pill">
+      <strong>{{ total }}</strong>
+      {{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}
+    </span>
+  </header>
+
+  <form class="search-bar fade-in" (ngSubmit)="search()">
+    <span class="search-icon" aria-hidden="true">🔎</span>
+    <input
+      id="customer-search"
+      class="search-input"
+      [(ngModel)]="query"
+      name="q"
+      [placeholder]="'BUSINESS.SEARCH_PLACEHOLDER' | translate"
+      [attr.aria-label]="'BUSINESS.SEARCH_PLACEHOLDER' | translate"
+      autocomplete="off"
+    />
+    <button *ngIf="query" type="button" class="search-clear" (click)="clear()"
+            [attr.aria-label]="'COMMON.CLEAR' | translate">×</button>
+    <button type="submit" class="btn btn-primary" [disabled]="loading">
+      {{ loading ? ('COMMON.LOADING' | translate) : ('COMMON.SEARCH' | translate) }}
+    </button>
+  </form>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">☕ {{ success }}</div>
+
+  <div *ngIf="loading && customers.length === 0" class="card skeleton">
+    {{ 'COMMON.LOADING' | translate }}
+  </div>
+
+  <div *ngIf="!loading && customers.length === 0" class="empty-state">
+    <span class="empty-icon" aria-hidden="true">🫥</span>
+    <p>{{ 'BUSINESS.NO_CUSTOMERS' | translate }}</p>
+  </div>
+
+  <section class="customer-grid" *ngIf="customers.length > 0">
+    <article class="customer-card" *ngFor="let customer of customers">
+      <header class="customer-card-head">
+        <span class="avatar" aria-hidden="true">{{ initials(customer) }}</span>
+        <div class="identity">
+          <strong>{{ customer.firstName }} {{ customer.lastName }}</strong>
+          <span class="muted">{{ customer.email }}</span>
+        </div>
+        <span class="badge" [class.badge-warning]="isReady(customer)"
+              [class.badge-primary]="!isReady(customer)">
+          {{ isReady(customer) ? ('CUSTOMER.REWARD_READY' | translate) : customer.cardStatus }}
+        </span>
+      </header>
+
+      <div class="stamp-progress">
+        <div class="stamp-progress-head">
+          <span>{{ 'CUSTOMER.STAMPS' | translate }}</span>
+          <strong>{{ customer.currentStamps }} / {{ customer.totalStamps }}</strong>
+        </div>
+        <div class="progress-track" role="progressbar"
+             [attr.aria-valuenow]="customer.currentStamps"
+             [attr.aria-valuemin]="0"
+             [attr.aria-valuemax]="customer.totalStamps">
+          <div class="progress-track-fill" [style.width.%]="progress(customer)"></div>
+        </div>
+      </div>
+
+      <dl class="customer-meta">
+        <div>
+          <dt>{{ 'CUSTOMER.COMPLETED' | translate }}</dt>
+          <dd>🎯 {{ customer.completedCards }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'BUSINESS.MEMBER_SINCE' | translate }}</dt>
+          <dd>{{ customer.memberSince | date:'mediumDate' }}</dd>
+        </div>
+      </dl>
+
+      <footer class="customer-card-actions">
+        <button class="btn btn-primary btn-sm" type="button"
+                [disabled]="addingId === customer.id"
+                (click)="addStamp(customer)">
+          <span aria-hidden="true">☕</span>
+          {{ addingId === customer.id ? ('COMMON.LOADING' | translate) : ('BUSINESS.ADD_STAMP' | translate) }}
+        </button>
+        <button class="btn btn-outline btn-sm" type="button" (click)="openQr(customer)">
+          <span aria-hidden="true">📱</span>
+          {{ 'BUSINESS.QR_CODE' | translate }}
+        </button>
+      </footer>
+    </article>
+  </section>
+</main>
+
+<div *ngIf="qrCustomer" class="qr-overlay" (click)="closeQr()">
+  <div class="qr-modal" role="dialog" aria-modal="true"
+       [attr.aria-label]="'BUSINESS.QR_CODE' | translate"
+       (click)="$event.stopPropagation()">
+    <button class="qr-close" type="button" (click)="closeQr()"
+            [attr.aria-label]="'COMMON.CLOSE' | translate">×</button>
+
+    <h2>{{ qrCustomer.firstName }} {{ qrCustomer.lastName }}</h2>
+    <p class="muted">{{ qrCustomer.email }}</p>
+
+    <p *ngIf="qrLoading" class="muted">{{ 'COMMON.LOADING' | translate }}</p>
+    <div *ngIf="qrError" class="alert alert-error">{{ qrError }}</div>
+
+    <div *ngIf="qrValue" class="qr-frame">
+      <img [src]="qrValue" [alt]="'BUSINESS.QR_CODE' | translate" />
+    </div>
+
+    <p class="muted qr-hint">{{ 'BUSINESS.QR_HINT' | translate }}</p>
+  </div>
+</div>

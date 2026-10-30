@@ -11,69 +11,8 @@ import { BusinessSummary } from '../../models/models';
   selector: 'app-platform-businesses',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, TranslateModule, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="container-wide" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'PLATFORM.BUSINESSES' | translate }}</h1>
-      </div>
-
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-      <div *ngIf="success" class="alert alert-success">{{ success }}</div>
-
-      <div class="card" style="margin-bottom:20px;">
-        <h3>{{ 'PLATFORM.NEW_BUSINESS' | translate }}</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">{{ 'COMMON.NAME' | translate }}</label>
-            <input class="form-control" [(ngModel)]="createForm.name" (ngModelChange)="onNameChange()" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ 'COMMON.SLUG' | translate }}</label>
-            <input class="form-control" [(ngModel)]="createForm.slug" placeholder="cafe-a"
-                   (ngModelChange)="onSlugChange($event)" />
-            <p style="margin-top:4px; color: var(--color-text-subtle); font-size: var(--text-xs);">
-              {{ 'PLATFORM.SLUG_HINT' | translate }}
-            </p>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.REWARD' | translate }}</label>
-          <input class="form-control" [(ngModel)]="createForm.rewardDescription" />
-        </div>
-        <button class="btn btn-primary" [disabled]="!canCreate()" (click)="create()">
-          {{ creating ? ('COMMON.LOADING' | translate) : ('COMMON.CREATE' | translate) }}
-        </button>
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'COMMON.NAME' | translate }}</th>
-            <th>{{ 'COMMON.SLUG' | translate }}</th>
-            <th>{{ 'COMMON.STATUS' | translate }}</th>
-            <th>{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</th>
-            <th>{{ 'COMMON.ACTIONS' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let business of businesses">
-            <td><a [routerLink]="['/platform/businesses', business.id]">{{ business.name }}</a></td>
-            <td>{{ business.slug }}</td>
-            <td>{{ business.status }}</td>
-            <td>{{ business.totalCustomers }}</td>
-            <td>
-              <button *ngIf="business.status === 'ACTIVE'" class="btn btn-ghost btn-sm"
-                      (click)="setStatus(business, 'SUSPENDED')">{{ 'PLATFORM.SUSPEND' | translate }}</button>
-              <button *ngIf="business.status === 'SUSPENDED'" class="btn btn-ghost btn-sm"
-                      (click)="setStatus(business, 'ACTIVE')">{{ 'PLATFORM.ACTIVATE' | translate }}</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  `
+  templateUrl: './platform-businesses.component.html',
+  styleUrls: ['./platform-businesses.component.css']
 })
 export class PlatformBusinessesComponent implements OnInit {
   businesses: BusinessSummary[] = [];

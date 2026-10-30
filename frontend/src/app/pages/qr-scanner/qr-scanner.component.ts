@@ -4,53 +4,22 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Html5Qrcode } from 'html5-qrcode';
 import { NavbarComponent } from '../../components/navbar.component';
+import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
 import { LoyaltyService } from '../../services/loyalty.service';
 import { LoyaltyCard } from '../../models/models';
 
 @Component({
   selector: 'app-qr-scanner',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'BUSINESS.SCANNER_TITLE' | translate }}</h1>
-        <p class="page-subtitle">{{ 'BUSINESS.SCANNER_SUBTITLE' | translate }}</p>
-      </div>
-
-      <div *ngIf="success" class="alert alert-success">{{ 'BUSINESS.STAMP_ADDED' | translate }}</div>
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-      <div *ngIf="card" class="card" style="margin-bottom:16px;">
-        <strong>{{ card.customerName }}</strong>
-        <div style="color: var(--color-text-muted);">{{ card.customerEmail }}</div>
-        <div class="progress-bar" style="margin: 12px 0;">
-          <div class="progress-fill" [style.width.%]="progress"></div>
-        </div>
-        <div>{{ card.currentStamps }} / {{ card.totalStamps }} · {{ card.status }}</div>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-        <div id="qr-reader" style="width:100%;"></div>
-        <button *ngIf="!scannerActive" class="btn btn-primary" (click)="startScanner()">
-          {{ 'BUSINESS.START_CAMERA' | translate }}
-        </button>
-      </div>
-
-      <div class="card">
-        <label class="form-label">{{ 'BUSINESS.QR_CODE' | translate }}</label>
-        <input class="form-control" [(ngModel)]="manualCode" (keydown.enter)="scanManual()" />
-        <label class="form-label" style="margin-top:12px;">{{ 'BUSINESS.NOTE' | translate }}</label>
-        <input class="form-control" [(ngModel)]="note" />
-        <button class="btn btn-primary btn-full" style="margin-top:12px;"
-                [disabled]="!manualCode || loading" (click)="scanManual()">
-          {{ loading ? ('COMMON.LOADING' | translate) : ('BUSINESS.CONFIRM_SCAN' | translate) }}
-        </button>
-      </div>
-    </div>
-  `
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    NavbarComponent,
+    LoyaltyCardVisualComponent
+  ],
+  templateUrl: './qr-scanner.component.html',
+  styleUrls: ['./qr-scanner.component.css']
 })
 export class QrScannerComponent implements OnDestroy {
   scannerActive = false;
@@ -60,22 +29,16 @@ export class QrScannerComponent implements OnDestroy {
   success = false;
   error = '';
   card: LoyaltyCard | null = null;
-  private scanner: any = null;
+  private scanner: Html5Qrcode | null = null;
 
   constructor(private loyalty: LoyaltyService) {}
-
-  get progress(): number {
-    if (!this.card || !this.card.totalStamps) {
-      return 0;
-    }
-    return (this.card.currentStamps / this.card.totalStamps) * 100;
-  }
 
   startScanner(): void {
     if (typeof Html5Qrcode === 'undefined') {
       this.error = 'Camera library not available';
       return;
     }
+    this.error = '';
     this.scannerActive = true;
     this.scanner = new Html5Qrcode('qr-reader');
     this.scanner.start(
@@ -113,14 +76,16 @@ export class QrScannerComponent implements OnDestroy {
     this.error = '';
     this.success = false;
     // A single call: the scan endpoint validates the QR inside the tenant and adds the stamp.
-    this.loyalty.scanQrAndAddStamp({ qrCode: this.manualCode.trim(), note: this.note || undefined }).subscribe({
+    this.loyalty.scanQrAndAddStamp({
+      qrCode: this.manualCode.trim(),
+      note: this.note || undefined
+    }).subscribe({
       next: (card) => {
         this.card = card;
         this.loading = false;
         this.success = true;
         this.manualCode = '';
         this.note = '';
-        setTimeout(() => this.success = false, 2500);
       },
       error: (err) => {
         this.error = err.error?.message || 'Invalid QR code';

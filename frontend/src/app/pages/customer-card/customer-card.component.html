@@ -1,0 +1,87 @@
+<app-navbar></app-navbar>
+
+<main class="customer-page">
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+  <ng-container *ngIf="card">
+    <header class="page-header">
+      <p class="eyebrow">{{ 'CUSTOMER.MY_CARD' | translate }}</p>
+      <h1 class="page-title">{{ card.businessName }}</h1>
+      <p class="page-subtitle">{{ card.customerName }} · {{ card.customerEmail }}</p>
+    </header>
+
+    <app-loyalty-card [card]="card" />
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">☕</span>
+        <div class="stat-value">{{ card.currentStamps }}/{{ card.totalStamps }}</div>
+        <div class="stat-label">{{ 'CUSTOMER.STAMPS' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🎯</span>
+        <div class="stat-value">{{ card.completedCards }}</div>
+        <div class="stat-label">{{ 'CUSTOMER.COMPLETED' | translate }}</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🏆</span>
+        <div class="stat-value">{{ availableRewards.length }}</div>
+        <div class="stat-label">{{ 'CUSTOMER.REWARDS_AVAILABLE' | translate }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="card.status === 'REWARD_PENDING'" class="alert alert-success">
+      🎉 {{ 'CUSTOMER.REWARD_READY' | translate }} — {{ card.rewardDescription }}
+    </div>
+
+    <div class="page-actions">
+      <a class="btn btn-primary" [routerLink]="['/', slug, 'customer', 'qr']">
+        <span aria-hidden="true">📱</span>
+        {{ 'CUSTOMER.SHOW_QR' | translate }}
+      </a>
+    </div>
+
+    <section class="card section-card">
+      <div class="section-head">
+        <h2>🏆 {{ 'CUSTOMER.REWARDS' | translate }}</h2>
+        <span class="badge badge-primary">{{ availableRewards.length }}</span>
+      </div>
+
+      <p *ngIf="card.rewards.length === 0" class="muted">
+        {{ 'CUSTOMER.NO_REWARDS' | translate }}
+      </p>
+
+      <ul class="reward-list" *ngIf="card.rewards.length > 0">
+        <li *ngFor="let reward of card.rewards" class="reward-row">
+          <span class="reward-icon" aria-hidden="true">🎁</span>
+          <div class="reward-body">
+            <strong>{{ reward.description }}</strong>
+            <span class="muted">{{ reward.earnedAt | date:'short' }}</span>
+          </div>
+          <span class="badge"
+                [class.badge-success]="reward.status === 'AVAILABLE'"
+                [class.badge-secondary]="reward.status === 'REDEEMED'">
+            {{ (reward.status === 'AVAILABLE' ? 'CUSTOMER.AVAILABLE' : 'CUSTOMER.REDEEMED') | translate }}
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="card section-card" *ngIf="card.recentStamps.length > 0">
+      <div class="section-head">
+        <h2>☕ {{ 'CUSTOMER.RECENT_STAMPS' | translate }}</h2>
+      </div>
+      <ul class="stamp-list">
+        <li *ngFor="let stamp of card.recentStamps" class="stamp-row">
+          <span class="stamp-dot" aria-hidden="true">☕</span>
+          <div class="stamp-body">
+            <strong>{{ stamp.addedByName }}</strong>
+            <span *ngIf="stamp.note" class="muted">— {{ stamp.note }}</span>
+          </div>
+          <span class="muted stamp-date">{{ stamp.createdAt | date:'short' }}</span>
+        </li>
+      </ul>
+    </section>
+  </ng-container>
+</main>

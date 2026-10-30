@@ -12,29 +12,8 @@ import { PwaService } from '../../services/pwa.service';
   selector: 'app-platform-login',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule],
-  template: `
-    <div class="auth-page">
-      <div class="auth-card fade-in">
-        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
-        <p class="auth-tagline">{{ 'PLATFORM.LOGIN_TITLE' | translate }}</p>
-
-        <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-        <div class="form-group">
-          <label class="form-label">{{ 'AUTH.EMAIL' | translate }}</label>
-          <input type="email" class="form-control" [(ngModel)]="email" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'AUTH.PASSWORD' | translate }}</label>
-          <input type="password" class="form-control" [(ngModel)]="password" (keydown.enter)="login()" />
-        </div>
-
-        <button class="btn btn-primary btn-full btn-lg" [disabled]="loading" (click)="login()">
-          {{ loading ? ('COMMON.LOADING' | translate) : ('AUTH.SIGN_IN' | translate) }}
-        </button>
-      </div>
-    </div>
-  `
+  templateUrl: './platform-login.component.html',
+  styleUrls: ['./platform-login.component.css']
 })
 export class PlatformLoginComponent {
   email = '';

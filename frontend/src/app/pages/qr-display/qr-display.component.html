@@ -1,0 +1,46 @@
+<app-navbar></app-navbar>
+
+<main class="qr-page">
+  <header class="qr-head fade-in">
+    <p class="eyebrow">{{ 'CUSTOMER.MY_CARD' | translate }}</p>
+    <h1 class="page-title">{{ 'CUSTOMER.MY_QR' | translate }}</h1>
+    <p class="page-subtitle" *ngIf="card">
+      {{ card.businessName }} · {{ card.customerName }}
+    </p>
+  </header>
+
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+
+  <section *ngIf="!loading && qr" class="qr-card fade-in">
+    <div class="qr-frame">
+      <img [src]="qr" [alt]="'CUSTOMER.MY_QR' | translate" />
+    </div>
+
+    <p class="qr-hint">{{ 'CUSTOMER.QR_HINT' | translate }}</p>
+
+    <div class="qr-stamps" *ngIf="card">
+      <div class="qr-stamps-head">
+        <span>{{ 'CUSTOMER.STAMPS' | translate }}</span>
+        <strong>{{ card.currentStamps }} / {{ card.totalStamps }}</strong>
+      </div>
+      <div class="qr-progress" role="progressbar"
+           [attr.aria-valuenow]="card.currentStamps"
+           [attr.aria-valuemin]="0"
+           [attr.aria-valuemax]="card.totalStamps">
+        <div class="qr-progress-fill"
+             [style.width.%]="card.totalStamps ? (card.currentStamps / card.totalStamps) * 100 : 0"></div>
+      </div>
+      <p class="qr-remaining" *ngIf="remaining > 0">
+        {{ remaining }} {{ 'CUSTOMER.TO_GO' | translate }}
+      </p>
+      <p class="qr-remaining is-ready" *ngIf="remaining === 0">
+        🎉 {{ 'CUSTOMER.REWARD_READY' | translate }}
+      </p>
+    </div>
+
+    <a class="btn btn-outline" [routerLink]="['/', slug, 'customer', 'card']">
+      {{ 'COMMON.BACK' | translate }}
+    </a>
+  </section>
+</main>

@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>
+
+<main class="scanner-page">
+  <header class="scanner-head fade-in">
+    <p class="eyebrow">{{ 'NAV.SCANNER' | translate }}</p>
+    <h1 class="page-title">{{ 'BUSINESS.SCANNER_TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'BUSINESS.SCANNER_SUBTITLE' | translate }}</p>
+  </header>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">☕ {{ 'BUSINESS.STAMP_ADDED' | translate }}</div>
+
+  <div class="scanner-grid">
+    <section class="panel fade-in">
+      <header class="panel-head">
+        <h2>{{ 'BUSINESS.START_CAMERA' | translate }}</h2>
+        <span class="badge" [class.badge-success]="scannerActive"
+              [class.badge-secondary]="!scannerActive">
+          {{ scannerActive ? 'LIVE' : 'OFF' }}
+        </span>
+      </header>
+
+      <div class="camera-shell">
+        <div id="qr-reader" class="qr-reader"></div>
+        <p *ngIf="!scannerActive" class="camera-hint">
+          📷 {{ 'BUSINESS.SCANNER_SUBTITLE' | translate }}
+        </p>
+      </div>
+
+      <div class="panel-actions">
+        <button *ngIf="!scannerActive" class="btn btn-primary" type="button" (click)="startScanner()">
+          {{ 'BUSINESS.START_CAMERA' | translate }}
+        </button>
+        <button *ngIf="scannerActive" class="btn btn-outline" type="button" (click)="stopScanner()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <section class="panel fade-in">
+      <header class="panel-head">
+        <h2>{{ 'BUSINESS.CONFIRM_SCAN' | translate }}</h2>
+      </header>
+
+      <div class="form-group">
+        <label class="form-label" for="manual-code">{{ 'BUSINESS.QR_CODE' | translate }}</label>
+        <input id="manual-code" class="form-control" [(ngModel)]="manualCode"
+               (keydown.enter)="scanManual()" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="stamp-note">{{ 'BUSINESS.NOTE' | translate }}</label>
+        <input id="stamp-note" class="form-control" [(ngModel)]="note" />
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" type="button"
+              [disabled]="!manualCode || loading" (click)="scanManual()">
+        {{ loading ? ('COMMON.LOADING' | translate) : ('BUSINESS.CONFIRM_SCAN' | translate) }}
+      </button>
+    </section>
+  </div>
+
+  <section *ngIf="card" class="result fade-in">
+    <app-loyalty-card [card]="card" />
+  </section>
+</main>

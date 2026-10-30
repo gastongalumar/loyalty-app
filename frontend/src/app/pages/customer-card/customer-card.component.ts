@@ -1,69 +1,43 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
+import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
 import { LoyaltyService } from '../../services/loyalty.service';
-import { LoyaltyCard } from '../../models/models';
+import { SlugService } from '../../services/slug.service';
+import { LoyaltyCard, Reward } from '../../models/models';
 
 @Component({
   selector: 'app-customer-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
-      <div *ngIf="loading" class="card">{{ 'COMMON.LOADING' | translate }}</div>
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-
-      <ng-container *ngIf="card">
-        <div class="page-header">
-          <h1 class="page-title">{{ 'CUSTOMER.MY_CARD' | translate }}</h1>
-          <p class="page-subtitle">{{ card.businessName }} · {{ card.customerName }}</p>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="badge badge-primary">{{ card.status }}</span>
-            <span>{{ card.currentStamps }} / {{ card.totalStamps }}</span>
-          </div>
-          <div class="progress-bar" style="margin: 12px 0;">
-            <div class="progress-fill" [style.width.%]="progress"></div>
-          </div>
-          <p>{{ 'CUSTOMER.COMPLETED' | translate }}: {{ card.completedCards }}</p>
-          <p style="color: var(--color-text-muted);">{{ card.rewardDescription }}</p>
-        </div>
-
-        <div class="card" style="margin-top: 16px;">
-          <h3>{{ 'CUSTOMER.REWARDS' | translate }}</h3>
-          <p *ngIf="card.rewards.length === 0" style="color: var(--color-text-muted);">
-            {{ 'CUSTOMER.NO_REWARDS' | translate }}
-          </p>
-          <ul>
-            <li *ngFor="let reward of card.rewards">
-              {{ reward.description }} — {{ reward.status }}
-            </li>
-          </ul>
-        </div>
-      </ng-container>
-    </div>
-  `
+  imports: [
+    CommonModule,
+    RouterLink,
+    TranslateModule,
+    NavbarComponent,
+    LoyaltyCardVisualComponent
+  ],
+  templateUrl: './customer-card.component.html',
+  styleUrls: ['./customer-card.component.css']
 })
 export class CustomerCardComponent implements OnInit {
   card: LoyaltyCard | null = null;
   loading = true;
   error = '';
+  slug = '';
 
-  constructor(private loyalty: LoyaltyService) {}
+  constructor(
+    private loyalty: LoyaltyService,
+    private slugService: SlugService
+  ) {}
 
-  get progress(): number {
-    if (!this.card || !this.card.totalStamps) {
-      return 0;
-    }
-    return (this.card.currentStamps / this.card.totalStamps) * 100;
+  get availableRewards(): Reward[] {
+    return this.card?.rewards.filter((reward) => reward.status === 'AVAILABLE') ?? [];
   }
 
   ngOnInit(): void {
+    this.slug = this.slugService.get() ?? '';
     this.loyalty.getMyCard().subscribe({
       next: (card) => {
         this.card = card;

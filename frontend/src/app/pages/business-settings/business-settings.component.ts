@@ -11,79 +11,8 @@ import { Business } from '../../models/models';
   selector: 'app-business-settings',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'BUSINESS.SETTINGS_TITLE' | translate }}</h1>
-      </div>
-
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-      <div *ngIf="saved" class="alert alert-success">{{ 'COMMON.SAVED' | translate }}</div>
-
-      <div class="card">
-        <div class="form-group">
-          <label class="form-label">{{ 'COMMON.NAME' | translate }}</label>
-          <input class="form-control" [(ngModel)]="form.name" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.DESCRIPTION' | translate }}</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="form.description"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.STAMPS_REQUIRED' | translate }}</label>
-          <input type="number" class="form-control" [(ngModel)]="form.stampsRequired" min="1" max="100" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.REWARD' | translate }}</label>
-          <input class="form-control" [(ngModel)]="form.rewardDescription" />
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px;">
-        <h3 style="margin-bottom:12px;">{{ 'BUSINESS.APPEARANCE' | translate }}</h3>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</label>
-            <input type="color" class="form-control" [(ngModel)]="form.colorPrimary"
-                   (ngModelChange)="onColorChange()" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</label>
-            <input type="color" class="form-control" [(ngModel)]="form.colorSecondary"
-                   (ngModelChange)="onColorChange()" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
-          <input class="form-control" [(ngModel)]="form.logoUrl" (ngModelChange)="onLogoChange()" />
-        </div>
-
-        <div *ngIf="logoPreview" style="margin-top:8px;">
-          <div class="form-label">{{ 'BUSINESS.LOGO_PREVIEW' | translate }}</div>
-          <img [src]="logoPreview" alt="logo" style="max-height:60px;max-width:200px;border-radius:6px;" />
-        </div>
-
-        <div style="display:flex; gap:12px; margin-top:12px; align-items:center;">
-          <span class="badge badge-primary">Aa</span>
-          <span style="color: var(--color-accent); font-weight:700;">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</span>
-          <span style="color: var(--color-text); font-weight:700;">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</span>
-        </div>
-      </div>
-
-      <button class="btn btn-primary btn-full btn-lg" style="margin-top:16px;"
-              [disabled]="saving" (click)="save()">
-        {{ saving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
-      </button>
-    </div>
-  `,
-  styles: [`
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    input[type="color"].form-control { height: 44px; padding: 4px; }
-  `]
+  templateUrl: './business-settings.component.html',
+  styleUrls: ['./business-settings.component.css']
 })
 export class BusinessSettingsComponent implements OnInit {
   form: Partial<Business> = {
@@ -99,6 +28,15 @@ export class BusinessSettingsComponent implements OnInit {
   private stamp = Date.now();
 
   constructor(private platform: PlatformService, private theme: ThemeService) {}
+
+  get canSave(): boolean {
+    const stamps = Number(this.form.stampsRequired);
+    return Boolean(this.form.name?.trim())
+      && Number.isFinite(stamps)
+      && stamps >= 1
+      && stamps <= 100
+      && !this.saving;
+  }
 
   ngOnInit(): void {
     this.platform.getMyBusiness().subscribe({
