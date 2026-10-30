@@ -3,8 +3,37 @@ import { BehaviorSubject } from 'rxjs';
 import { TenantInfo } from '../models/models';
 import { mediaUrl } from '../utils/media-url';
 
-export type ThemeMode = 'light' | 'dark' | 'system';
-type ResolvedTheme = 'light-neumorphic' | 'dark-purple';
+export type ThemeId =
+  | 'light-neumorphic'
+  | 'dark-purple'
+  | 'sage-mist'
+  | 'deep-ocean'
+  | 'warm-ember';
+
+export type ThemeMode = ThemeId | 'system';
+
+export interface ThemeOption {
+  id: ThemeMode;
+  labelKey: string;
+}
+
+const DARK_THEMES: ThemeId[] = ['dark-purple', 'deep-ocean', 'warm-ember'];
+const THEME_IDS: ThemeId[] = [
+  'light-neumorphic',
+  'dark-purple',
+  'sage-mist',
+  'deep-ocean',
+  'warm-ember'
+];
+
+export const THEME_OPTIONS: ThemeOption[] = [
+  { id: 'light-neumorphic', labelKey: 'THEME.BONE' },
+  { id: 'dark-purple', labelKey: 'THEME.NIGHT' },
+  { id: 'sage-mist', labelKey: 'THEME.SAGE' },
+  { id: 'deep-ocean', labelKey: 'THEME.OCEAN' },
+  { id: 'warm-ember', labelKey: 'THEME.EMBER' },
+  { id: 'system', labelKey: 'THEME.SYSTEM' }
+];
 
 const STORAGE_KEY = 'loyalty.theme';
 const BRAND_VARS = [
@@ -59,7 +88,8 @@ export class ThemeService {
   }
 
   isDark(): boolean {
-    return document.documentElement.dataset['theme'] === 'dark-purple';
+    const current = document.documentElement.dataset['theme'] as ThemeId | undefined;
+    return current ? DARK_THEMES.includes(current) : false;
   }
 
   setMode(mode: ThemeMode): void {
@@ -73,7 +103,7 @@ export class ThemeService {
   }
 
   toggle(): void {
-    this.setMode(this.isDark() ? 'light' : 'dark');
+    this.setMode(this.isDark() ? 'light-neumorphic' : 'dark-purple');
   }
 
   /** Aplica (o limpia) el branding del tenant. */
@@ -93,26 +123,29 @@ export class ThemeService {
     const resolved = this.resolveTheme();
     document.documentElement.dataset['theme'] = resolved;
     document.documentElement.dataset['themeMode'] = this.mode;
-    this.isDark$.next(resolved === 'dark-purple');
+    this.isDark$.next(DARK_THEMES.includes(resolved));
     this.applyBranding();
     this.applyBackground();
   }
 
-  private resolveTheme(): ResolvedTheme {
-    if (this.mode === 'light') {
-      return 'light-neumorphic';
+  private resolveTheme(): ThemeId {
+    if (this.mode === 'system') {
+      return this.media?.matches ? 'dark-purple' : 'light-neumorphic';
     }
-    if (this.mode === 'dark') {
-      return 'dark-purple';
-    }
-    return this.media?.matches ? 'dark-purple' : 'light-neumorphic';
+    return this.mode;
   }
 
   private readMode(): ThemeMode {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'light' || saved === 'dark' || saved === 'system') {
-        return saved;
+      if (saved === 'light') {
+        return 'light-neumorphic';
+      }
+      if (saved === 'dark') {
+        return 'dark-purple';
+      }
+      if (saved === 'system' || (saved && THEME_IDS.includes(saved as ThemeId))) {
+        return saved as ThemeMode;
       }
     } catch {
       // ignore
@@ -160,6 +193,7 @@ export class ThemeService {
    */
   private applyBackground(): void {
     const body = document.body;
+    const root = document.documentElement;
     const rawUrl = this.tenant?.backgroundUrl?.trim();
 
     if (!rawUrl) {
@@ -168,16 +202,32 @@ export class ThemeService {
       body.style.removeProperty('background-attachment');
       body.style.removeProperty('background-position');
       body.style.removeProperty('background-repeat');
+      root.dataset['tenantBg'] = 'false';
+      root.style.removeProperty('--tenant-glass-blur');
+      root.style.removeProperty('--tenant-glass-overlay');
       return;
     }
 
+    const visibility = this.clampInt(this.tenant?.backgroundVisibility ?? 20, 0, 100);
+    const blur = this.clampInt(this.tenant?.backgroundBlur ?? 8, 0, 24);
+    const overlay = Math.round(96 - visibility * 0.42);
     const safeUrl = encodeURI(mediaUrl(rawUrl)).replace(/"/g, '%22');
+    const veil = `color-mix(in srgb, var(--color-bg) ${overlay}%, transparent)`;
+
     body.style.backgroundImage =
-      `linear-gradient(var(--color-bg-overlay), var(--color-bg-overlay)), url("${safeUrl}")`;
+      `var(--page-wash), linear-gradient(${veil}, ${veil}), url("${safeUrl}")`;
     body.style.backgroundSize = 'cover';
     body.style.backgroundAttachment = 'fixed';
     body.style.backgroundPosition = 'center';
     body.style.backgroundRepeat = 'no-repeat';
+
+    root.dataset['tenantBg'] = 'true';
+    root.style.setProperty('--tenant-glass-blur', `${blur}px`);
+    root.style.setProperty('--tenant-glass-overlay', `${overlay}%`);
+  }
+
+  private clampInt(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, Math.round(Number(value) || 0)));
   }
 
   private readToken(name: string): string | null {

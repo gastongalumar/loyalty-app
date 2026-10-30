@@ -58,6 +58,12 @@ public class BusinessService {
         if (request.getBackgroundUrl() != null) {
             replaceBackground(business, request.getBackgroundUrl());
         }
+        if (request.getBackgroundVisibility() != null) {
+            business.setBackgroundVisibility(clamp(request.getBackgroundVisibility(), 0, 100));
+        }
+        if (request.getBackgroundBlur() != null) {
+            business.setBackgroundBlur(clamp(request.getBackgroundBlur(), 0, 24));
+        }
         if (request.getStampIcon() != null) {
             business.setStampIcon(blankToNull(request.getStampIcon()));
         }
@@ -115,6 +121,10 @@ public class BusinessService {
 
     private String blankToNull(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private Business requireTenantBusiness() {

@@ -21,6 +21,14 @@ public class BusinessUpdateRequest {
     @Size(max = 500)
     private String backgroundUrl;
 
+    @Min(0)
+    @Max(100)
+    private Integer backgroundVisibility;
+
+    @Min(0)
+    @Max(24)
+    private Integer backgroundBlur;
+
     @Size(max = 16)
     private String stampIcon;
 

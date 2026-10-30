@@ -124,6 +124,10 @@
     "UPLOAD_BACKGROUND": "Upload photo",
     "REMOVE_BACKGROUND": "Remove photo",
     "BACKGROUND_HINT": "Upload a JPG, PNG or WebP (max 5 MB) or paste a public image URL. It will be shown behind the business screens.",
+    "BACKGROUND_VISIBILITY": "Background visibility",
+    "BACKGROUND_VISIBILITY_HINT": "More visibility shows the photo better; the minimum veil keeps text readable.",
+    "BACKGROUND_BLUR": "Glass effect",
+    "BACKGROUND_BLUR_HINT": "Blur the surfaces so the background shows through the glass.",
     "BACKGROUND_PREVIEW": "Background preview",
     "BACKGROUND_TYPE_ERROR": "Choose a JPG, PNG or WebP image.",
     "BACKGROUND_SIZE_ERROR": "The image must be 5 MB or smaller.",
@@ -183,6 +187,13 @@
     "INSTALL": "Install app"
   },
   "THEME": {
+    "LABEL": "App theme",
+    "SYSTEM": "System",
+    "BONE": "Bone",
+    "NIGHT": "Night",
+    "SAGE": "Sage",
+    "OCEAN": "Ocean",
+    "EMBER": "Ember",
     "LIGHT": "Switch to light theme",
     "DARK": "Switch to dark theme"
   },

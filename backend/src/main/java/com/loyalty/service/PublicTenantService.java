@@ -35,6 +35,8 @@ public class PublicTenantService {
                 .colorSecondary(business.getColorSecondary())
                 .logoUrl(business.getLogoUrl())
                 .backgroundUrl(business.getBackgroundUrl())
+                .backgroundVisibility(business.getBackgroundVisibility())
+                .backgroundBlur(business.getBackgroundBlur())
                 .stampIcon(business.getStampIcon())
                 .rewardIcon(business.getRewardIcon())
                 .build();

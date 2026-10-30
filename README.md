@@ -12,7 +12,7 @@ negocios.
 | Spring Boot | 3.5.16 |
 | Maven | 3.9+ |
 | Base de datos | MySQL 8 |
-| Migraciones | **Flyway** (`db/migration/V1..V6`) |
+| Migraciones | **Flyway** (`db/migration/V1..V7`) |
 | Frontend | Angular 17, TypeScript ~5.2 |
 | Node.js | 18+ (build Docker usa 20) |
 
@@ -101,7 +101,7 @@ Copiar `.env.example` a `.env` y completar. El backend no tiene valores por defe
 
 ### 2. Base de datos y migraciones
 
-No hay que ejecutar SQL a mano: Flyway aplica `V1..V6` al arrancar el backend
+No hay que ejecutar SQL a mano: Flyway aplica `V1..V7` al arrancar el backend
 (`baseline-on-migrate=true`, `baseline-version=0`).
 
 ```powershell
@@ -133,7 +133,7 @@ FLUSH PRIVILEGES;
 ```
 
 No hace falta ejecutar el esquema a mano: Flyway corre al arrancar el backend. Para verificar
-las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V6 y valida
+las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V7 y valida
 invariantes + constraints):
 
 ```powershell
@@ -162,8 +162,11 @@ Frontend: `http://localhost:4200` · Backend: `http://localhost:8080` · Swagger
 ## Sistema de diseño
 
 - Tokens en `frontend/src/styles/tokens.css`; **ningún otro archivo tiene hex/rgba**.
-- Dos temas: `light-neumorphic` (Bone) y `dark-purple` (Noche), persistidos en
+- Cinco temas: `light-neumorphic` (Bone), `dark-purple` (Noche), `sage-mist` (Salvia),
+  `deep-ocean` (Marea) y `warm-ember` (Brasa), más `system`; persistidos en
   `localStorage['loyalty.theme']` con anti-FOUC en `index.html`.
+- Con foto de fondo, las superficies pasan a vidrio (`--glass-surface`, `backdrop-filter`) y el
+  negocio ajusta `backgroundVisibility` / `backgroundBlur`.
 - El branding del tenant ajusta el acento y la tarjeta manteniendo AA.
 - Guía: [`docs/DESIGN_DIRECTION.md`](docs/DESIGN_DIRECTION.md) · reglas para agentes:
   [`frontend/AGENTS.md`](frontend/AGENTS.md).
@@ -248,6 +251,7 @@ de otro tenant (no se filtra existencia).
 | `V4__backfill_tenants.sql` | `BUSINESS_OWNER → BUSINESS_ADMIN`, slugs y `tenant_id` |
 | `V5__tenant_constraints.sql` | `NOT NULL`, `CHECK`, FKs compuestas, ENUM→VARCHAR |
 | `V6__business_visual_assets.sql` | `background_url`, `stamp_icon`, `reward_icon` por negocio |
+| `V7__background_glass_controls.sql` | `background_visibility`, `background_blur` |
 
 Rollbacks manuales en `backend/src/main/resources/db/rollback/*.down.sql` (Flyway Community no
 tiene `undo`). Antes de migrar una base con datos: `mysqldump`.
@@ -265,8 +269,8 @@ En Windows con MySQL local (sin Docker):
 ```
 
 Ambos corren `flyway:migrate`, las queries de `db/verify/V4_verification.sql`, la prueba
-negativa de constraints y exigen `flyway_schema_history` con las 6 migraciones en verde.
-Verificado sobre MySQL 8.0.43: V1..V6 aplican limpias y los cinco rollbacks (`V6..V2`)
+negativa de constraints y exigen `flyway_schema_history` con las 7 migraciones en verde.
+Verificado sobre MySQL 8.0.43: V1..V7 aplican limpias y los seis rollbacks (`V7..V2`)
 devuelven el esquema a la forma de V1.
 
 > **TODO-01** — La versión actual de `V4` asume una base **sin datos a preservar** (portfolio).
@@ -287,7 +291,7 @@ MySQL-específicas). La cobertura real de las migraciones la da `scripts/verify-
 CI (`.github/workflows/backend-ci.yml`).
 
 Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 8.0.43**
-(migraciones V1..V6 + rollbacks).
+(migraciones V1..V7 + rollbacks).
 
 ## Branding por tenant (R2)
 
@@ -298,8 +302,13 @@ Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 
 - El `BUSINESS_ADMIN` los edita en **Configuración → Marca y apariencia**
   (`PUT /api/v1/business/me`), con validación `^#[0-9A-Fa-f]{6}$` para los colores.
 - La foto de fondo se puede subir (`POST /api/v1/business/me/background`, JPG/PNG/WebP hasta 5 MB)
-  o indicar con una URL. Se sirve en `/api/files/backgrounds/{archivo}` y se compone con el token
-  `--color-bg-overlay` para no perder contraste.
+  o indicar con una URL. Se sirve en `/api/files/backgrounds/{archivo}` y se compone con un velo
+  dinámico sobre `--color-bg` para no perder contraste.
+- `backgroundVisibility` (0–100) regula cuánto se ve la foto y `backgroundBlur` (0–24 px) el
+  desenfoque de las superficies. Con foto activa, `html[data-tenant-bg='true']` usa
+  `--glass-surface` y `backdrop-filter` para el efecto vidrio.
+- La app tiene 5 temas (`light-neumorphic`, `dark-purple`, `sage-mist`, `deep-ocean`,
+  `warm-ember`) más `system`; el navbar los muestra con muestras de color y persiste la elección.
 - `stampIcon` y `rewardIcon` son emojis elegidos desde un catálogo curado (café, naturaleza,
   corazones, premios, comida, belleza, mascotas, bienestar y tienda).
 - El logo es una **URL remota** (sin MinIO ni BLOB en MySQL); la vista previa usa cache busting

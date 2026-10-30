@@ -28,6 +28,7 @@ import { mediaUrl } from '../../utils/media-url';
 export class BusinessSettingsComponent implements OnInit {
   form: Partial<Business> = {
     name: '', description: '', logoUrl: '', backgroundUrl: '',
+    backgroundVisibility: 20, backgroundBlur: 8,
     stampsRequired: 10, rewardDescription: '',
     colorPrimary: '', colorSecondary: '',
     stampIcon: DEFAULT_STAMP_ICON, rewardIcon: DEFAULT_REWARD_ICON
@@ -93,6 +94,8 @@ export class BusinessSettingsComponent implements OnInit {
           description: business.description,
           logoUrl: business.logoUrl,
           backgroundUrl: business.backgroundUrl || '',
+          backgroundVisibility: business.backgroundVisibility ?? 20,
+          backgroundBlur: business.backgroundBlur ?? 8,
           stampsRequired: business.stampsRequired,
           rewardDescription: business.rewardDescription,
           colorPrimary: business.colorPrimary || this.token('--color-accent'),
@@ -139,6 +142,10 @@ export class BusinessSettingsComponent implements OnInit {
   onBackgroundChange(): void {
     const url = (this.form.backgroundUrl || '').trim();
     this.backgroundPreview = mediaUrl(url);
+    this.applyPreview();
+  }
+
+  onBackgroundStyleChange(): void {
     this.applyPreview();
   }
 
@@ -215,6 +222,8 @@ export class BusinessSettingsComponent implements OnInit {
       description: this.form.description,
       logoUrl: this.form.logoUrl,
       backgroundUrl: this.form.backgroundUrl || '',
+      backgroundVisibility: this.form.backgroundVisibility ?? 20,
+      backgroundBlur: this.form.backgroundBlur ?? 8,
       stampsRequired: this.form.stampsRequired,
       rewardDescription: this.form.rewardDescription,
       colorPrimary: (this.form.colorPrimary || '').toUpperCase(),
@@ -256,6 +265,8 @@ export class BusinessSettingsComponent implements OnInit {
       colorSecondary: business?.colorSecondary || this.form.colorSecondary,
       logoUrl: business?.logoUrl || this.form.logoUrl,
       backgroundUrl: business?.backgroundUrl || this.form.backgroundUrl,
+      backgroundVisibility: business?.backgroundVisibility ?? this.form.backgroundVisibility,
+      backgroundBlur: business?.backgroundBlur ?? this.form.backgroundBlur,
       stampIcon: business?.stampIcon || this.form.stampIcon,
       rewardIcon: business?.rewardIcon || this.form.rewardIcon
     });
@@ -267,6 +278,8 @@ export class BusinessSettingsComponent implements OnInit {
         colorSecondary: business.colorSecondary,
         logoUrl: business.logoUrl,
         backgroundUrl: business.backgroundUrl,
+        backgroundVisibility: business.backgroundVisibility,
+        backgroundBlur: business.backgroundBlur,
         stampIcon: business.stampIcon,
         rewardIcon: business.rewardIcon
       });

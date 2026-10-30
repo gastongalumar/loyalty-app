@@ -5,6 +5,8 @@ export interface Business {
   description?: string;
   logoUrl?: string;
   backgroundUrl?: string;
+  backgroundVisibility?: number;
+  backgroundBlur?: number;
   colorPrimary?: string;
   colorSecondary?: string;
   stampIcon?: string;

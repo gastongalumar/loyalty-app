@@ -32,6 +32,10 @@ public class Business {
     @Column(length = 500)
     private String backgroundUrl;
 
+    private Integer backgroundVisibility;
+
+    private Integer backgroundBlur;
+
     @Column(length = 7)
     private String colorPrimary;
 

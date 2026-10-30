@@ -18,6 +18,8 @@ public class BusinessResponse {
     private String description;
     private String logoUrl;
     private String backgroundUrl;
+    private Integer backgroundVisibility;
+    private Integer backgroundBlur;
     private String colorPrimary;
     private String colorSecondary;
     private String stampIcon;

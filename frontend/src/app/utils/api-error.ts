@@ -5,6 +5,8 @@ const FIELD_KEYS: Record<string, string> = {
   slug: 'COMMON.SLUG',
   rewardDescription: 'BUSINESS.REWARD',
   backgroundUrl: 'BUSINESS.BACKGROUND',
+  backgroundVisibility: 'BUSINESS.BACKGROUND_VISIBILITY',
+  backgroundBlur: 'BUSINESS.BACKGROUND_BLUR',
   stampIcon: 'BUSINESS.STAMP_ICON',
   rewardIcon: 'BUSINESS.REWARD_ICON',
   stampsRequired: 'BUSINESS.STAMPS_REQUIRED',

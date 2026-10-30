@@ -108,6 +108,18 @@
   --color-overlay: rgba(20, 18, 16, 0.52);
   --color-selection: #efd3c6;
 
+  /* Fondo de página y superficies de vidrio */
+  --page-wash: radial-gradient(1100px 560px at 8% -10%, var(--color-accent-soft) 0%, transparent 60%),
+    radial-gradient(900px 460px at 100% 0%, color-mix(in srgb, var(--color-accent) 5%, transparent) 0%, transparent 55%);
+  --glass-blur: 16px;
+  --glass-surface: color-mix(in srgb, var(--color-surface-raised) 78%, transparent);
+  --glass-surface-strong: color-mix(in srgb, var(--color-surface-raised) 90%, transparent);
+  --glass-border: color-mix(in srgb, var(--color-border-strong) 55%, transparent);
+  --glass-highlight: color-mix(in srgb, var(--neutral-0) 35%, transparent);
+  --glass-sheen: color-mix(in srgb, var(--neutral-0) 12%, transparent);
+  --shadow-glass: 0 20px 48px color-mix(in srgb, var(--neutral-950) 16%, transparent),
+    0 1px 0 var(--glass-highlight) inset;
+
   --shadow-raised-sm: 0 1px 0 rgba(255, 255, 255, 0.6) inset,
     2px 2px 5px rgba(120, 112, 100, 0.18),
     -2px -2px 5px rgba(255, 253, 248, 0.7);
@@ -146,6 +158,18 @@
   --brand-ocean: #1d4e89;
   --brand-plum: #6b2d5c;
   --brand-berry: #a11d4b;
+
+  /* Muestras del selector de temas */
+  --swatch-bone-bg: #ece7df;
+  --swatch-bone-accent: #a63a12;
+  --swatch-night-bg: #121014;
+  --swatch-night-accent: #ff9e7a;
+  --swatch-sage-bg: #e7ece5;
+  --swatch-sage-accent: #2f6b46;
+  --swatch-ocean-bg: #0a1418;
+  --swatch-ocean-accent: #6fd6c8;
+  --swatch-ember-bg: #17100d;
+  --swatch-ember-accent: #ffb07a;
 
   /* Componente */
   --button-bg: var(--color-surface-raised);
@@ -232,4 +256,191 @@
   --modal-bg: var(--color-surface-raised);
   --toast-bg: #f1ecf5;
   --toast-text: #17131b;
+}
+
+[data-theme='sage-mist'] {
+  color-scheme: light;
+  --color-bg: #e7ece5;
+  --color-surface: #eef3ec;
+  --color-surface-raised: #f7faf5;
+  --color-surface-sunken: #dde5da;
+  --color-text: #18211a;
+  --color-text-muted: #4f5e51;
+  --color-text-subtle: #59675c;
+  --color-border: #ccd7c9;
+  --color-border-strong: #b1c0ad;
+  --color-accent: #2f6b46;
+  --color-accent-hover: #255438;
+  --color-accent-contrast: #ffffff;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-bg-overlay: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  --color-success: #1f6f4a;
+  --color-success-soft: #d9ecdf;
+  --color-warning: #735100;
+  --color-warning-soft: #f1e7c9;
+  --color-danger: #8f1d2b;
+  --color-danger-soft: #f2dadd;
+  --color-focus: #2f6b46;
+  --color-overlay: rgba(18, 24, 18, 0.52);
+  --color-selection: #cfe0d2;
+
+  --color-nav-bg: #1b241d;
+  --color-nav-text: #f2f6f0;
+  --color-nav-text-muted: rgba(242, 246, 240, 0.74);
+  --color-nav-hover-bg: rgba(242, 246, 240, 0.1);
+  --color-nav-active-bg: rgba(242, 246, 240, 0.16);
+
+  --loyalty-card-from: #1b241d;
+  --loyalty-card-to: #2c3a2f;
+  --loyalty-card-text: #f2f6f0;
+  --loyalty-card-muted: rgba(242, 246, 240, 0.65);
+  --loyalty-card-accent: #d7e8a8;
+  --loyalty-card-accent-contrast: #1b241d;
+  --loyalty-card-accent-soft: rgba(215, 232, 168, 0.16);
+  --loyalty-card-accent-border: rgba(215, 232, 168, 0.34);
+
+  --input-bg: var(--color-surface-sunken);
+  --input-border: var(--color-border);
+  --nav-bg: var(--color-surface);
+  --card-bg: var(--color-surface-raised);
+  --modal-bg: var(--color-surface-raised);
+  --toast-bg: #1b241d;
+  --toast-text: #f2f6f0;
+}
+
+[data-theme='deep-ocean'] {
+  color-scheme: dark;
+  --color-bg: #0a1418;
+  --color-surface: #101d23;
+  --color-surface-raised: #16262d;
+  --color-surface-sunken: #060f13;
+  --color-text: #eaf4f5;
+  --color-text-muted: #b8cccf;
+  --color-text-subtle: #9fb6ba;
+  --color-border: rgba(234, 244, 245, 0.14);
+  --color-border-strong: rgba(234, 244, 245, 0.3);
+  --color-accent: #6fd6c8;
+  --color-accent-hover: #8fe6da;
+  --color-accent-contrast: #06211d;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --color-bg-overlay: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  --color-success: #6ee7b7;
+  --color-success-soft: rgba(110, 231, 183, 0.12);
+  --color-warning: #fcd34d;
+  --color-warning-soft: rgba(252, 211, 77, 0.12);
+  --color-danger: #ff8a93;
+  --color-danger-soft: rgba(255, 138, 147, 0.12);
+  --color-focus: #8fe6da;
+  --color-overlay: rgba(0, 0, 0, 0.66);
+  --color-selection: rgba(111, 214, 200, 0.22);
+
+  --shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    2px 2px 6px rgba(0, 0, 0, 0.38);
+  --shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    6px 6px 16px rgba(0, 0, 0, 0.46);
+  --shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-overlay: 0 24px 60px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 14px color-mix(in srgb, var(--color-accent) 32%, transparent);
+
+  --color-nav-bg: #060f13;
+  --color-nav-text: #eaf4f5;
+  --color-nav-text-muted: rgba(234, 244, 245, 0.74);
+  --color-nav-hover-bg: rgba(234, 244, 245, 0.1);
+  --color-nav-active-bg: rgba(234, 244, 245, 0.16);
+
+  --loyalty-card-from: #16262d;
+  --loyalty-card-to: #0a1418;
+  --loyalty-card-text: #eaf4f5;
+  --loyalty-card-muted: rgba(234, 244, 245, 0.62);
+  --loyalty-card-accent: #6fd6c8;
+  --loyalty-card-accent-contrast: #06211d;
+  --loyalty-card-accent-soft: rgba(111, 214, 200, 0.14);
+  --loyalty-card-accent-border: rgba(111, 214, 200, 0.3);
+
+  --button-bg: var(--color-surface-raised);
+  --button-bg-hover: var(--color-surface);
+  --button-text: var(--color-text);
+  --button-primary-bg: var(--color-accent);
+  --button-primary-bg-hover: var(--color-accent-hover);
+  --button-primary-text: var(--color-accent-contrast);
+  --input-bg: #071014;
+  --input-border: var(--color-border);
+  --nav-bg: #0d1a1f;
+  --card-bg: var(--color-surface-raised);
+  --modal-bg: var(--color-surface-raised);
+  --toast-bg: #eaf4f5;
+  --toast-text: #0a1418;
+}
+
+[data-theme='warm-ember'] {
+  color-scheme: dark;
+  --color-bg: #17100d;
+  --color-surface: #211713;
+  --color-surface-raised: #2a1d18;
+  --color-surface-sunken: #0f0a08;
+  --color-text: #f7ece4;
+  --color-text-muted: #d5bbad;
+  --color-text-subtle: #bb9f91;
+  --color-border: rgba(247, 236, 228, 0.13);
+  --color-border-strong: rgba(247, 236, 228, 0.3);
+  --color-accent: #ffb07a;
+  --color-accent-hover: #ffc79d;
+  --color-accent-contrast: #2a1105;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --color-bg-overlay: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  --color-success: #7ee2b8;
+  --color-success-soft: rgba(126, 226, 184, 0.12);
+  --color-warning: #f6cf78;
+  --color-warning-soft: rgba(246, 207, 120, 0.12);
+  --color-danger: #ff9aa5;
+  --color-danger-soft: rgba(255, 154, 165, 0.12);
+  --color-focus: #ffc79d;
+  --color-overlay: rgba(0, 0, 0, 0.68);
+  --color-selection: rgba(255, 176, 122, 0.22);
+
+  --shadow-raised-sm: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    2px 2px 6px rgba(0, 0, 0, 0.42);
+  --shadow-raised: inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    6px 6px 16px rgba(0, 0, 0, 0.5);
+  --shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.52),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.04);
+  --shadow-overlay: 0 24px 60px rgba(0, 0, 0, 0.65);
+  --shadow-accent: 0 4px 14px color-mix(in srgb, var(--color-accent) 34%, transparent);
+
+  --color-nav-bg: #0f0a08;
+  --color-nav-text: #f7ece4;
+  --color-nav-text-muted: rgba(247, 236, 228, 0.74);
+  --color-nav-hover-bg: rgba(247, 236, 228, 0.1);
+  --color-nav-active-bg: rgba(247, 236, 228, 0.16);
+
+  --loyalty-card-from: #2a1d18;
+  --loyalty-card-to: #17100d;
+  --loyalty-card-text: #f7ece4;
+  --loyalty-card-muted: rgba(247, 236, 228, 0.62);
+  --loyalty-card-accent: #ffb07a;
+  --loyalty-card-accent-contrast: #2a1105;
+  --loyalty-card-accent-soft: rgba(255, 176, 122, 0.14);
+  --loyalty-card-accent-border: rgba(255, 176, 122, 0.3);
+
+  --button-bg: var(--color-surface-raised);
+  --button-bg-hover: var(--color-surface);
+  --button-text: var(--color-text);
+  --button-primary-bg: var(--color-accent);
+  --button-primary-bg-hover: var(--color-accent-hover);
+  --button-primary-text: var(--color-accent-contrast);
+  --input-bg: #100a08;
+  --input-border: var(--color-border);
+  --nav-bg: #1a120e;
+  --card-bg: var(--color-surface-raised);
+  --modal-bg: var(--color-surface-raised);
+  --toast-bg: #f7ece4;
+  --toast-text: #17100d;
+}
+
+/* Cuando hay foto de fondo, las superficies pasan a vidrio. */
+html[data-tenant-bg='true'] {
+  --card-bg: var(--glass-surface);
+  --modal-bg: var(--glass-surface-strong);
+  --nav-bg: var(--color-nav-bg);
 }

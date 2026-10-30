@@ -37,6 +37,9 @@ function tenant(overrides: Partial<TenantInfo> = {}): TenantInfo {
     colorPrimary: null,
     colorSecondary: null,
     logoUrl: null,
+    backgroundUrl: null,
+    backgroundVisibility: 20,
+    backgroundBlur: 8,
     ...overrides
   };
 }
@@ -48,11 +51,18 @@ describe('ThemeService', () => {
     const root = document.documentElement;
     root.removeAttribute('data-theme');
     root.removeAttribute('data-theme-mode');
+    root.removeAttribute('data-tenant-bg');
     [
       '--color-accent', '--color-accent-hover', '--color-accent-contrast', '--color-focus',
       '--loyalty-card-to', '--loyalty-card-text', '--loyalty-card-muted',
+      '--tenant-glass-blur', '--tenant-glass-overlay',
       '--color-bg', '--neutral-0', '--neutral-950'
     ].forEach(variable => root.style.removeProperty(variable));
+    document.body.style.removeProperty('background-image');
+    document.body.style.removeProperty('background-size');
+    document.body.style.removeProperty('background-attachment');
+    document.body.style.removeProperty('background-position');
+    document.body.style.removeProperty('background-repeat');
     root.style.setProperty('--color-bg', BG);
     root.style.setProperty('--neutral-0', WHITE);
     root.style.setProperty('--neutral-950', INK);
@@ -89,22 +99,30 @@ describe('ThemeService', () => {
     expect(document.documentElement.dataset['themeMode']).toBe('system');
   });
 
-  it('setMode persiste y aplica el tema oscuro', () => {
+  it('setMode persiste y aplica un tema oscuro', () => {
     service.init();
-    service.setMode('dark');
+    service.setMode('deep-ocean');
 
-    expect(localStorage.getItem('loyalty.theme')).toBe('dark');
-    expect(document.documentElement.dataset['theme']).toBe('dark-purple');
+    expect(localStorage.getItem('loyalty.theme')).toBe('deep-ocean');
+    expect(document.documentElement.dataset['theme']).toBe('deep-ocean');
     expect(service.isDark()).toBeTrue();
   });
 
-  it('toggle alterna y persiste el tema', () => {
+  it('toggle alterna desde un tema oscuro al claro base', () => {
     service.init();
-    service.setMode('dark');
+    service.setMode('warm-ember');
     service.toggle();
 
-    expect(localStorage.getItem('loyalty.theme')).toBe('light');
+    expect(localStorage.getItem('loyalty.theme')).toBe('light-neumorphic');
     expect(service.isDark()).toBeFalse();
+  });
+
+  it('migra el modo viejo light/dark a los ids nuevos', () => {
+    localStorage.setItem('loyalty.theme', 'dark');
+    service.init();
+
+    expect(document.documentElement.dataset['theme']).toBe('dark-purple');
+    expect(document.documentElement.dataset['themeMode']).toBe('dark-purple');
   });
 
   it('ajusta el acento del tenant hasta cumplir AA contra el fondo', () => {
@@ -120,7 +138,7 @@ describe('ThemeService', () => {
 
   it('reset limpia el branding sin tocar el tema', () => {
     service.init();
-    service.setMode('dark');
+    service.setMode('dark-purple');
     service.apply(tenant({ colorPrimary: ACCENT, colorSecondary: CARD_TO }));
 
     expect(document.documentElement.style.getPropertyValue('--color-accent')).not.toBe('');
@@ -129,5 +147,24 @@ describe('ThemeService', () => {
 
     expect(document.documentElement.style.getPropertyValue('--color-accent')).toBe('');
     expect(document.documentElement.dataset['theme']).toBe('dark-purple');
+  });
+
+  it('aplica fondo y controles de vidrio al tenant', () => {
+    service.init();
+    service.apply(tenant({
+      backgroundUrl: '/api/files/backgrounds/fondo.png',
+      backgroundVisibility: 35,
+      backgroundBlur: 12
+    }));
+
+    expect(document.documentElement.dataset['tenantBg']).toBe('true');
+    expect(document.documentElement.style.getPropertyValue('--tenant-glass-blur')).toBe('12px');
+    expect(document.body.style.backgroundImage).toContain('fondo.png');
+    expect(document.body.style.backgroundImage).toContain('var(--page-wash)');
+
+    service.reset();
+
+    expect(document.documentElement.dataset['tenantBg']).toBe('false');
+    expect(document.body.style.backgroundImage).toBe('');
   });
 });

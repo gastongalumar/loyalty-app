@@ -69,6 +69,8 @@ public class PlatformService {
                 .rewardIcon(request.getRewardIcon() != null && !request.getRewardIcon().isBlank()
                         ? request.getRewardIcon().trim()
                         : "🏆")
+                .backgroundVisibility(20)
+                .backgroundBlur(8)
                 .status(Business.Status.ACTIVE)
                 .build();
 

@@ -25,7 +25,14 @@ function parseVars(source) {
 }
 
 const light = parseVars(block(':root'));
-const dark = { ...light, ...parseVars(block("[data-theme='dark-purple']")) };
+
+const themes = [
+  ['light-neumorphic', light],
+  ['dark-purple', { ...light, ...parseVars(block("[data-theme='dark-purple']")) }],
+  ['sage-mist', { ...light, ...parseVars(block("[data-theme='sage-mist']")) }],
+  ['deep-ocean', { ...light, ...parseVars(block("[data-theme='deep-ocean']")) }],
+  ['warm-ember', { ...light, ...parseVars(block("[data-theme='warm-ember']")) }]
+];
 
 function resolve(theme, name, depth = 0) {
   if (depth > 10) return null;
@@ -108,7 +115,7 @@ const pairs = [
 
 let failures = 0;
 
-for (const [themeName, theme] of [['light-neumorphic', light], ['dark-purple', dark]]) {
+for (const [themeName, theme] of themes) {
   console.log(`\n${themeName}`);
   console.log('-'.repeat(56));
   for (const [label, fgName, bgName, min] of pairs) {

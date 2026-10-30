@@ -5,7 +5,7 @@
 #   .\scripts\verify-migrations.ps1 -Port 3306 -User root -Password "mi-clave"
 #   .\scripts\verify-migrations.ps1 -Mysql "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"
 #
-# Crea una base descartable (por defecto loyalty_local_verify), aplica V1..V6,
+# Crea una base descartable (por defecto loyalty_local_verify), aplica V1..V7,
 # corre las queries de verificación y falla si algo no cierra.
 
 param(
@@ -71,8 +71,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $applied = ((Invoke-Sql "SELECT COUNT(*) FROM flyway_schema_history WHERE success = 1;") -join "").Trim()
-if ([int]$applied -lt 6) {
-    Write-Host "FAIL: se esperaban >= 6 migraciones aplicadas, hay $applied" -ForegroundColor Red
+if ([int]$applied -lt 7) {
+    Write-Host "FAIL: se esperaban >= 7 migraciones aplicadas, hay $applied" -ForegroundColor Red
     exit 1
 }
 Write-Host "OK: $applied migraciones aplicadas" -ForegroundColor Green

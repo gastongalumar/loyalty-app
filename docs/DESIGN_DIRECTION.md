@@ -18,7 +18,7 @@ el sistema ni el contraste.
 3. **Un solo acento.** El color del tenant señala acción y foco; no se usa como decoración.
 4. **Densidad legible.** Listas compactas en desktop, tarjetas apiladas en mobile.
 5. **Movimiento sobrio.** Transiciones cortas, sin autoplay, respetando `prefers-reduced-motion`.
-6. **Dos temas, un sistema.** Claro y oscuro comparten tokens; los componentes no saben qué tema está activo.
+6. **Cinco temas, un sistema.** Claro, oscuro y tres paletas con carácter; los componentes no saben qué tema está activo.
 
 ## Paletas
 
@@ -38,6 +38,27 @@ el sistema ni el contraste.
 - Acento: coral.
 - Sombras profundas, sin invertir los colores del tema claro.
 
+### `sage-mist` (Salvia)
+
+- Fondo: verde papel, luminoso y sereno.
+- Superficies: verdes claros con hairlines.
+- Acento: verde bosque.
+- Pensado para cafeterías, viveros y marcas naturales.
+
+### `deep-ocean` (Marea)
+
+- Fondo: azul profundo casi negro.
+- Superficies: petróleo.
+- Acento: turquesa.
+- Ideal para tecnología, servicios y marcas frescas.
+
+### `warm-ember` (Brasa)
+
+- Fondo: marrón espresso.
+- Superficies: cobre oscuro.
+- Acento: durazno cálido.
+- Para gastronomía, barberías y marcas de autor.
+
 Ambos temas se implementan **reemplazando tokens** bajo `[data-theme]`; no hay CSS condicional
 por tema ni clases `.dark`.
 
@@ -45,6 +66,9 @@ por tema ni clases `.dark`.
 |---|---|---|---|---|---|
 | Bone | 13.36:1 | 5.71:1 | 5.27:1 | 6.49:1 | 14.98:1 |
 | Noche | 16.27:1 | 9.96:1 | 9.39:1 | 8.96:1 | 16.85:1 |
+| Salvia | 13.79:1 | 5.74:1 | 5.29:1 | 6.34:1 | 14.59:1 |
+| Marea | 16.66:1 | 11.17:1 | 10.77:1 | 9.76:1 | 17.28:1 |
+| Brasa | 16.19:1 | 10.34:1 | 10.52:1 | 9.94:1 | 16.93:1 |
 
 Ratios medidos con `node scripts/check-contrast.mjs` (AA mínimo 4.5:1 para texto normal).
 
@@ -80,8 +104,12 @@ Ratios medidos con `node scripts/check-contrast.mjs` (AA mínimo 4.5:1 para text
 - `ThemeService` aplica `--color-accent`, `--color-accent-hover`, `--color-accent-contrast` y
   `--color-focus` en runtime, **ajustando el color** hasta alcanzar 4.5:1 contra el fondo del tema activo.
 - `colorSecondary` se usa como `--loyalty-card-to`; el texto de la tarjeta se recalcula para AA.
-- `backgroundUrl` aplica la foto del tenant al `body` con el velo `--color-bg-overlay`; así la
-  imagen no compite con el texto ni cambia el contraste medido por el script.
+- `backgroundUrl` aplica la foto del tenant al `body` con un velo dinámico sobre `--color-bg`;
+  así la imagen no compite con el texto ni cambia el contraste medido por el script.
+- `backgroundVisibility` (0–100) controla cuánto se ve la foto; `backgroundBlur` (0–24 px) define
+  el desenfoque de las superficies de vidrio. El velo mínimo mantiene la legibilidad.
+- Cuando hay foto, `html[data-tenant-bg='true']` cambia `--card-bg` a `--glass-surface` y aplica
+  `backdrop-filter` a tarjetas, paneles, tablas y modales (glassmorphism).
 - `stampIcon` y `rewardIcon` personalizan el sello y el regalo en tarjeta, panel y recompensas.
 - Sin branding, rigen los tokens del tema. Al entrar a `/platform` se limpian los overrides.
 - Los cambios de tema recalculan el branding (no queda un acento oscuro sobre fondo oscuro).
@@ -104,11 +132,12 @@ Ratios medidos con `node scripts/check-contrast.mjs` (AA mínimo 4.5:1 para text
 ## Implementación del tema
 
 1. `index.html` ejecuta un script inline **antes del primer paint** que lee
-   `localStorage['loyalty.theme']` (`light` | `dark` | `system`) y setea
-   `data-theme` (`light-neumorphic` | `dark-purple`) y `data-theme-mode`.
-2. `ThemeService.init()` sincroniza estado, escucha `prefers-color-scheme` y reaplica branding.
-3. `ThemeService.toggle()` alterna claro/oscuro y persiste.
-4. `ThemeToggle` en el navbar muestra sol/luna y expone `aria-label`.
+   `localStorage['loyalty.theme']` (`system` o uno de los 5 ids de tema) y setea
+   `data-theme` y `data-theme-mode`.
+2. `ThemeService.init()` sincroniza estado, escucha `prefers-color-scheme`, migra `light`/`dark`
+   viejos y reaplica branding.
+3. `ThemeService.setMode()` persiste cualquiera de los 5 temas; `toggle()` alterna claro/oscuro.
+4. El selector del navbar muestra los 5 temas + Sistema con muestras de color y `aria-checked`.
 
 Sin el script inline habría flash del tema incorrecto (FOUC) en cada recarga.
 

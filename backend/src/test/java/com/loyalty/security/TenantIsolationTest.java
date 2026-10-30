@@ -66,6 +66,8 @@ class TenantIsolationTest {
                 .colorPrimary("#FF6B35").colorSecondary("#1A1A2E")
                 .logoUrl("https://cdn.example.com/cafe-a.png")
                 .backgroundUrl("https://cdn.example.com/cafe-a-bg.jpg")
+                .backgroundVisibility(24)
+                .backgroundBlur(10)
                 .stampIcon("🌿").rewardIcon("🎁")
                 .build());
         gymB = businessRepository.save(Business.builder()
@@ -259,6 +261,8 @@ class TenantIsolationTest {
                 .andExpect(jsonPath("$.colorSecondary").value("#1A1A2E"))
                 .andExpect(jsonPath("$.logoUrl").value("https://cdn.example.com/cafe-a.png"))
                 .andExpect(jsonPath("$.backgroundUrl").value("https://cdn.example.com/cafe-a-bg.jpg"))
+                .andExpect(jsonPath("$.backgroundVisibility").value(24))
+                .andExpect(jsonPath("$.backgroundBlur").value(10))
                 .andExpect(jsonPath("$.stampIcon").value("🌿"))
                 .andExpect(jsonPath("$.rewardIcon").value("🎁"));
     }
@@ -269,6 +273,8 @@ class TenantIsolationTest {
                 "colorPrimary", "#00AA88",
                 "colorSecondary", "#222233",
                 "backgroundUrl", "https://cdn.example.com/new-bg.jpg",
+                "backgroundVisibility", 32,
+                "backgroundBlur", 12,
                 "stampIcon", "⭐",
                 "rewardIcon", "🤍"
         ));
@@ -280,12 +286,16 @@ class TenantIsolationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.colorPrimary").value("#00AA88"))
                 .andExpect(jsonPath("$.backgroundUrl").value("https://cdn.example.com/new-bg.jpg"))
+                .andExpect(jsonPath("$.backgroundVisibility").value(32))
+                .andExpect(jsonPath("$.backgroundBlur").value(12))
                 .andExpect(jsonPath("$.stampIcon").value("⭐"))
                 .andExpect(jsonPath("$.rewardIcon").value("🤍"));
 
         Business other = businessRepository.findById(gymB.getId()).orElseThrow();
         org.assertj.core.api.Assertions.assertThat(other.getColorPrimary()).isNull();
         org.assertj.core.api.Assertions.assertThat(other.getBackgroundUrl()).isNull();
+        org.assertj.core.api.Assertions.assertThat(other.getBackgroundVisibility()).isNull();
+        org.assertj.core.api.Assertions.assertThat(other.getBackgroundBlur()).isNull();
         org.assertj.core.api.Assertions.assertThat(other.getStampIcon()).isNull();
         org.assertj.core.api.Assertions.assertThat(other.getRewardIcon()).isNull();
     }

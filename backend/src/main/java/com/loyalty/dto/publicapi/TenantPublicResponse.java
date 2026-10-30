@@ -17,6 +17,8 @@ public class TenantPublicResponse {
     private String colorSecondary;
     private String logoUrl;
     private String backgroundUrl;
+    private Integer backgroundVisibility;
+    private Integer backgroundBlur;
     private String stampIcon;
     private String rewardIcon;
 }

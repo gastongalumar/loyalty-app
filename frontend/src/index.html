@@ -18,11 +18,14 @@
     (function () {
       try {
         var mode = localStorage.getItem('loyalty.theme') || 'system';
-        var theme = mode;
+        var themes = ['light-neumorphic', 'dark-purple', 'sage-mist', 'deep-ocean', 'warm-ember'];
+        var theme;
         if (mode === 'system') {
           theme = window.matchMedia('(prefers-color-scheme: dark)').matches
             ? 'dark-purple'
             : 'light-neumorphic';
+        } else if (themes.indexOf(mode) !== -1) {
+          theme = mode;
         } else if (mode === 'dark') {
           theme = 'dark-purple';
         } else {

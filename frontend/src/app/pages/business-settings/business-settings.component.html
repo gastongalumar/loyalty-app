@@ -126,6 +126,34 @@
           <p *ngIf="backgroundMessage" class="field-hint success-hint">{{ backgroundMessage }}</p>
         </div>
 
+        <div class="background-tuning" [class.is-disabled]="!form.backgroundUrl">
+          <div class="range-field">
+            <div class="range-head">
+              <span class="form-label">{{ 'BUSINESS.BACKGROUND_VISIBILITY' | translate }}</span>
+              <span class="range-value">{{ form.backgroundVisibility ?? 20 }}%</span>
+            </div>
+            <input id="background-visibility" name="backgroundVisibility" type="range"
+                   min="0" max="100" step="1"
+                   [(ngModel)]="form.backgroundVisibility"
+                   (ngModelChange)="onBackgroundStyleChange()"
+                   [disabled]="!form.backgroundUrl" />
+            <p class="field-hint">{{ 'BUSINESS.BACKGROUND_VISIBILITY_HINT' | translate }}</p>
+          </div>
+
+          <div class="range-field">
+            <div class="range-head">
+              <span class="form-label">{{ 'BUSINESS.BACKGROUND_BLUR' | translate }}</span>
+              <span class="range-value">{{ form.backgroundBlur ?? 8 }}px</span>
+            </div>
+            <input id="background-blur" name="backgroundBlur" type="range"
+                   min="0" max="24" step="1"
+                   [(ngModel)]="form.backgroundBlur"
+                   (ngModelChange)="onBackgroundStyleChange()"
+                   [disabled]="!form.backgroundUrl" />
+            <p class="field-hint">{{ 'BUSINESS.BACKGROUND_BLUR_HINT' | translate }}</p>
+          </div>
+        </div>
+
         <div *ngIf="backgroundPreview" class="background-preview">
           <span class="form-label">{{ 'BUSINESS.BACKGROUND_PREVIEW' | translate }}</span>
           <div class="background-thumb" role="img"

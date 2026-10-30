@@ -23,7 +23,9 @@ body {
   font-size: var(--text-base);
   line-height: var(--leading-base);
   color: var(--color-text);
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image: var(--page-wash);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -130,7 +132,7 @@ img {
    Card
    ============================================================ */
 .card {
-  background: var(--color-surface-raised);
+  background: var(--card-bg);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -150,9 +152,12 @@ img {
   gap: var(--space-4);
   min-height: var(--nav-height);
   padding: var(--space-3) var(--space-5);
-  background: var(--color-nav-bg);
+  border-bottom: var(--border-width) solid color-mix(in srgb, var(--color-nav-text) 12%, transparent);
+  background: color-mix(in srgb, var(--color-nav-bg) 88%, transparent);
   color: var(--color-nav-text);
   box-shadow: var(--shadow-raised-sm);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  backdrop-filter: blur(20px) saturate(1.2);
 }
 
 .navbar-brand {
@@ -233,6 +238,7 @@ img {
    ============================================================ */
 .btn {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
@@ -255,12 +261,17 @@ img {
 .btn-primary {
   background: var(--color-accent);
   color: var(--color-accent-contrast);
+  box-shadow: var(--shadow-accent);
 }
 
 .btn-primary:hover {
   background: var(--color-accent-hover);
-  box-shadow: var(--shadow-accent);
+  box-shadow: var(--shadow-accent), var(--shadow-raised-sm);
   transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .btn-secondary {
@@ -293,6 +304,7 @@ img {
 }
 
 .btn-sm {
+  min-height: 36px;
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-xs);
 }
@@ -337,6 +349,7 @@ img {
 
 .form-control {
   width: 100%;
+  min-height: 46px;
   padding: var(--space-3) var(--space-4);
   border: var(--border-width) solid var(--input-border);
   border-radius: var(--radius-md);
@@ -344,13 +357,15 @@ img {
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
+  box-shadow: var(--shadow-inset);
   transition: border-color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+    box-shadow var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
 }
 
 .form-control:focus {
   border-color: var(--color-accent);
-  box-shadow: var(--focus-shadow);
+  box-shadow: var(--focus-shadow), var(--shadow-inset);
 }
 
 .form-control::placeholder {
@@ -369,7 +384,7 @@ select.form-control {
 }
 
 textarea.form-control {
-  min-height: 88px;
+  min-height: 108px;
   resize: vertical;
 }
 
@@ -453,10 +468,11 @@ input[type='color'].form-control {
 }
 
 .stat-card {
-  padding: var(--space-4);
+  padding: var(--space-5);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-raised-sm);
 }
 
 .stat-value {
@@ -478,16 +494,19 @@ input[type='color'].form-control {
    ============================================================ */
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   overflow: hidden;
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-raised-sm);
 }
 
 .data-table th {
   padding: var(--space-3) var(--space-4);
   border-bottom: var(--border-width) solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface-sunken) 62%, transparent);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
@@ -507,7 +526,7 @@ input[type='color'].form-control {
 }
 
 .data-table tbody tr:hover {
-  background: var(--color-surface-sunken);
+  background: color-mix(in srgb, var(--color-surface-sunken) 55%, transparent);
 }
 
 /* ============================================================
@@ -642,8 +661,8 @@ input[type='color'].form-control {
   padding: var(--space-8) var(--space-6);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-xl);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-raised);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-overlay);
 }
 
 .auth-logo {
@@ -798,20 +817,57 @@ input[type='color'].form-control {
   padding: var(--space-3) var(--space-4);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-raised-sm);
   transition: box-shadow var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out);
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
 
 .customer-card-item:hover {
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-raised-sm);
+  box-shadow: var(--shadow-raised);
+  transform: translateY(-1px);
 }
 
 .empty-state {
   padding: var(--space-8);
+  border: var(--border-width) dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--card-bg) 70%, transparent);
   color: var(--color-text-muted);
   text-align: center;
+}
+
+/* ============================================================
+   Glass: solo cuando el tenant cargó una foto de fondo
+   ============================================================ */
+html[data-tenant-bg='true'] body :is(
+  .card,
+  .panel,
+  .stat-card,
+  .summary-card,
+  .reward-card,
+  .customer-card,
+  .action-tile,
+  .qr-card,
+  .auth-card,
+  .emoji-panel,
+  .qr-modal,
+  .search-bar,
+  .customer-card-item
+) {
+  border-color: var(--glass-border);
+  background-image: linear-gradient(135deg, var(--glass-sheen), transparent 55%);
+  box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(var(--tenant-glass-blur, var(--glass-blur))) saturate(1.18);
+  backdrop-filter: blur(var(--tenant-glass-blur, var(--glass-blur))) saturate(1.18);
+}
+
+html[data-tenant-bg='true'] .page-title,
+html[data-tenant-bg='true'] .page-subtitle,
+html[data-tenant-bg='true'] .eyebrow {
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--color-bg) 72%, transparent);
 }
 
 /* ============================================================

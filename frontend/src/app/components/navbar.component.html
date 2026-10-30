@@ -23,19 +23,35 @@
       </ul>
 
       <div class="navbar-actions">
-        <button class="theme-toggle" type="button" (click)="theme.toggle()"
-                [attr.aria-label]="(theme.isDark$ | async) ? ('THEME.LIGHT' | translate) : ('THEME.DARK' | translate)"
-                [title]="(theme.isDark$ | async) ? ('THEME.LIGHT' | translate) : ('THEME.DARK' | translate)">
-          <svg *ngIf="!(theme.isDark$ | async)" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
-          </svg>
-          <svg *ngIf="theme.isDark$ | async" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
-          </svg>
-        </button>
+        <div class="theme-menu-wrap">
+          <button class="theme-picker" type="button"
+                  (click)="toggleThemeMenu($event)"
+                  [attr.aria-expanded]="themeMenuOpen"
+                  aria-haspopup="menu"
+                  [attr.aria-label]="'THEME.LABEL' | translate"
+                  [title]="'THEME.LABEL' | translate">
+            <span class="theme-current-swatch" [ngClass]="'swatch-' + currentMode" aria-hidden="true"></span>
+            <span class="theme-current-label">{{ currentThemeLabelKey | translate }}</span>
+            <svg class="theme-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </button>
+
+          <div class="theme-menu" *ngIf="themeMenuOpen" role="menu"
+               (click)="$event.stopPropagation()">
+            <button *ngFor="let option of themeOptions"
+                    type="button"
+                    role="menuitemradio"
+                    [class.active]="currentMode === option.id"
+                    [attr.aria-checked]="currentMode === option.id"
+                    (click)="selectTheme(option.id, $event)">
+              <span class="theme-option-swatch" [ngClass]="'swatch-' + option.id" aria-hidden="true"></span>
+              <span class="theme-option-label">{{ option.labelKey | translate }}</span>
+              <span *ngIf="currentMode === option.id" class="theme-option-check" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </div>
         <div class="lang-switcher">
           <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
           <button class="lang-btn" [class.active]="currentLang === 'es'" (click)="setLang('es')">ES</button>

@@ -124,6 +124,10 @@
     "UPLOAD_BACKGROUND": "Subir foto",
     "REMOVE_BACKGROUND": "Quitar foto",
     "BACKGROUND_HINT": "Subí un JPG, PNG o WebP (máx. 5 MB) o pegá la URL pública de una imagen. Se va a ver detrás de las pantallas del negocio.",
+    "BACKGROUND_VISIBILITY": "Visibilidad del fondo",
+    "BACKGROUND_VISIBILITY_HINT": "Más visibilidad muestra mejor la foto; el velo mínimo mantiene la lectura clara.",
+    "BACKGROUND_BLUR": "Efecto vidrio",
+    "BACKGROUND_BLUR_HINT": "Desenfoque de las superficies para que el fondo se vea a través del vidrio.",
     "BACKGROUND_PREVIEW": "Vista previa del fondo",
     "BACKGROUND_TYPE_ERROR": "Elegí una imagen JPG, PNG o WebP.",
     "BACKGROUND_SIZE_ERROR": "La imagen tiene que pesar 5 MB o menos.",
@@ -183,6 +187,13 @@
     "INSTALL": "Instalar app"
   },
   "THEME": {
+    "LABEL": "Tema de la app",
+    "SYSTEM": "Sistema",
+    "BONE": "Bone",
+    "NIGHT": "Noche",
+    "SAGE": "Salvia",
+    "OCEAN": "Marea",
+    "EMBER": "Brasa",
     "LIGHT": "Cambiar a tema claro",
     "DARK": "Cambiar a tema oscuro"
   },
