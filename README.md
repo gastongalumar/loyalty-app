@@ -193,7 +193,7 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 |---|---|---|---|
 | `POST` | `/api/auth/register` | `X-Tenant-Slug` **obligatorio** | crea **solo** `CUSTOMER`; `role` distinto de `CUSTOMER` → 400 |
 | `POST` | `/api/auth/login` | `X-Tenant-Slug` opcional | con slug: usuario del tenant; sin slug: solo `PLATFORM_ADMIN` |
-| `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status,colorPrimary,colorSecondary,logoUrl}` |
+| `GET` | `/api/public/tenants/{slug}` | — | `{slug,name,status,colorPrimary,colorSecondary,logoUrl,backgroundUrl,backgroundVisibility,backgroundBlur,stampIcon,rewardIcon}` |
 | `GET` | `/api/public/tenants/{slug}/manifest.webmanifest` | — | manifest PWA del tenant (`start_url` y `scope` con el slug) |
 
 ### Platform (`PLATFORM_ADMIN`)
@@ -202,6 +202,8 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 |---|---|
 | `POST` / `GET` | `/api/v1/platform/businesses` |
 | `GET` / `DELETE` | `/api/v1/platform/businesses/{id}` |
+| `PUT` | `/api/v1/platform/businesses/{id}` |
+| `POST` / `DELETE` | `/api/v1/platform/businesses/{id}/background` |
 | `PATCH` | `/api/v1/platform/businesses/{id}/status` |
 | `POST` / `GET` | `/api/v1/platform/businesses/{id}/admins` |
 
@@ -301,6 +303,9 @@ Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 
   `/:slug/**`; si el tenant no definió colores, quedan los del tema.
 - El `BUSINESS_ADMIN` los edita en **Configuración → Marca y apariencia**
   (`PUT /api/v1/business/me`), con validación `^#[0-9A-Fa-f]{6}$` para los colores.
+- El `PLATFORM_ADMIN` puede editar el mismo perfil y apariencia desde
+  **Plataforma → Negocios → Detalle** (`PUT /api/v1/platform/businesses/{id}`), incluyendo logo,
+  fondo y controles de vidrio.
 - La foto de fondo se puede subir (`POST /api/v1/business/me/background`, JPG/PNG/WebP hasta 5 MB)
   o indicar con una URL. Se sirve en `/api/files/backgrounds/{archivo}` y se compone con un velo
   dinámico sobre `--color-bg` para no perder contraste.

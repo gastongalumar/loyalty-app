@@ -339,6 +339,33 @@ class TenantIsolationTest {
     }
 
     @Test
+    void platformAdminCanUpdateBusinessProfile() throws Exception {
+        String payload = objectMapper.writeValueAsString(Map.of(
+                "name", "Cafe A Renovado",
+                "logoUrl", "https://cdn.example.com/new-logo.png",
+                "backgroundUrl", "https://cdn.example.com/new-bg.jpg",
+                "backgroundVisibility", 55,
+                "backgroundBlur", 15,
+                "colorPrimary", "#112233",
+                "stampIcon", "⭐",
+                "rewardIcon", "🤍"
+        ));
+
+        mockMvc.perform(put("/api/v1/platform/businesses/" + cafeA.getId())
+                        .header("Authorization", bearer(platformToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Cafe A Renovado"))
+                .andExpect(jsonPath("$.logoUrl").value("https://cdn.example.com/new-logo.png"))
+                .andExpect(jsonPath("$.backgroundVisibility").value(55))
+                .andExpect(jsonPath("$.backgroundBlur").value(15))
+                .andExpect(jsonPath("$.colorPrimary").value("#112233"))
+                .andExpect(jsonPath("$.stampIcon").value("⭐"))
+                .andExpect(jsonPath("$.rewardIcon").value("🤍"));
+    }
+
+    @Test
     void businessAdminCannotUsePlatformEndpoints() throws Exception {
         mockMvc.perform(get("/api/v1/platform/businesses").header("Authorization", bearer(adminAToken)))
                 .andExpect(status().isForbidden());

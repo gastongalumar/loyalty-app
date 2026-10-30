@@ -5,6 +5,7 @@ import com.loyalty.dto.platform.BusinessResponse;
 import com.loyalty.dto.platform.BusinessSummary;
 import com.loyalty.dto.platform.CreateAdminRequest;
 import com.loyalty.dto.platform.CreateBusinessRequest;
+import com.loyalty.dto.business.BusinessUpdateRequest;
 import com.loyalty.entity.Business;
 import com.loyalty.entity.User;
 import com.loyalty.exception.ConflictException;
@@ -19,10 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class PlatformService {
@@ -33,19 +36,22 @@ public class PlatformService {
     private final BusinessMapper businessMapper;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final QrCodeService qrCodeService;
+    private final FileStorageService fileStorageService;
 
     public PlatformService(BusinessRepository businessRepository,
                            UserRepository userRepository,
                            LoyaltyCardRepository loyaltyCardRepository,
                            BusinessMapper businessMapper,
                            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
-                           QrCodeService qrCodeService) {
+                           QrCodeService qrCodeService,
+                           FileStorageService fileStorageService) {
         this.businessRepository = businessRepository;
         this.userRepository = userRepository;
         this.loyaltyCardRepository = loyaltyCardRepository;
         this.businessMapper = businessMapper;
         this.passwordEncoder = passwordEncoder;
         this.qrCodeService = qrCodeService;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional
@@ -92,6 +98,99 @@ public class PlatformService {
     @Transactional(readOnly = true)
     public BusinessResponse getBusiness(Long id) {
         return toResponse(requireBusiness(id));
+    }
+
+    @Transactional
+    public BusinessResponse updateBusiness(Long id, BusinessUpdateRequest request) {
+        Business business = requireEditableBusiness(id);
+
+        if (request.getName() != null) {
+            business.setName(request.getName().trim());
+        }
+        if (request.getDescription() != null) {
+            business.setDescription(request.getDescription());
+        }
+        if (request.getLogoUrl() != null) {
+            business.setLogoUrl(blankToNull(request.getLogoUrl()));
+        }
+        if (request.getBackgroundUrl() != null) {
+            replaceBackground(business, request.getBackgroundUrl());
+        }
+        if (request.getBackgroundVisibility() != null) {
+            business.setBackgroundVisibility(clamp(request.getBackgroundVisibility(), 0, 100));
+        }
+        if (request.getBackgroundBlur() != null) {
+            business.setBackgroundBlur(clamp(request.getBackgroundBlur(), 0, 24));
+        }
+        if (request.getStampIcon() != null) {
+            business.setStampIcon(blankToNull(request.getStampIcon()));
+        }
+        if (request.getRewardIcon() != null) {
+            business.setRewardIcon(blankToNull(request.getRewardIcon()));
+        }
+        if (request.getColorPrimary() != null) {
+            business.setColorPrimary(request.getColorPrimary().toUpperCase(Locale.ROOT));
+        }
+        if (request.getColorSecondary() != null) {
+            business.setColorSecondary(request.getColorSecondary().toUpperCase(Locale.ROOT));
+        }
+        if (request.getRewardDescription() != null) {
+            business.setRewardDescription(request.getRewardDescription());
+        }
+        if (request.getStampsRequired() != null && request.getStampsRequired() > 0) {
+            business.setStampsRequired(request.getStampsRequired());
+        }
+
+        return toResponse(businessRepository.save(business));
+    }
+
+    @Transactional
+    public BusinessResponse updateBackground(Long id, MultipartFile file) {
+        Business business = requireEditableBusiness(id);
+        String previous = business.getBackgroundUrl();
+        String uploaded = fileStorageService.storeBackground(file);
+        business.setBackgroundUrl(uploaded);
+        Business saved = businessRepository.save(business);
+
+        if (!Objects.equals(previous, uploaded)) {
+            fileStorageService.deleteManaged(previous);
+        }
+        return toResponse(saved);
+    }
+
+    @Transactional
+    public BusinessResponse removeBackground(Long id) {
+        Business business = requireEditableBusiness(id);
+        String previous = business.getBackgroundUrl();
+        business.setBackgroundUrl(null);
+        Business saved = businessRepository.save(business);
+        fileStorageService.deleteManaged(previous);
+        return toResponse(saved);
+    }
+
+    private void replaceBackground(Business business, String next) {
+        String previous = business.getBackgroundUrl();
+        String normalized = blankToNull(next);
+        business.setBackgroundUrl(normalized);
+        if (!Objects.equals(previous, normalized)) {
+            fileStorageService.deleteManaged(previous);
+        }
+    }
+
+    private Business requireEditableBusiness(Long id) {
+        Business business = requireBusiness(id);
+        if (business.getStatus() == Business.Status.DELETED) {
+            throw new ConflictException("business_deleted", "A deleted business cannot be edited");
+        }
+        return business;
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     @Transactional
@@ -171,9 +270,5 @@ public class PlatformService {
         } catch (IllegalArgumentException ex) {
             throw new com.loyalty.exception.InvalidRequestException("Unknown status: " + status);
         }
-    }
-
-    private String blankToNull(String value) {
-        return value == null || value.isBlank() ? null : value.trim();
     }
 }

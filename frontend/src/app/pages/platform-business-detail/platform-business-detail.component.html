@@ -13,13 +13,16 @@
 
   <ng-container *ngIf="business && !loading">
     <header class="detail-head fade-in">
-      <div>
-        <p class="eyebrow">{{ 'PLATFORM.DETAIL' | translate }}</p>
-        <h1 class="page-title">{{ business.name }}</h1>
-        <p class="page-subtitle">
-          <code class="slug">{{ business.slug }}</code>
-          <span *ngIf="business.description"> · {{ business.description }}</span>
-        </p>
+      <div class="detail-head-main">
+        <img *ngIf="business.logoUrl" class="detail-logo" [src]="business.logoUrl" alt="" />
+        <div>
+          <p class="eyebrow">{{ 'PLATFORM.DETAIL' | translate }}</p>
+          <h1 class="page-title">{{ business.name }}</h1>
+          <p class="page-subtitle">
+            <code class="slug">{{ business.slug }}</code>
+            <span *ngIf="business.description"> · {{ business.description }}</span>
+          </p>
+        </div>
       </div>
       <span class="status-badge" [ngClass]="statusTone">
         <span class="status-dot" aria-hidden="true"></span>
@@ -43,6 +46,135 @@
         <span class="summary-label">{{ 'PLATFORM.ADMINS' | translate }}</span>
         <strong class="summary-value">{{ admins.length }}</strong>
       </article>
+    </section>
+
+    <section class="panel editor-panel fade-in">
+      <header class="panel-head">
+        <div>
+          <h2>{{ 'PLATFORM.EDIT_BUSINESS' | translate }}</h2>
+          <p class="muted">{{ 'PLATFORM.EDIT_BUSINESS_HINT' | translate }}</p>
+        </div>
+        <button class="btn btn-primary" type="button" [disabled]="!canSave" (click)="saveBusiness()">
+          {{ saving ? ('COMMON.LOADING' | translate) : ('COMMON.SAVE' | translate) }}
+        </button>
+      </header>
+
+      <div class="editor-columns">
+        <div class="editor-section">
+          <div class="form-group">
+            <label class="form-label" for="platform-business-name">{{ 'COMMON.NAME' | translate }}</label>
+            <input id="platform-business-name" class="form-control" [(ngModel)]="editForm.name" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="platform-business-description">{{ 'BUSINESS.DESCRIPTION' | translate }}</label>
+            <textarea id="platform-business-description" class="form-control" rows="3"
+                      [(ngModel)]="editForm.description"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="platform-business-stamps">{{ 'BUSINESS.STAMPS_REQUIRED' | translate }}</label>
+              <input id="platform-business-stamps" type="number" class="form-control"
+                     [(ngModel)]="editForm.stampsRequired" min="1" max="100" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="platform-business-reward">{{ 'BUSINESS.REWARD' | translate }}</label>
+              <input id="platform-business-reward" class="form-control"
+                     [(ngModel)]="editForm.rewardDescription" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="platform-business-logo">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
+            <input id="platform-business-logo" class="form-control" [(ngModel)]="editForm.logoUrl"
+                   placeholder="https://..." />
+            <p class="field-hint">{{ 'BUSINESS.LOGO_HINT' | translate }}</p>
+          </div>
+
+          <div *ngIf="editForm.logoUrl" class="logo-preview">
+            <span class="form-label">{{ 'BUSINESS.LOGO_PREVIEW' | translate }}</span>
+            <img [src]="editForm.logoUrl" [alt]="'BUSINESS.LOGO_PREVIEW' | translate" />
+          </div>
+        </div>
+
+        <div class="editor-section">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="platform-business-primary">{{ 'BUSINESS.PRIMARY_COLOR' | translate }}</label>
+              <input id="platform-business-primary" type="color" class="form-control color-input"
+                     [(ngModel)]="editForm.colorPrimary" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="platform-business-secondary">{{ 'BUSINESS.SECONDARY_COLOR' | translate }}</label>
+              <input id="platform-business-secondary" type="color" class="form-control color-input"
+                     [(ngModel)]="editForm.colorSecondary" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">{{ 'BUSINESS.BACKGROUND' | translate }}</span>
+            <div class="background-actions">
+              <label class="btn btn-outline btn-sm file-button">
+                {{ (uploadingBackground ? 'COMMON.LOADING' : 'BUSINESS.UPLOAD_BACKGROUND') | translate }}
+                <input type="file" accept="image/png,image/jpeg,image/webp"
+                       [disabled]="uploadingBackground"
+                       (change)="onBackgroundFile($event)" />
+              </label>
+              <button *ngIf="editForm.backgroundUrl" type="button" class="btn btn-ghost btn-sm"
+                      [disabled]="removingBackground" (click)="removeBackground()">
+                {{ (removingBackground ? 'COMMON.LOADING' : 'BUSINESS.REMOVE_BACKGROUND') | translate }}
+              </button>
+            </div>
+            <input class="form-control" [(ngModel)]="editForm.backgroundUrl"
+                   (ngModelChange)="onBackgroundChange()" placeholder="https://..." />
+            <p class="field-hint">{{ 'BUSINESS.BACKGROUND_HINT' | translate }}</p>
+          </div>
+
+          <div *ngIf="backgroundPreview" class="background-preview">
+            <span class="form-label">{{ 'BUSINESS.BACKGROUND_PREVIEW' | translate }}</span>
+            <div class="background-thumb" role="img"
+                 [style.backgroundImage]="'url(' + backgroundPreview + ')'"
+                 [attr.aria-label]="'BUSINESS.BACKGROUND_PREVIEW' | translate"></div>
+          </div>
+
+          <div class="background-tuning" [class.is-disabled]="!editForm.backgroundUrl">
+            <div class="range-field">
+              <div class="range-head">
+                <span class="form-label">{{ 'BUSINESS.BACKGROUND_VISIBILITY' | translate }}</span>
+                <span class="range-value">{{ editForm.backgroundVisibility ?? 20 }}%</span>
+              </div>
+              <input type="range" min="0" max="100" step="1"
+                     [(ngModel)]="editForm.backgroundVisibility"
+                     [disabled]="!editForm.backgroundUrl" />
+            </div>
+            <div class="range-field">
+              <div class="range-head">
+                <span class="form-label">{{ 'BUSINESS.BACKGROUND_BLUR' | translate }}</span>
+                <span class="range-value">{{ editForm.backgroundBlur ?? 8 }}px</span>
+              </div>
+              <input type="range" min="0" max="24" step="1"
+                     [(ngModel)]="editForm.backgroundBlur"
+                     [disabled]="!editForm.backgroundUrl" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <app-emoji-picker
+              [label]="'BUSINESS.STAMP_ICON' | translate"
+              [hint]="'BUSINESS.STAMP_ICON_HINT' | translate"
+              [value]="stampIcon"
+              (valueChange)="editForm.stampIcon = $event">
+            </app-emoji-picker>
+            <app-emoji-picker
+              [label]="'BUSINESS.REWARD_ICON' | translate"
+              [hint]="'BUSINESS.REWARD_ICON_HINT' | translate"
+              [value]="rewardIcon"
+              (valueChange)="editForm.rewardIcon = $event">
+            </app-emoji-picker>
+          </div>
+        </div>
+      </div>
     </section>
 
     <div class="detail-grid fade-in">

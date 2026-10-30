@@ -169,7 +169,9 @@
     "BUSINESS_MANY": "negocios",
     "SUSPEND": "Suspender",
     "ACTIVATE": "Activar",
-    "SLUG_HINT": "Minúsculas, números y guiones. Ej.: cafe-central"
+    "SLUG_HINT": "Minúsculas, números y guiones. Ej.: cafe-central",
+    "EDIT_BUSINESS": "Perfil y apariencia del negocio",
+    "EDIT_BUSINESS_HINT": "Editá nombre, logo, fondo, colores e iconos de este negocio."
   },
   "STATUS": {
     "ACTIVE": "Activo",
@@ -225,6 +227,7 @@
   },
   "SUCCESS": {
     "BUSINESS_CREATED": "{{name}} se creó correctamente.",
+    "BUSINESS_UPDATED": "{{name}} se actualizó correctamente.",
     "ADMIN_CREATED": "{{email}} ahora puede administrar el negocio."
   },
   "COMMON": {

@@ -37,6 +37,20 @@ export class PlatformService {
     return this.http.delete<void>(`${this.API}/${id}`);
   }
 
+  update(id: number, payload: Partial<Business>): Observable<Business> {
+    return this.http.put<Business>(`${this.API}/${id}`, payload);
+  }
+
+  uploadBackgroundFor(id: number, file: File): Observable<Business> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<Business>(`${this.API}/${id}/background`, body);
+  }
+
+  removeBackgroundFor(id: number): Observable<Business> {
+    return this.http.delete<Business>(`${this.API}/${id}/background`);
+  }
+
   listAdmins(id: number): Observable<Admin[]> {
     return this.http.get<Admin[]>(`${this.API}/${id}/admins`);
   }

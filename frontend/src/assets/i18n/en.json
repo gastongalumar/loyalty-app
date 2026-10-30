@@ -169,7 +169,9 @@
     "BUSINESS_MANY": "businesses",
     "SUSPEND": "Suspend",
     "ACTIVATE": "Activate",
-    "SLUG_HINT": "Lowercase letters, numbers and hyphens. E.g. cafe-central"
+    "SLUG_HINT": "Lowercase letters, numbers and hyphens. E.g. cafe-central",
+    "EDIT_BUSINESS": "Business profile and appearance",
+    "EDIT_BUSINESS_HINT": "Edit the name, logo, background, colors and icons for this business."
   },
   "STATUS": {
     "ACTIVE": "Active",
@@ -225,6 +227,7 @@
   },
   "SUCCESS": {
     "BUSINESS_CREATED": "{{name}} was created successfully.",
+    "BUSINESS_UPDATED": "{{name}} was updated successfully.",
     "ADMIN_CREATED": "{{email}} can now manage this business."
   },
   "COMMON": {
