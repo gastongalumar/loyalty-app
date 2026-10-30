@@ -44,3 +44,4 @@ backend/.dockerignore
 project-snapshot.json
 *.log
 logs/
+backups/

@@ -45,12 +45,16 @@ PLATFORM_ADMIN (global, tenant_id = NULL)
 ```text
 .
 ├── PLAN.md                      # Arquitectura, migraciones y plan de tareas
-├── docker-compose.yml           # MySQL + backend + frontend
+├── docker-compose.yml           # MySQL + backend + frontend (prod, solo publica 8090)
+├── docker-compose.dev.yml       # solo MySQL para desarrollo local (3307)
 ├── docker-compose.ci.yml        # MySQL efímero para verificar migraciones
-├── .env.example                 # todas las variables, sin valores reales
+├── .env.example                 # variables de desarrollo local
+├── .env.prod.example            # variables de producción (VM)
 ├── scripts/verify-migrations.sh # gate de migraciones (Docker / CI)
 ├── scripts/verify-migrations.ps1# gate de migraciones con MySQL local (Windows, sin Docker)
 ├── scripts/run-local.ps1        # arranca backend + frontend leyendo .env
+├── scripts/update.sh            # deploy: pull + build + up en la VM
+├── scripts/backup.sh            # mysqldump comprimido a backups/
 ├── backend/
 │   ├── Dockerfile               # eclipse-temurin:21
 │   └── src/main/
@@ -315,15 +319,113 @@ Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 
   `ng serve`. Para probar la PWA: `npm run build` y servir `dist/loyalty-frontend/browser`
   (por ejemplo con el nginx del Compose o cualquier servidor estático en `localhost`).
 
-## Docker
+## Docker y despliegue en la VM
+
+### Servicios
+
+| Servicio | Imagen | Puertos | Notas |
+|---|---|---|---|
+| `db` | `mysql:8.0` | solo red interna `3306` | volumen `mysql_data`; **sin puerto publicado** |
+| `backend` | build `./backend` (temurin 21) | solo red interna `8080` | health `/actuator/health` |
+| `frontend` | build `./frontend` (nginx) | host **`${HTTP_PORT:-8090}`** → `80` | proxy `/api/`, health `/healthz` |
+
+Solo se publica el frontend. MySQL y el backend quedan en la red `loyalty_net` y no son
+accesibles desde Internet.
+
+### Producción en la VM (OVH)
+
+| Dato | Valor |
+|---|---|
+| Host | `40.160.241.75` |
+| DNS | `loyalty.programandos.site` → `40.160.241.75` |
+| Puerto local del stack | **`8090`** |
+| Reverse proxy | Caddy/Nginx del host → `127.0.0.1:8090` |
 
 ```bash
-cp .env.example .env    # completar secretos
-docker compose up --build
+# en la VM
+git clone https://github.com/gastongalumar/loyalty-app.git
+cd loyalty-app
+cp .env.prod.example .env
+nano .env                        # completar MYSQL_*, APP_JWT_SECRET y bootstrap
+docker compose up -d --build
+docker compose ps
 ```
 
-Servicios: `db` (MySQL 8), `backend` (temurin 21, health `/actuator/health`), `frontend`
-(nginx, proxy `/api/` al backend). El frontend de producción usa `apiUrl: '/api'` (relativo).
+Verificación desde la VM:
+
+```bash
+curl -fsS http://127.0.0.1:8090/healthz
+curl -fsS http://127.0.0.1:8090/api/public/tenants/<slug>
+docker compose exec -T backend wget -qO- http://127.0.0.1:8080/actuator/health
+docker compose logs -f backend
+```
+
+> `docker compose` falla a propósito si faltan `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` o
+> `APP_JWT_SECRET` (validación `${VAR:?}`). No hay valores por defecto en producción.
+
+### Reverse proxy + HTTPS
+
+Caddy en el host (recomendado, TLS automático):
+
+```caddyfile
+loyalty.programandos.site {
+    reverse_proxy 127.0.0.1:8090
+}
+```
+
+Nginx del host:
+
+```nginx
+server {
+    listen 80;
+    server_name loyalty.programandos.site;
+    location / {
+        proxy_pass http://127.0.0.1:8090;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Firewall (no abrir 8080, 8090 ni 3306 a Internet):
+
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+```
+
+### Actualizar y respaldar
+
+```bash
+./scripts/update.sh     # git pull + build + up -d + prune
+./scripts/backup.sh     # mysqldump comprimido en backups/
+```
+
+El backup se guarda en `backups/` (ignorado por git). Para restaurar:
+
+```bash
+gunzip -c backups/loyalty_YYYYmmdd_HHMMSS.sql.gz | \
+  docker compose exec -T db sh -c 'exec mysql -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"'
+```
+
+### Desarrollo local
+
+```bash
+# opción A: MySQL en Docker + procesos locales
+docker compose -f docker-compose.dev.yml up -d   # MySQL en localhost:3307
+./scripts/run-local.ps1                          # backend + frontend con .env de dev
+
+# opción B: stack completo en Docker
+cp .env.example .env
+docker compose up --build                        # http://localhost:8090
+```
+
+El frontend de producción usa `apiUrl: '/api'` (relativo) y nginx proxya al backend. El
+service worker se registra solo en builds de producción: para probar la PWA serví
+`dist/loyalty-frontend/browser` por HTTP en `localhost` o usá el stack de Docker.
 
 ## Seguridad
 
