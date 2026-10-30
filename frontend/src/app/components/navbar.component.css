@@ -10,3 +10,9 @@
   color: var(--color-nav-text-muted);
   font-weight: var(--weight-medium);
 }
+
+@media (max-width: 640px) {
+  .navbar-slug {
+    display: none;
+  }
+}

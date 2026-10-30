@@ -53,7 +53,7 @@
         </div>
         <span class="badge" [class.badge-warning]="isReady(customer)"
               [class.badge-primary]="!isReady(customer)">
-          {{ isReady(customer) ? ('CUSTOMER.REWARD_READY' | translate) : customer.cardStatus }}
+          {{ statusKey(customer) | translate }}
         </span>
       </header>
 
@@ -77,7 +77,7 @@
         </div>
         <div>
           <dt>{{ 'BUSINESS.MEMBER_SINCE' | translate }}</dt>
-          <dd>{{ customer.memberSince | date:'mediumDate' }}</dd>
+          <dd>{{ customer.memberSince | appDate:'mediumDate' }}</dd>
         </div>
       </dl>
 

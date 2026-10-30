@@ -48,7 +48,10 @@
     <section *ngIf="availableRewardCount > 0" class="reward-banner fade-in">
       <span class="reward-banner-icon" aria-hidden="true">🎁</span>
       <div class="reward-banner-body">
-        <strong>{{ availableRewardCount }} {{ 'BUSINESS.REWARDS_WAITING' | translate }}</strong>
+        <strong>
+          {{ availableRewardCount }}
+          {{ (availableRewardCount === 1 ? 'BUSINESS.REWARD_WAITING_ONE' : 'BUSINESS.REWARDS_WAITING') | translate }}
+        </strong>
         <span class="muted">{{ business.rewardDescription }}</span>
       </div>
       <a class="btn btn-primary btn-sm" [routerLink]="['/', slug, 'business', 'rewards']">
@@ -121,7 +124,7 @@
           <span class="action-icon" aria-hidden="true">🏆</span>
           <span class="action-body">
             <strong>{{ 'NAV.REWARDS' | translate }}</strong>
-            <span class="muted">{{ 'BUSINESS.REWARDS_SUBTITLE' | translate }}</span>
+            <span class="muted">{{ 'BUSINESS.REWARDS_HINT' | translate }}</span>
           </span>
         </a>
 

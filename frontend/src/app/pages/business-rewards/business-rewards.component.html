@@ -56,7 +56,7 @@
       <dl class="reward-meta">
         <div>
           <dt>{{ 'BUSINESS.EARNED_AT' | translate }}</dt>
-          <dd>{{ reward.earnedAt | date:'short' }}</dd>
+          <dd>{{ reward.earnedAt | appDate:'short' }}</dd>
         </div>
         <div *ngIf="reward.status === 'REDEEMED'">
           <dt>{{ 'BUSINESS.REDEEMED_BY' | translate }}</dt>
@@ -64,7 +64,7 @@
         </div>
         <div *ngIf="reward.status === 'REDEEMED' && reward.redeemedAt">
           <dt>{{ 'BUSINESS.REDEEMED_AT' | translate }}</dt>
-          <dd>{{ reward.redeemedAt | date:'short' }}</dd>
+          <dd>{{ reward.redeemedAt | appDate:'short' }}</dd>
         </div>
       </dl>
 

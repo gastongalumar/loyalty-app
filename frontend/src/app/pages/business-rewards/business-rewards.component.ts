@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { RewardService } from '../../services/reward.service';
 import { Reward } from '../../models/models';
@@ -13,7 +14,7 @@ interface RewardTab {
 @Component({
   selector: 'app-business-rewards',
   standalone: true,
-  imports: [CommonModule, TranslateModule, NavbarComponent],
+  imports: [CommonModule, TranslateModule, AppDatePipe, NavbarComponent],
   templateUrl: './business-rewards.component.html',
   styleUrls: ['./business-rewards.component.css']
 })

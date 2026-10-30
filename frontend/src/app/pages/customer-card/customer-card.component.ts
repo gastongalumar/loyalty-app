@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
 import { LoyaltyService } from '../../services/loyalty.service';
@@ -15,6 +16,7 @@ import { LoyaltyCard, Reward } from '../../models/models';
     CommonModule,
     RouterLink,
     TranslateModule,
+    AppDatePipe,
     NavbarComponent,
     LoyaltyCardVisualComponent
   ],

@@ -9,7 +9,7 @@
     </div>
     <span class="lc-status" [class.lc-status-ready]="card.status === 'REWARD_PENDING'">
       <span aria-hidden="true">{{ card.status === 'REWARD_PENDING' ? '🎁' : '✨' }}</span>
-      {{ card.status }}
+      {{ statusKey | translate }}
     </span>
   </header>
 
@@ -41,10 +41,13 @@
     <span class="lc-count">
       {{ card.currentStamps }} / {{ card.totalStamps }} {{ 'CUSTOMER.STAMPS' | translate }}
     </span>
-    <span *ngIf="remaining > 0" class="lc-hint">
+    <span *ngIf="card.status === 'REWARD_PENDING'" class="lc-hint lc-ready">
+      🎁 {{ 'CUSTOMER.REWARD_PENDING_HINT' | translate }}
+    </span>
+    <span *ngIf="card.status !== 'REWARD_PENDING' && remaining > 0" class="lc-hint">
       {{ remaining }} {{ 'CUSTOMER.TO_GO' | translate }}
     </span>
-    <span *ngIf="remaining === 0" class="lc-hint lc-ready">
+    <span *ngIf="card.status !== 'REWARD_PENDING' && remaining === 0" class="lc-hint lc-ready">
       🎉 {{ 'CUSTOMER.REWARD_READY' | translate }}
     </span>
   </footer>

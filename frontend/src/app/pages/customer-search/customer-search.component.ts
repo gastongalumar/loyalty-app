@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyService } from '../../services/loyalty.service';
 import { Customer } from '../../models/models';
@@ -9,7 +10,7 @@ import { Customer } from '../../models/models';
 @Component({
   selector: 'app-customer-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, AppDatePipe, NavbarComponent],
   templateUrl: './customer-search.component.html',
   styleUrls: ['./customer-search.component.css']
 })
@@ -69,6 +70,19 @@ export class CustomerSearchComponent implements OnInit {
 
   isReady(customer: Customer): boolean {
     return customer.cardStatus === 'REWARD_PENDING';
+  }
+
+  statusKey(customer: Customer): string {
+    switch (customer.cardStatus) {
+      case 'REWARD_PENDING':
+        return 'CUSTOMER.REWARD_READY';
+      case 'ACTIVE':
+        return 'CUSTOMER.STATUS_ACTIVE';
+      case 'COMPLETED':
+        return 'CUSTOMER.STATUS_COMPLETED';
+      default:
+        return customer.cardStatus;
+    }
   }
 
   addStamp(customer: Customer): void {

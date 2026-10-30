@@ -18,7 +18,9 @@ export class NavbarComponent {
   isCustomer = this.auth.isCustomer();
   isBusinessAdmin = this.auth.isBusinessAdmin();
   isPlatformAdmin = this.auth.isPlatformAdmin();
-  slug = this.auth.getTenantSlug() ?? this.slugService.get() ?? '';
+  slug = this.isPlatformAdmin
+    ? ''
+    : (this.auth.getTenantSlug() ?? this.slugService.get() ?? '');
   home = this.auth.homeRoute();
   currentLang = localStorage.getItem('lang') || 'en';
   businessName = this.slugService.getTenant()?.name ?? '';

@@ -57,7 +57,7 @@
           <span class="reward-icon" aria-hidden="true">🎁</span>
           <div class="reward-body">
             <strong>{{ reward.description }}</strong>
-            <span class="muted">{{ reward.earnedAt | date:'short' }}</span>
+            <span class="muted">{{ reward.earnedAt | appDate:'short' }}</span>
           </div>
           <span class="badge"
                 [class.badge-success]="reward.status === 'AVAILABLE'"
@@ -79,7 +79,7 @@
             <strong>{{ stamp.addedByName }}</strong>
             <span *ngIf="stamp.note" class="muted">— {{ stamp.note }}</span>
           </div>
-          <span class="muted stamp-date">{{ stamp.createdAt | date:'short' }}</span>
+          <span class="muted stamp-date">{{ stamp.createdAt | appDate:'short' }}</span>
         </li>
       </ul>
     </section>

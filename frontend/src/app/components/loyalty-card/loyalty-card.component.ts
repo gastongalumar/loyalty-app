@@ -26,4 +26,15 @@ export class LoyaltyCardVisualComponent {
   get remaining(): number {
     return Math.max(this.card.totalStamps - this.card.currentStamps, 0);
   }
+
+  get statusKey(): string {
+    switch (this.card?.status) {
+      case 'REWARD_PENDING':
+        return 'CUSTOMER.REWARD_READY';
+      case 'COMPLETED':
+        return 'CUSTOMER.STATUS_COMPLETED';
+      default:
+        return 'CUSTOMER.STATUS_ACTIVE';
+    }
+  }
 }
