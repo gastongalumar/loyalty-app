@@ -1,7 +1,7 @@
 <div class="auth-page">
       <div class="auth-card fade-in">
-        <div class="auth-logo">{{ 'APP.NAME' | translate }}</div>
-        <p class="auth-tagline">{{ slug }} · {{ 'AUTH.JOIN_US' | translate }}</p>
+        <div class="auth-logo">{{ businessName || ('APP.NAME' | translate) }}</div>
+        <p class="auth-tagline">{{ 'AUTH.JOIN_US' | translate }}</p>
 
         <div *ngIf="error" class="alert alert-error">{{ error }}</div>
 

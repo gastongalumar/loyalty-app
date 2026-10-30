@@ -19,6 +19,7 @@ export class LoginComponent {
   loading = false;
   error = '';
   slug = this.slugService.get() ?? '';
+  businessName = this.slugService.getTenant()?.name ?? this.slugService.get() ?? '';
 
   constructor(
     private authService: AuthService,
