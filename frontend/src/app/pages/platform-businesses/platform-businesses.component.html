@@ -48,6 +48,7 @@
                 <a class="business-link" [routerLink]="['/platform/businesses', business.id]">
                   <span class="business-avatar" aria-hidden="true">{{ initial(business) }}</span>
                   <span class="business-name">{{ business.name }}</span>
+                  <span class="business-go" aria-hidden="true">→</span>
                 </a>
               </td>
               <td [attr.data-label]="'COMMON.SLUG' | translate">
@@ -64,9 +65,6 @@
               </td>
               <td class="actions-col" [attr.data-label]="'COMMON.ACTIONS' | translate">
                 <div class="row-actions">
-                  <a class="btn btn-ghost btn-sm" [routerLink]="['/platform/businesses', business.id]">
-                    {{ 'COMMON.DETAILS' | translate }}
-                  </a>
                   <button *ngIf="business.status === 'ACTIVE'" class="btn btn-ghost btn-sm"
                           type="button" (click)="setStatus(business, 'SUSPENDED')">
                     {{ 'PLATFORM.SUSPEND' | translate }}

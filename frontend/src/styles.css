@@ -884,6 +884,30 @@ input[type='color'].form-control {
   }
 }
 
+@media (max-width: 640px) {
+  .navbar-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1);
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .navbar-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .pwa-install {
+    display: none;
+  }
+}
+
 @media (max-width: 600px) {
   .stats-grid {
     grid-template-columns: 1fr;

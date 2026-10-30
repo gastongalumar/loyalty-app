@@ -103,6 +103,7 @@
 
 .data-table .actions-col {
   text-align: right;
+  white-space: nowrap;
 }
 
 .business-link {
@@ -131,7 +132,25 @@
   font-weight: var(--weight-bold);
 }
 
+.business-name {
+  min-width: 0;
+}
+
+.business-go {
+  flex: none;
+  color: var(--color-text-subtle);
+  font-size: var(--text-sm);
+  transition: transform var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.business-link:hover .business-go {
+  color: var(--color-accent);
+  transform: translateX(2px);
+}
+
 .slug {
+  white-space: nowrap;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-xs);
   background: var(--color-surface-sunken);

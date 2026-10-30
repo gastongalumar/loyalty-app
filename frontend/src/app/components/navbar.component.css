@@ -43,6 +43,12 @@
     min-width: 0;
   }
 
+  .navbar-name {
+    max-width: none;
+    flex: 1;
+    min-width: 0;
+  }
+
   .navbar-actions {
     flex: none;
   }
@@ -52,11 +58,17 @@
   }
 }
 
-@media (max-width: 420px) {
-  .navbar-name {
-    max-width: 18ch;
+@media (max-width: 480px) {
+  .navbar-brand {
+    font-size: var(--text-base);
   }
 
+  .navbar-logo {
+    height: 22px;
+  }
+}
+
+@media (max-width: 420px) {
   .theme-toggle {
     width: 32px;
     height: 32px;

@@ -348,6 +348,10 @@
     flex-basis: 60%;
   }
 
+  .search-bar .btn {
+    flex: 1 0 100%;
+  }
+
   .customer-grid {
     grid-template-columns: minmax(0, 1fr);
   }
