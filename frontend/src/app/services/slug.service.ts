@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TenantInfo } from '../models/models';
+import { PwaService } from './pwa.service';
 
 /**
  * Resolves the tenant slug from the /:slug path segment and keeps the last
@@ -16,7 +17,7 @@ export class SlugService {
   private current: string | null = sessionStorage.getItem(SlugService.KEY);
   private currentTenant: TenantInfo | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private pwa: PwaService) {}
 
   get(): string | null {
     return this.current;
@@ -33,6 +34,10 @@ export class SlugService {
   validate(slug: string): Observable<TenantInfo> {
     return this.http.get<TenantInfo>(`${environment.apiUrl}/public/tenants/${slug}`)
       .pipe(tap(info => {
+        if (this.current && this.current !== info.slug) {
+          // Nunca reutilizar la cache de navegación de otro tenant.
+          this.pwa.clearTenantCache(this.current);
+        }
         this.set(info.slug);
         this.currentTenant = info;
       }));
@@ -44,6 +49,7 @@ export class SlugService {
   }
 
   clear(): void {
+    this.pwa.clearTenantCache(this.current);
     this.current = null;
     this.currentTenant = null;
     sessionStorage.removeItem(SlugService.KEY);

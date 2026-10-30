@@ -3,11 +3,14 @@ import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TenantInfo } from '../models/models';
 
+const STATIC_MANIFEST = '/manifest.webmanifest';
+
 /**
- * PWA per tenant:
- * - registers the shared service worker (caches are partitioned by slug);
- * - injects the tenant manifest and theme-color at runtime;
- * - exposes the deferred install prompt.
+ * PWA por tenant:
+ * - registra el service worker compartido (caches particionadas por slug);
+ * - inyecta el manifest y theme-color del tenant en runtime;
+ * - expone el install prompt deferido;
+ * - invalida la cache del tenant al cambiar de negocio o cerrar sesión.
  */
 @Injectable({ providedIn: 'root' })
 export class PwaService {
@@ -17,6 +20,7 @@ export class PwaService {
   private deferredPrompt: any = null;
   private manifestLink: HTMLLinkElement | null = null;
   private themeColorMeta: HTMLMetaElement | null = null;
+  private appleTitleMeta: HTMLMetaElement | null = null;
 
   constructor() {
     window.addEventListener('beforeinstallprompt', (event: any) => {
@@ -45,19 +49,20 @@ export class PwaService {
       return;
     }
 
+    this.ensureManifestLink();
+
     if (!info) {
-      this.manifestLink?.remove();
-      this.manifestLink = null;
+      if (this.manifestLink) {
+        this.manifestLink.href = STATIC_MANIFEST;
+      }
+      this.setAppleTitle('Loyalty');
       return;
     }
 
-    if (!this.manifestLink) {
-      this.manifestLink = document.createElement('link');
-      this.manifestLink.rel = 'manifest';
-      document.head.appendChild(this.manifestLink);
+    if (this.manifestLink) {
+      this.manifestLink.href =
+        `${environment.apiUrl}/public/tenants/${info.slug}/manifest.webmanifest`;
     }
-    this.manifestLink.href =
-      `${environment.apiUrl}/public/tenants/${info.slug}/manifest.webmanifest`;
 
     if (!this.themeColorMeta) {
       this.themeColorMeta = document.createElement('meta');
@@ -69,6 +74,20 @@ export class PwaService {
     if (accent) {
       this.themeColorMeta.content = accent;
     }
+
+    this.setAppleTitle(info.name);
+  }
+
+  /** Borra la cache de navegación de un tenant (al cambiar de negocio o hacer logout). */
+  clearTenantCache(slug: string | null): void {
+    if (!slug || typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+      return;
+    }
+    const controller = navigator.serviceWorker.controller;
+    if (!controller) {
+      return;
+    }
+    controller.postMessage({ type: 'CLEAR_TENANT', slug });
   }
 
   async install(): Promise<void> {
@@ -79,5 +98,29 @@ export class PwaService {
     await this.deferredPrompt.userChoice;
     this.deferredPrompt = null;
     this.canInstall$.next(false);
+  }
+
+  private ensureManifestLink(): void {
+    if (!this.manifestLink) {
+      this.manifestLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+    }
+    if (!this.manifestLink) {
+      this.manifestLink = document.createElement('link');
+      this.manifestLink.rel = 'manifest';
+      document.head.appendChild(this.manifestLink);
+    }
+  }
+
+  private setAppleTitle(title: string): void {
+    if (!this.appleTitleMeta) {
+      this.appleTitleMeta = document.querySelector<HTMLMetaElement>(
+        'meta[name="apple-mobile-web-app-title"]');
+    }
+    if (!this.appleTitleMeta) {
+      this.appleTitleMeta = document.createElement('meta');
+      this.appleTitleMeta.name = 'apple-mobile-web-app-title';
+      document.head.appendChild(this.appleTitleMeta);
+    }
+    this.appleTitleMeta.content = title;
   }
 }

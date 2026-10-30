@@ -296,7 +296,10 @@ class TenantIsolationTest {
                 .andExpect(jsonPath("$.start_url").value("/cafe-a/login"))
                 .andExpect(jsonPath("$.scope").value("/cafe-a/"))
                 .andExpect(jsonPath("$.theme_color").value("#FF6B35"))
-                .andExpect(jsonPath("$.background_color").value("#1A1A2E"));
+                .andExpect(jsonPath("$.background_color").value("#1A1A2E"))
+                .andExpect(jsonPath("$.icons.length()").value(4))
+                .andExpect(jsonPath("$.icons[0].sizes").value("192x192"))
+                .andExpect(jsonPath("$.icons[2].purpose").value("maskable"));
 
         mockMvc.perform(get("/api/public/tenants/gym-b/manifest.webmanifest"))
                 .andExpect(status().isOk())

@@ -4,12 +4,13 @@ import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { AuthRequest, AuthResponse, RegisterRequest, Role } from '../models/models';
+import { PwaService } from './pwa.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private pwa: PwaService) {}
 
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/register`, request)
@@ -23,6 +24,8 @@ export class AuthService {
 
   logout(): void {
     const wasPlatform = this.isPlatformAdmin();
+    const slug = this.getTenantSlug();
+    this.pwa.clearTenantCache(slug);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.router.navigate(wasPlatform ? ['/platform/login'] : ['/']);

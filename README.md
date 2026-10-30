@@ -296,12 +296,18 @@ Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 
 ## PWA por tenant (R3)
 
 - `GET /api/public/tenants/{slug}/manifest.webmanifest` arma el manifest en runtime con
-  `name`, `theme_color`, `background_color`, `start_url: /{slug}/login` y `scope: /{slug}/`.
+  `name`, `theme_color`, `background_color`, `start_url: /{slug}/login` y `scope: /{slug}/`,
+  más iconos PNG 192/512 y 512 maskable.
+- `frontend/src/manifest.webmanifest` es el fallback estático (landing, scope `/`); al resolver
+  un tenant, `PwaService` cambia el `href` al manifest dinámico y actualiza `theme-color` y
+  `apple-mobile-web-app-title`.
 - Un **único service worker** (`/sw.js`, scope `/`) cachea:
   - assets de la app → `loyalty-shell-v1` (compartido, sin datos de negocio);
   - navegación de cada tenant → `loyalty-tenant-<slug>-v1`.
 - No hay fallback cruzado: la caché se elige por el primer segmento de la URL y `/api/**`,
   `/actuator/**` y `/platform/**` no se cachean nunca. Un tenant no puede servir HTML de otro.
+- Al cambiar de tenant o cerrar sesión, `PwaService` envía `CLEAR_TENANT` y el SW borra
+  `loyalty-tenant-<slug>-*`.
 - El manifest y el `theme-color` se inyectan en runtime solo cuando hay slug, y se limpian al
   entrar a `/platform`.
 - El botón **Instalar app** aparece cuando el navegador dispara `beforeinstallprompt`.

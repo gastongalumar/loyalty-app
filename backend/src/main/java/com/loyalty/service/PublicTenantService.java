@@ -57,16 +57,28 @@ public class PublicTenantService {
         manifest.put("lang", "es");
         manifest.put("icons", List.of(
                 Map.of(
+                        "src", "/assets/icons/icon-192.png",
+                        "sizes", "192x192",
+                        "type", "image/png",
+                        "purpose", "any"
+                ),
+                Map.of(
+                        "src", "/assets/icons/icon-512.png",
+                        "sizes", "512x512",
+                        "type", "image/png",
+                        "purpose", "any"
+                ),
+                Map.of(
+                        "src", "/assets/icons/icon-maskable-512.png",
+                        "sizes", "512x512",
+                        "type", "image/png",
+                        "purpose", "maskable"
+                ),
+                Map.of(
                         "src", "/assets/icons/icon.svg",
                         "sizes", "any",
                         "type", "image/svg+xml",
                         "purpose", "any"
-                ),
-                Map.of(
-                        "src", "/assets/icons/icon-maskable.svg",
-                        "sizes", "any",
-                        "type", "image/svg+xml",
-                        "purpose", "maskable"
                 )
         ));
         return manifest;

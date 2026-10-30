@@ -9,7 +9,7 @@
  * Las rutas /api, /actuator y /platform no se cachean.
  */
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = `loyalty-shell-${VERSION}`;
 const TENANT_CACHE_PREFIX = 'loyalty-tenant-';
 const SHELL_ASSETS = [
@@ -42,8 +42,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  const data = event.data || {};
+  if (data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (data.type === 'CLEAR_TENANT' && data.slug) {
+    const prefix = `${TENANT_CACHE_PREFIX}${data.slug}-`;
+    event.waitUntil(
+      caches.keys()
+        .then((keys) => Promise.all(
+          keys.filter((key) => key.startsWith(prefix)).map((key) => caches.delete(key))
+        ))
+    );
   }
 });
 
