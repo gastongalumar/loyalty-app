@@ -12,6 +12,9 @@ import com.loyalty.repository.UserRepository;
 import com.loyalty.tenant.TenantContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 @Service
 public class BusinessService {
@@ -20,15 +23,18 @@ public class BusinessService {
     private final LoyaltyCardRepository loyaltyCardRepository;
     private final UserRepository userRepository;
     private final BusinessMapper businessMapper;
+    private final FileStorageService fileStorageService;
 
     public BusinessService(BusinessRepository businessRepository,
                            LoyaltyCardRepository loyaltyCardRepository,
                            UserRepository userRepository,
-                           BusinessMapper businessMapper) {
+                           BusinessMapper businessMapper,
+                           FileStorageService fileStorageService) {
         this.businessRepository = businessRepository;
         this.loyaltyCardRepository = loyaltyCardRepository;
         this.userRepository = userRepository;
         this.businessMapper = businessMapper;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -49,6 +55,15 @@ public class BusinessService {
         if (request.getLogoUrl() != null) {
             business.setLogoUrl(request.getLogoUrl());
         }
+        if (request.getBackgroundUrl() != null) {
+            replaceBackground(business, request.getBackgroundUrl());
+        }
+        if (request.getStampIcon() != null) {
+            business.setStampIcon(blankToNull(request.getStampIcon()));
+        }
+        if (request.getRewardIcon() != null) {
+            business.setRewardIcon(blankToNull(request.getRewardIcon()));
+        }
         if (request.getColorPrimary() != null) {
             business.setColorPrimary(request.getColorPrimary().toUpperCase());
         }
@@ -63,6 +78,43 @@ public class BusinessService {
         }
 
         return toResponse(businessRepository.save(business));
+    }
+
+    @Transactional
+    public BusinessResponse updateBackground(MultipartFile file) {
+        Business business = requireTenantBusiness();
+        String previous = business.getBackgroundUrl();
+        String uploaded = fileStorageService.storeBackground(file);
+        business.setBackgroundUrl(uploaded);
+        Business saved = businessRepository.save(business);
+
+        if (!Objects.equals(previous, uploaded)) {
+            fileStorageService.deleteManaged(previous);
+        }
+        return toResponse(saved);
+    }
+
+    @Transactional
+    public BusinessResponse removeBackground() {
+        Business business = requireTenantBusiness();
+        String previous = business.getBackgroundUrl();
+        business.setBackgroundUrl(null);
+        Business saved = businessRepository.save(business);
+        fileStorageService.deleteManaged(previous);
+        return toResponse(saved);
+    }
+
+    private void replaceBackground(Business business, String next) {
+        String previous = business.getBackgroundUrl();
+        String normalized = blankToNull(next);
+        business.setBackgroundUrl(normalized);
+        if (!Objects.equals(previous, normalized)) {
+            fileStorageService.deleteManaged(previous);
+        }
+    }
+
+    private String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private Business requireTenantBusiness() {

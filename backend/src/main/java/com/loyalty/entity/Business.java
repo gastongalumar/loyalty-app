@@ -29,11 +29,20 @@ public class Business {
 
     private String logoUrl;
 
+    @Column(length = 500)
+    private String backgroundUrl;
+
     @Column(length = 7)
     private String colorPrimary;
 
     @Column(length = 7)
     private String colorSecondary;
+
+    @Column(length = 16)
+    private String stampIcon;
+
+    @Column(length = 16)
+    private String rewardIcon;
 
     @Column(nullable = false)
     private Integer stampsRequired;

@@ -31,7 +31,7 @@
   <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading && rewards.length === 0" class="empty-state">
-    <span class="empty-icon" aria-hidden="true">🎁</span>
+    <span class="empty-icon" aria-hidden="true">{{ giftIcon }}</span>
     <p>{{ 'BUSINESS.NO_REWARDS' | translate }}</p>
   </div>
 
@@ -40,7 +40,7 @@
              [class.is-redeemed]="reward.status === 'REDEEMED'">
       <header class="reward-head">
         <span class="reward-icon" aria-hidden="true">
-          {{ reward.status === 'AVAILABLE' ? '🎁' : '🏆' }}
+          {{ reward.status === 'AVAILABLE' ? giftIcon : rewardIcon }}
         </span>
         <div class="reward-identity">
           <strong>{{ reward.customerName }}</strong>

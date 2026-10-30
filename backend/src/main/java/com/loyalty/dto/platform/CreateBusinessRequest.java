@@ -24,4 +24,10 @@ public class CreateBusinessRequest {
 
     @Size(max = 500)
     private String rewardDescription;
+
+    @Size(max = 16)
+    private String stampIcon;
+
+    @Size(max = 16)
+    private String rewardIcon;
 }

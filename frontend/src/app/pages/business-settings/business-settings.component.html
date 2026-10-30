@@ -104,6 +104,49 @@
           <img [src]="logoPreview" [alt]="'BUSINESS.LOGO_PREVIEW' | translate"
                (error)="onLogoError()" />
         </div>
+
+        <div class="form-group">
+          <span class="form-label">{{ 'BUSINESS.BACKGROUND' | translate }}</span>
+          <div class="background-actions">
+            <label class="btn btn-outline btn-sm file-button">
+              {{ (uploadingBackground ? 'COMMON.LOADING' : 'BUSINESS.UPLOAD_BACKGROUND') | translate }}
+              <input type="file" accept="image/png,image/jpeg,image/webp"
+                     [disabled]="uploadingBackground"
+                     (change)="onBackgroundFile($event)" />
+            </label>
+            <button *ngIf="form.backgroundUrl" type="button" class="btn btn-ghost btn-sm"
+                    [disabled]="removingBackground" (click)="removeBackground()">
+              {{ (removingBackground ? 'COMMON.LOADING' : 'BUSINESS.REMOVE_BACKGROUND') | translate }}
+            </button>
+          </div>
+          <input id="business-background" name="backgroundUrl" class="form-control"
+                 [(ngModel)]="form.backgroundUrl" (ngModelChange)="onBackgroundChange()"
+                 placeholder="https://..." />
+          <p class="field-hint">{{ 'BUSINESS.BACKGROUND_HINT' | translate }}</p>
+          <p *ngIf="backgroundMessage" class="field-hint success-hint">{{ backgroundMessage }}</p>
+        </div>
+
+        <div *ngIf="backgroundPreview" class="background-preview">
+          <span class="form-label">{{ 'BUSINESS.BACKGROUND_PREVIEW' | translate }}</span>
+          <div class="background-thumb" role="img"
+               [style.backgroundImage]="'url(' + backgroundPreview + ')'"
+               [attr.aria-label]="'BUSINESS.BACKGROUND_PREVIEW' | translate"></div>
+        </div>
+
+        <div class="form-row">
+          <app-emoji-picker
+            [label]="'BUSINESS.STAMP_ICON' | translate"
+            [hint]="'BUSINESS.STAMP_ICON_HINT' | translate"
+            [value]="stampIcon"
+            (valueChange)="form.stampIcon = $event">
+          </app-emoji-picker>
+          <app-emoji-picker
+            [label]="'BUSINESS.REWARD_ICON' | translate"
+            [hint]="'BUSINESS.REWARD_ICON_HINT' | translate"
+            [value]="rewardIcon"
+            (valueChange)="form.rewardIcon = $event">
+          </app-emoji-picker>
+        </div>
       </section>
 
       <button class="btn btn-primary btn-full btn-lg" type="submit" [disabled]="!canSave">
@@ -125,11 +168,11 @@
           </div>
         </div>
 
-        <p class="preview-reward">🏆 {{ form.rewardDescription || ('BUSINESS.REWARD' | translate) }}</p>
+        <p class="preview-reward">{{ rewardIcon }} {{ form.rewardDescription || ('BUSINESS.REWARD' | translate) }}</p>
 
         <div class="preview-stamps" aria-hidden="true">
           <span *ngFor="let i of previewStamps" class="preview-stamp" [class.filled]="i < previewFilled">
-            {{ i < previewFilled ? '☕' : i + 1 }}
+            {{ i < previewFilled ? stampIcon : i + 1 }}
           </span>
           <span *ngIf="previewOverflow > 0" class="preview-stamp preview-overflow">+{{ previewOverflow }}</span>
         </div>

@@ -6,6 +6,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
 import { LoyaltyService } from '../../services/loyalty.service';
+import { SlugService } from '../../services/slug.service';
 import { LoyaltyCard } from '../../models/models';
 
 @Component({
@@ -33,8 +34,13 @@ export class QrScannerComponent implements OnDestroy {
 
   constructor(
     private loyalty: LoyaltyService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private slugService: SlugService
   ) {}
+
+  get stampIcon(): string {
+    return this.slugService.getTenant()?.stampIcon || '☕';
+  }
 
   startScanner(): void {
     if (typeof Html5Qrcode === 'undefined') {

@@ -4,21 +4,36 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
+import { EmojiPickerComponent } from '../../components/emoji-picker/emoji-picker.component';
 import { PlatformService } from '../../services/platform.service';
 import { Business, BusinessSummary } from '../../models/models';
 import { businessStatusKey, businessStatusTone } from '../../utils/status';
 import { apiErrorMessage } from '../../utils/api-error';
+import { DEFAULT_REWARD_ICON, DEFAULT_STAMP_ICON } from '../../utils/emoji-catalog';
 
 @Component({
   selector: 'app-platform-businesses',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, NavbarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    TranslateModule,
+    NavbarComponent,
+    EmojiPickerComponent
+  ],
   templateUrl: './platform-businesses.component.html',
   styleUrls: ['./platform-businesses.component.css']
 })
 export class PlatformBusinessesComponent implements OnInit {
   businesses: BusinessSummary[] = [];
-  createForm = { name: '', slug: '', rewardDescription: '' };
+  createForm = {
+    name: '',
+    slug: '',
+    rewardDescription: '',
+    stampIcon: DEFAULT_STAMP_ICON,
+    rewardIcon: DEFAULT_REWARD_ICON
+  };
   creating = false;
   error = '';
   success = '';
@@ -85,6 +100,8 @@ export class PlatformBusinessesComponent implements OnInit {
       name: this.createForm.name.trim(),
       slug: this.createForm.slug,
       rewardDescription: this.createForm.rewardDescription || undefined,
+      stampIcon: this.createForm.stampIcon,
+      rewardIcon: this.createForm.rewardIcon,
       stampsRequired: 10
     };
 
@@ -92,7 +109,13 @@ export class PlatformBusinessesComponent implements OnInit {
       next: (business) => {
         this.creating = false;
         this.success = this.translate.instant('SUCCESS.BUSINESS_CREATED', { name: business.name });
-        this.createForm = { name: '', slug: '', rewardDescription: '' };
+        this.createForm = {
+          name: '',
+          slug: '',
+          rewardDescription: '',
+          stampIcon: DEFAULT_STAMP_ICON,
+          rewardIcon: DEFAULT_REWARD_ICON
+        };
         this.slugTouched = false;
         this.load();
       },

@@ -29,7 +29,7 @@
 
     <section class="summary-grid fade-in" [attr.aria-label]="'PLATFORM.DETAIL' | translate">
       <article class="summary-card">
-        <span class="summary-icon" aria-hidden="true">🏆</span>
+        <span class="summary-icon" aria-hidden="true">{{ business.rewardIcon || '🏆' }}</span>
         <span class="summary-label">{{ 'BUSINESS.REWARD' | translate }}</span>
         <strong class="summary-value">{{ business.rewardDescription || '—' }}</strong>
       </article>

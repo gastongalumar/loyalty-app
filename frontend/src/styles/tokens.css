@@ -97,6 +97,7 @@
   --color-accent-hover: #82290a;
   --color-accent-contrast: #ffffff;
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-bg-overlay: color-mix(in srgb, var(--color-bg) 88%, transparent);
   --color-success: #1f6f4a;
   --color-success-soft: #dcece3;
   --color-warning: #7a4e00;
@@ -183,6 +184,7 @@
   --color-accent-hover: #ffb9a0;
   --color-accent-contrast: #2a0e05;
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --color-bg-overlay: color-mix(in srgb, var(--color-bg) 88%, transparent);
   --color-success: #6ee7b7;
   --color-success-soft: rgba(110, 231, 183, 0.12);
   --color-warning: #fcd34d;

@@ -17,8 +17,11 @@ public class BusinessResponse {
     private String name;
     private String description;
     private String logoUrl;
+    private String backgroundUrl;
     private String colorPrimary;
     private String colorSecondary;
+    private String stampIcon;
+    private String rewardIcon;
     private Integer stampsRequired;
     private String rewardDescription;
     private String status;

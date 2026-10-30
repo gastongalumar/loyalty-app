@@ -3,27 +3,44 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
+import { EmojiPickerComponent } from '../../components/emoji-picker/emoji-picker.component';
 import { PlatformService } from '../../services/platform.service';
 import { ThemeService } from '../../services/theme.service';
+import { SlugService } from '../../services/slug.service';
 import { Business } from '../../models/models';
+import { DEFAULT_REWARD_ICON, DEFAULT_STAMP_ICON } from '../../utils/emoji-catalog';
+import { apiErrorMessage } from '../../utils/api-error';
+import { mediaUrl } from '../../utils/media-url';
 
 @Component({
   selector: 'app-business-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, NavbarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    NavbarComponent,
+    EmojiPickerComponent
+  ],
   templateUrl: './business-settings.component.html',
   styleUrls: ['./business-settings.component.css']
 })
 export class BusinessSettingsComponent implements OnInit {
   form: Partial<Business> = {
-    name: '', description: '', logoUrl: '', stampsRequired: 10, rewardDescription: '',
-    colorPrimary: '', colorSecondary: ''
+    name: '', description: '', logoUrl: '', backgroundUrl: '',
+    stampsRequired: 10, rewardDescription: '',
+    colorPrimary: '', colorSecondary: '',
+    stampIcon: DEFAULT_STAMP_ICON, rewardIcon: DEFAULT_REWARD_ICON
   };
   saving = false;
   saved = false;
   error = '';
   logoPreview = '';
   logoError = false;
+  backgroundPreview = '';
+  uploadingBackground = false;
+  removingBackground = false;
+  backgroundMessage = '';
   private slug = '';
   private status: 'ACTIVE' | 'SUSPENDED' | 'DELETED' = 'ACTIVE';
   private stamp = Date.now();
@@ -31,6 +48,7 @@ export class BusinessSettingsComponent implements OnInit {
   constructor(
     private platform: PlatformService,
     private theme: ThemeService,
+    private slugService: SlugService,
     private translate: TranslateService
   ) {}
 
@@ -41,6 +59,14 @@ export class BusinessSettingsComponent implements OnInit {
       && stamps >= 1
       && stamps <= 100
       && !this.saving;
+  }
+
+  get stampIcon(): string {
+    return this.form.stampIcon || DEFAULT_STAMP_ICON;
+  }
+
+  get rewardIcon(): string {
+    return this.form.rewardIcon || DEFAULT_REWARD_ICON;
   }
 
   /** Sellos visibles en la vista previa (máximo 12 para no romper la tarjeta). */
@@ -66,12 +92,17 @@ export class BusinessSettingsComponent implements OnInit {
           name: business.name,
           description: business.description,
           logoUrl: business.logoUrl,
+          backgroundUrl: business.backgroundUrl || '',
           stampsRequired: business.stampsRequired,
           rewardDescription: business.rewardDescription,
           colorPrimary: business.colorPrimary || this.token('--color-accent'),
-          colorSecondary: business.colorSecondary || this.token('--color-text')
+          colorSecondary: business.colorSecondary || this.token('--color-text'),
+          stampIcon: business.stampIcon || DEFAULT_STAMP_ICON,
+          rewardIcon: business.rewardIcon || DEFAULT_REWARD_ICON
         };
         this.onLogoChange();
+        this.onBackgroundChange();
+        this.applyPreview(business);
       },
       error: (err) => this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_BUSINESS')
     });
@@ -105,6 +136,74 @@ export class BusinessSettingsComponent implements OnInit {
     this.logoError = true;
   }
 
+  onBackgroundChange(): void {
+    const url = (this.form.backgroundUrl || '').trim();
+    this.backgroundPreview = mediaUrl(url);
+    this.applyPreview();
+  }
+
+  onBackgroundFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      this.error = this.translate.instant('BUSINESS.BACKGROUND_TYPE_ERROR');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.error = this.translate.instant('BUSINESS.BACKGROUND_SIZE_ERROR');
+      return;
+    }
+
+    this.uploadingBackground = true;
+    this.backgroundMessage = '';
+    this.error = '';
+
+    this.platform.uploadBackground(file).subscribe({
+      next: (business) => {
+        this.uploadingBackground = false;
+        this.form.backgroundUrl = business.backgroundUrl || '';
+        this.onBackgroundChange();
+        this.applyPreview(business);
+        this.flashBackgroundMessage();
+      },
+      error: (err) => {
+        this.uploadingBackground = false;
+        this.error = apiErrorMessage(err, this.translate,
+          this.translate.instant('ERRORS.UPLOAD_BACKGROUND'));
+      }
+    });
+  }
+
+  removeBackground(): void {
+    if (!this.form.backgroundUrl) {
+      return;
+    }
+
+    this.removingBackground = true;
+    this.backgroundMessage = '';
+    this.error = '';
+
+    this.platform.removeBackground().subscribe({
+      next: (business) => {
+        this.removingBackground = false;
+        this.form.backgroundUrl = '';
+        this.onBackgroundChange();
+        this.applyPreview(business);
+        this.flashBackgroundMessage();
+      },
+      error: (err) => {
+        this.removingBackground = false;
+        this.error = apiErrorMessage(err, this.translate,
+          this.translate.instant('ERRORS.REMOVE_BACKGROUND'));
+      }
+    });
+  }
+
   save(): void {
     this.saving = true;
     this.error = '';
@@ -115,10 +214,13 @@ export class BusinessSettingsComponent implements OnInit {
       name: this.form.name,
       description: this.form.description,
       logoUrl: this.form.logoUrl,
+      backgroundUrl: this.form.backgroundUrl || '',
       stampsRequired: this.form.stampsRequired,
       rewardDescription: this.form.rewardDescription,
       colorPrimary: (this.form.colorPrimary || '').toUpperCase(),
-      colorSecondary: (this.form.colorSecondary || '').toUpperCase()
+      colorSecondary: (this.form.colorSecondary || '').toUpperCase(),
+      stampIcon: this.form.stampIcon || DEFAULT_STAMP_ICON,
+      rewardIcon: this.form.rewardIcon || DEFAULT_REWARD_ICON
     };
 
     this.platform.updateMyBusiness(payload).subscribe({
@@ -136,6 +238,11 @@ export class BusinessSettingsComponent implements OnInit {
     });
   }
 
+  private flashBackgroundMessage(): void {
+    this.backgroundMessage = this.translate.instant('COMMON.SAVED');
+    setTimeout(() => this.backgroundMessage = '', 2500);
+  }
+
   private token(name: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
@@ -147,7 +254,22 @@ export class BusinessSettingsComponent implements OnInit {
       status: business?.status === 'SUSPENDED' ? 'SUSPENDED' : 'ACTIVE',
       colorPrimary: business?.colorPrimary || this.form.colorPrimary,
       colorSecondary: business?.colorSecondary || this.form.colorSecondary,
-      logoUrl: business?.logoUrl || this.form.logoUrl
+      logoUrl: business?.logoUrl || this.form.logoUrl,
+      backgroundUrl: business?.backgroundUrl || this.form.backgroundUrl,
+      stampIcon: business?.stampIcon || this.form.stampIcon,
+      rewardIcon: business?.rewardIcon || this.form.rewardIcon
     });
+
+    if (business) {
+      this.slugService.updateTenant({
+        name: business.name,
+        colorPrimary: business.colorPrimary,
+        colorSecondary: business.colorSecondary,
+        logoUrl: business.logoUrl,
+        backgroundUrl: business.backgroundUrl,
+        stampIcon: business.stampIcon,
+        rewardIcon: business.rewardIcon
+      });
+    }
   }
 }

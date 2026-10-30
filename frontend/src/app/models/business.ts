@@ -4,8 +4,11 @@ export interface Business {
   name: string;
   description?: string;
   logoUrl?: string;
+  backgroundUrl?: string;
   colorPrimary?: string;
   colorSecondary?: string;
+  stampIcon?: string;
+  rewardIcon?: string;
   stampsRequired: number;
   rewardDescription: string;
   status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';

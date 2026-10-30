@@ -3,7 +3,7 @@
 <main class="dash">
   <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-  <div *ngIf="success" class="alert alert-success">☕ {{ success }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ stampIcon }} {{ success }}</div>
 
   <ng-container *ngIf="business">
     <header class="dash-head fade-in">
@@ -29,12 +29,12 @@
         <span class="stat-label">{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</span>
       </article>
       <article class="stat-card">
-        <span class="stat-icon" aria-hidden="true">☕</span>
+        <span class="stat-icon" aria-hidden="true">{{ stampIcon }}</span>
         <strong class="stat-value">{{ business.stampsRequired }}</strong>
         <span class="stat-label">{{ 'BUSINESS.STAMPS_REQUIRED' | translate }}</span>
       </article>
       <article class="stat-card">
-        <span class="stat-icon" aria-hidden="true">🎁</span>
+        <span class="stat-icon" aria-hidden="true">{{ rewardIcon }}</span>
         <strong class="stat-value">{{ availableRewardCount }}</strong>
         <span class="stat-label">{{ 'BUSINESS.AVAILABLE' | translate }}</span>
       </article>
@@ -46,7 +46,7 @@
     </section>
 
     <section *ngIf="availableRewardCount > 0" class="reward-banner fade-in">
-      <span class="reward-banner-icon" aria-hidden="true">🎁</span>
+      <span class="reward-banner-icon" aria-hidden="true">{{ rewardIcon }}</span>
       <div class="reward-banner-body">
         <strong>
           {{ availableRewardCount }}
@@ -121,7 +121,7 @@
         </a>
 
         <a class="action-tile" [routerLink]="['/', slug, 'business', 'rewards']">
-          <span class="action-icon" aria-hidden="true">🏆</span>
+          <span class="action-icon" aria-hidden="true">{{ rewardIcon }}</span>
           <span class="action-body">
             <strong>{{ 'NAV.REWARDS' | translate }}</strong>
             <span class="muted">{{ 'BUSINESS.REWARDS_HINT' | translate }}</span>

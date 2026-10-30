@@ -33,4 +33,7 @@ export interface TenantInfo {
   colorPrimary?: string | null;
   colorSecondary?: string | null;
   logoUrl?: string | null;
+  backgroundUrl?: string | null;
+  stampIcon?: string | null;
+  rewardIcon?: string | null;
 }

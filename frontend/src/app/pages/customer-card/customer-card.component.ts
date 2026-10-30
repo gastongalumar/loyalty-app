@@ -39,6 +39,14 @@ export class CustomerCardComponent implements OnInit {
     return this.card?.rewards.filter((reward) => reward.status === 'AVAILABLE') ?? [];
   }
 
+  get stampIcon(): string {
+    return this.card?.stampIcon || '☕';
+  }
+
+  get rewardIcon(): string {
+    return this.card?.rewardIcon || '🏆';
+  }
+
   ngOnInit(): void {
     this.slug = this.slugService.get() ?? '';
     this.loyalty.getMyCard().subscribe({

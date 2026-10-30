@@ -20,6 +20,8 @@ public class LoyaltyCardResponse {
     private String qrCode;
     private String businessName;
     private String rewardDescription;
+    private String stampIcon;
+    private String rewardIcon;
     private Integer currentStamps;
     private Integer totalStamps;
     private Integer completedCards;

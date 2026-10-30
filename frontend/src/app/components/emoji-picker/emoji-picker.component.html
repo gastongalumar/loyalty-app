@@ -1,0 +1,42 @@
+<div class="emoji-field">
+  <span class="form-label">{{ label }}</span>
+
+  <div class="emoji-current">
+    <span class="emoji-current-icon" aria-hidden="true">{{ displayValue }}</span>
+    <span class="emoji-current-value">{{ value || '—' }}</span>
+    <button type="button" class="btn btn-outline btn-sm"
+            [attr.aria-expanded]="open"
+            (click)="toggle()">
+      {{ (open ? 'COMMON.CLOSE' : 'BUSINESS.CHOOSE_ICON') | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="open" class="emoji-panel">
+    <div class="emoji-tabs" role="tablist">
+      <button *ngFor="let group of groups"
+              type="button"
+              role="tab"
+              class="emoji-tab"
+              [class.active]="group.key === activeKey"
+              [attr.aria-selected]="group.key === activeKey"
+              (click)="selectGroup(group.key)">
+        {{ group.labelKey | translate }}
+      </button>
+    </div>
+
+    <div class="emoji-grid" role="listbox" [attr.aria-label]="label">
+      <button *ngFor="let emoji of activeGroup.emojis"
+              type="button"
+              role="option"
+              class="emoji-option"
+              [class.selected]="emoji === value"
+              [attr.aria-selected]="emoji === value"
+              [attr.title]="emoji"
+              (click)="pick(emoji)">
+        {{ emoji }}
+      </button>
+    </div>
+  </div>
+
+  <p *ngIf="hint" class="field-hint">{{ hint }}</p>
+</div>

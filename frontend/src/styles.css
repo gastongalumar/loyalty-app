@@ -633,8 +633,7 @@ input[type='color'].form-control {
   justify-content: center;
   padding: var(--space-5);
   background:
-    radial-gradient(circle at 20% 0%, var(--color-accent-soft) 0%, transparent 55%),
-    var(--color-bg);
+    radial-gradient(circle at 20% 0%, var(--color-accent-soft) 0%, transparent 55%);
 }
 
 .auth-card {

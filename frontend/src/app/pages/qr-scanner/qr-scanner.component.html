@@ -8,7 +8,7 @@
   </header>
 
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-  <div *ngIf="success" class="alert alert-success">☕ {{ 'BUSINESS.STAMP_ADDED' | translate }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ stampIcon }} {{ 'BUSINESS.STAMP_ADDED' | translate }}</div>
 
   <div class="scanner-grid">
     <section class="panel fade-in">

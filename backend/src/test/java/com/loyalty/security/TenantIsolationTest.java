@@ -65,6 +65,8 @@ class TenantIsolationTest {
                 .rewardDescription("Free coffee").status(Business.Status.ACTIVE)
                 .colorPrimary("#FF6B35").colorSecondary("#1A1A2E")
                 .logoUrl("https://cdn.example.com/cafe-a.png")
+                .backgroundUrl("https://cdn.example.com/cafe-a-bg.jpg")
+                .stampIcon("🌿").rewardIcon("🎁")
                 .build());
         gymB = businessRepository.save(Business.builder()
                 .name("Gym B").slug("gym-b").stampsRequired(8)
@@ -255,14 +257,20 @@ class TenantIsolationTest {
                 .andExpect(jsonPath("$.slug").value("cafe-a"))
                 .andExpect(jsonPath("$.colorPrimary").value("#FF6B35"))
                 .andExpect(jsonPath("$.colorSecondary").value("#1A1A2E"))
-                .andExpect(jsonPath("$.logoUrl").value("https://cdn.example.com/cafe-a.png"));
+                .andExpect(jsonPath("$.logoUrl").value("https://cdn.example.com/cafe-a.png"))
+                .andExpect(jsonPath("$.backgroundUrl").value("https://cdn.example.com/cafe-a-bg.jpg"))
+                .andExpect(jsonPath("$.stampIcon").value("🌿"))
+                .andExpect(jsonPath("$.rewardIcon").value("🎁"));
     }
 
     @Test
     void adminCanUpdateOwnBrandingOnly() throws Exception {
         String payload = objectMapper.writeValueAsString(Map.of(
                 "colorPrimary", "#00AA88",
-                "colorSecondary", "#222233"
+                "colorSecondary", "#222233",
+                "backgroundUrl", "https://cdn.example.com/new-bg.jpg",
+                "stampIcon", "⭐",
+                "rewardIcon", "🤍"
         ));
 
         mockMvc.perform(put("/api/v1/business/me")
@@ -270,10 +278,16 @@ class TenantIsolationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.colorPrimary").value("#00AA88"));
+                .andExpect(jsonPath("$.colorPrimary").value("#00AA88"))
+                .andExpect(jsonPath("$.backgroundUrl").value("https://cdn.example.com/new-bg.jpg"))
+                .andExpect(jsonPath("$.stampIcon").value("⭐"))
+                .andExpect(jsonPath("$.rewardIcon").value("🤍"));
 
         Business other = businessRepository.findById(gymB.getId()).orElseThrow();
         org.assertj.core.api.Assertions.assertThat(other.getColorPrimary()).isNull();
+        org.assertj.core.api.Assertions.assertThat(other.getBackgroundUrl()).isNull();
+        org.assertj.core.api.Assertions.assertThat(other.getStampIcon()).isNull();
+        org.assertj.core.api.Assertions.assertThat(other.getRewardIcon()).isNull();
     }
 
     @Test

@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyService } from '../../services/loyalty.service';
+import { SlugService } from '../../services/slug.service';
 import { Customer } from '../../models/models';
 import { cardStatusKey } from '../../utils/status';
 
@@ -31,8 +32,13 @@ export class CustomerSearchComponent implements OnInit {
 
   constructor(
     private loyalty: LoyaltyService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private slugService: SlugService
   ) {}
+
+  get stampIcon(): string {
+    return this.slugService.getTenant()?.stampIcon || '☕';
+  }
 
   ngOnInit(): void {
     this.search();

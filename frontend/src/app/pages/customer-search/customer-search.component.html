@@ -32,7 +32,7 @@
   </form>
 
   <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-  <div *ngIf="success" class="alert alert-success">☕ {{ success }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ stampIcon }} {{ success }}</div>
 
   <div *ngIf="loading && customers.length === 0" class="card skeleton">
     {{ 'COMMON.LOADING' | translate }}
@@ -85,7 +85,7 @@
         <button class="btn btn-primary btn-sm" type="button"
                 [disabled]="addingId === customer.id"
                 (click)="addStamp(customer)">
-          <span aria-hidden="true">☕</span>
+          <span aria-hidden="true">{{ stampIcon }}</span>
           {{ addingId === customer.id ? ('COMMON.LOADING' | translate) : ('BUSINESS.ADD_STAMP' | translate) }}
         </button>
         <button class="btn btn-outline btn-sm" type="button" (click)="openQr(customer)">

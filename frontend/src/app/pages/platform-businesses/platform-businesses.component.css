@@ -84,6 +84,11 @@
   top: calc(var(--nav-height) + var(--space-4));
 }
 
+.create-panel app-emoji-picker {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
 .field-hint {
   margin-top: var(--space-1);
   color: var(--color-text-subtle);

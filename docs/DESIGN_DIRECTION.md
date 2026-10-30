@@ -80,6 +80,9 @@ Ratios medidos con `node scripts/check-contrast.mjs` (AA mínimo 4.5:1 para text
 - `ThemeService` aplica `--color-accent`, `--color-accent-hover`, `--color-accent-contrast` y
   `--color-focus` en runtime, **ajustando el color** hasta alcanzar 4.5:1 contra el fondo del tema activo.
 - `colorSecondary` se usa como `--loyalty-card-to`; el texto de la tarjeta se recalcula para AA.
+- `backgroundUrl` aplica la foto del tenant al `body` con el velo `--color-bg-overlay`; así la
+  imagen no compite con el texto ni cambia el contraste medido por el script.
+- `stampIcon` y `rewardIcon` personalizan el sello y el regalo en tarjeta, panel y recompensas.
 - Sin branding, rigen los tokens del tema. Al entrar a `/platform` se limpian los overrides.
 - Los cambios de tema recalculan el branding (no queda un acento oscuro sobre fondo oscuro).
 

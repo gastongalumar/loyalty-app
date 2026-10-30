@@ -6,6 +6,8 @@ export interface LoyaltyCard {
   qrCode: string;
   businessName: string;
   rewardDescription: string;
+  stampIcon?: string;
+  rewardIcon?: string;
   currentStamps: number;
   totalStamps: number;
   completedCards: number;

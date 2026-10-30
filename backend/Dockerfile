@@ -14,7 +14,8 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-RUN addgroup -S loyalty && adduser -S loyalty -G loyalty
+RUN addgroup -S loyalty && adduser -S loyalty -G loyalty && \
+    mkdir -p /app/uploads && chown -R loyalty:loyalty /app/uploads
 USER loyalty
 
 COPY --from=builder /app/target/loyalty-backend-1.0.0.jar app.jar

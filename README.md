@@ -12,7 +12,7 @@ negocios.
 | Spring Boot | 3.5.16 |
 | Maven | 3.9+ |
 | Base de datos | MySQL 8 |
-| Migraciones | **Flyway** (`db/migration/V1..V5`) |
+| Migraciones | **Flyway** (`db/migration/V1..V6`) |
 | Frontend | Angular 17, TypeScript ~5.2 |
 | Node.js | 18+ (build Docker usa 20) |
 
@@ -101,7 +101,7 @@ Copiar `.env.example` a `.env` y completar. El backend no tiene valores por defe
 
 ### 2. Base de datos y migraciones
 
-No hay que ejecutar SQL a mano: Flyway aplica `V1..V5` al arrancar el backend
+No hay que ejecutar SQL a mano: Flyway aplica `V1..V6` al arrancar el backend
 (`baseline-on-migrate=true`, `baseline-version=0`).
 
 ```powershell
@@ -133,7 +133,7 @@ FLUSH PRIVILEGES;
 ```
 
 No hace falta ejecutar el esquema a mano: Flyway corre al arrancar el backend. Para verificar
-las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V5 y valida
+las migraciones contra ese MySQL local (crea una base descartable, aplica V1..V6 y valida
 invariantes + constraints):
 
 ```powershell
@@ -207,6 +207,7 @@ Slugs reservados: `platform`, `api`, `assets`, `login`, `register`, `admin`, `cu
 | Método | Ruta |
 |---|---|
 | `GET` / `PUT` | `/api/v1/business/me` |
+| `POST` / `DELETE` | `/api/v1/business/me/background` |
 | `GET` | `/api/v1/business/customers?q=&page=&size=` |
 | `GET` | `/api/v1/business/customers/{userId}` · `/card` · `/qr` |
 | `POST` | `/api/v1/business/stamps` · `/stamps/scan` |
@@ -246,6 +247,7 @@ de otro tenant (no se filtra existencia).
 | `V3__tenant_child_tables.sql` | `tenant_id` en cards/stamps/rewards + `redeemed_by_id` |
 | `V4__backfill_tenants.sql` | `BUSINESS_OWNER → BUSINESS_ADMIN`, slugs y `tenant_id` |
 | `V5__tenant_constraints.sql` | `NOT NULL`, `CHECK`, FKs compuestas, ENUM→VARCHAR |
+| `V6__business_visual_assets.sql` | `background_url`, `stamp_icon`, `reward_icon` por negocio |
 
 Rollbacks manuales en `backend/src/main/resources/db/rollback/*.down.sql` (Flyway Community no
 tiene `undo`). Antes de migrar una base con datos: `mysqldump`.
@@ -263,8 +265,8 @@ En Windows con MySQL local (sin Docker):
 ```
 
 Ambos corren `flyway:migrate`, las queries de `db/verify/V4_verification.sql`, la prueba
-negativa de constraints y exigen `flyway_schema_history` con las 5 migraciones en verde.
-Verificado sobre MySQL 8.0.43: V1..V5 aplican limpias y los cuatro rollbacks (`V5..V2`)
+negativa de constraints y exigen `flyway_schema_history` con las 6 migraciones en verde.
+Verificado sobre MySQL 8.0.43: V1..V6 aplican limpias y los cinco rollbacks (`V6..V2`)
 devuelven el esquema a la forma de V1.
 
 > **TODO-01** — La versión actual de `V4` asume una base **sin datos a preservar** (portfolio).
@@ -284,19 +286,26 @@ Los tests usan H2 con `ddl-auto=create-drop` y Flyway deshabilitado (las migraci
 MySQL-específicas). La cobertura real de las migraciones la da `scripts/verify-migrations.sh` +
 CI (`.github/workflows/backend-ci.yml`).
 
-Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 8.0.43**
-(migraciones V1..V5 + rollbacks).
+Verificado con **Temurin 21.0.13 LTS** (55 tests verdes sobre JVM 21) y **MySQL 8.0.43**
+(migraciones V1..V6 + rollbacks).
 
 ## Branding por tenant (R2)
 
-- `GET /api/public/tenants/{slug}` devuelve `colorPrimary`, `colorSecondary` y `logoUrl`.
-- El frontend los aplica como variables CSS (`--primary`, `--secondary`, `--primary-light`,
-  `--primary-dark`) al entrar a `/:slug/**`; si el tenant no definió colores, quedan los del tema.
-- El `BUSINESS_ADMIN` los edita en **Configuración → Apariencia** (`PUT /api/v1/business/me`),
-  con validación `^#[0-9A-Fa-f]{6}$`.
+- `GET /api/public/tenants/{slug}` devuelve `colorPrimary`, `colorSecondary`, `logoUrl`,
+  `backgroundUrl`, `stampIcon` y `rewardIcon`.
+- El frontend los aplica como variables CSS (`--color-accent`, `--loyalty-card-to`) al entrar a
+  `/:slug/**`; si el tenant no definió colores, quedan los del tema.
+- El `BUSINESS_ADMIN` los edita en **Configuración → Marca y apariencia**
+  (`PUT /api/v1/business/me`), con validación `^#[0-9A-Fa-f]{6}$` para los colores.
+- La foto de fondo se puede subir (`POST /api/v1/business/me/background`, JPG/PNG/WebP hasta 5 MB)
+  o indicar con una URL. Se sirve en `/api/files/backgrounds/{archivo}` y se compone con el token
+  `--color-bg-overlay` para no perder contraste.
+- `stampIcon` y `rewardIcon` son emojis elegidos desde un catálogo curado (café, naturaleza,
+  corazones, premios, comida, belleza, mascotas, bienestar y tienda).
 - El logo es una **URL remota** (sin MinIO ni BLOB en MySQL); la vista previa usa cache busting
   con `?v=<timestamp>`.
-- Un admin de A no puede cambiar el branding de B: el `tenant_id` sale del JWT.
+- Un admin de A no puede cambiar el branding de B: el `tenant_id` sale del JWT. Las imágenes
+  subidas viven en el volumen `uploads_data` de Docker.
 
 ## PWA por tenant (R3)
 

@@ -149,6 +149,8 @@ public class LoyaltyCardService {
                 .qrCode(card.getUser().getQrCode())
                 .businessName(card.getBusiness().getName())
                 .rewardDescription(card.getBusiness().getRewardDescription())
+                .stampIcon(card.getBusiness().getStampIcon())
+                .rewardIcon(card.getBusiness().getRewardIcon())
                 .currentStamps(card.getCurrentStamps())
                 .totalStamps(card.getTotalStamps())
                 .completedCards(card.getCompletedCards())

@@ -63,6 +63,12 @@ public class PlatformService {
                 .rewardDescription(request.getRewardDescription() != null
                         ? request.getRewardDescription()
                         : "Complete your card and get a reward")
+                .stampIcon(request.getStampIcon() != null && !request.getStampIcon().isBlank()
+                        ? request.getStampIcon().trim()
+                        : "☕")
+                .rewardIcon(request.getRewardIcon() != null && !request.getRewardIcon().isBlank()
+                        ? request.getRewardIcon().trim()
+                        : "🏆")
                 .status(Business.Status.ACTIVE)
                 .build();
 

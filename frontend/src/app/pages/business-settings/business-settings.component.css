@@ -178,6 +178,49 @@
   background: var(--color-surface);
 }
 
+/* Background photo */
+.background-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.file-button {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+}
+
+.file-button input[type='file'] {
+  position: absolute;
+  width: var(--border-width);
+  height: var(--border-width);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.background-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.background-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  background-position: center;
+  background-size: cover;
+  box-shadow: var(--shadow-inset);
+}
+
+.success-hint {
+  color: var(--color-success);
+}
+
 /* Preview */
 .preview {
   position: sticky;

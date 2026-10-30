@@ -61,6 +61,14 @@ export class AdminDashboardComponent implements OnInit {
     return businessStatusKey(this.business?.status ?? 'ACTIVE');
   }
 
+  get stampIcon(): string {
+    return this.business?.stampIcon || '☕';
+  }
+
+  get rewardIcon(): string {
+    return this.business?.rewardIcon || '🏆';
+  }
+
   get activeCustomers(): number {
     return this.business?.totalCustomers ?? 0;
   }

@@ -48,6 +48,14 @@ export class SlugService {
     sessionStorage.setItem(SlugService.KEY, slug);
   }
 
+  /** Mantiene el tenant en memoria al día después de editar el branding. */
+  updateTenant(patch: Partial<TenantInfo>): void {
+    if (!this.currentTenant) {
+      return;
+    }
+    this.currentTenant = { ...this.currentTenant, ...patch };
+  }
+
   clear(): void {
     this.pwa.clearTenantCache(this.current);
     this.current = null;

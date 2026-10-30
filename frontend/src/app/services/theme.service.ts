@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { TenantInfo } from '../models/models';
+import { mediaUrl } from '../utils/media-url';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 type ResolvedTheme = 'light-neumorphic' | 'dark-purple';
@@ -79,11 +80,13 @@ export class ThemeService {
   apply(info: TenantInfo | null): void {
     this.tenant = info;
     this.applyBranding();
+    this.applyBackground();
   }
 
   reset(): void {
     this.tenant = null;
     this.clearBranding();
+    this.applyBackground();
   }
 
   private applyResolved(): void {
@@ -92,6 +95,7 @@ export class ThemeService {
     document.documentElement.dataset['themeMode'] = this.mode;
     this.isDark$.next(resolved === 'dark-purple');
     this.applyBranding();
+    this.applyBackground();
   }
 
   private resolveTheme(): ResolvedTheme {
@@ -148,6 +152,32 @@ export class ThemeService {
   private clearBranding(): void {
     const root = document.documentElement;
     BRAND_VARS.forEach(variable => root.style.removeProperty(variable));
+  }
+
+  /**
+   * La foto de fondo vive en el body para que cubra todas las pantallas del
+   * tenant. Se compone con un velo del color base para no romper el contraste.
+   */
+  private applyBackground(): void {
+    const body = document.body;
+    const rawUrl = this.tenant?.backgroundUrl?.trim();
+
+    if (!rawUrl) {
+      body.style.removeProperty('background-image');
+      body.style.removeProperty('background-size');
+      body.style.removeProperty('background-attachment');
+      body.style.removeProperty('background-position');
+      body.style.removeProperty('background-repeat');
+      return;
+    }
+
+    const safeUrl = encodeURI(mediaUrl(rawUrl)).replace(/"/g, '%22');
+    body.style.backgroundImage =
+      `linear-gradient(var(--color-bg-overlay), var(--color-bg-overlay)), url("${safeUrl}")`;
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundAttachment = 'fixed';
+    body.style.backgroundPosition = 'center';
+    body.style.backgroundRepeat = 'no-repeat';
   }
 
   private readToken(name: string): string | null {

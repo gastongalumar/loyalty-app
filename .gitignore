@@ -45,3 +45,5 @@ project-snapshot.json
 *.log
 logs/
 backups/
+uploads/
+backend/uploads/

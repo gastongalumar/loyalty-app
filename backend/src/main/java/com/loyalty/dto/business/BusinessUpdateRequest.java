@@ -18,6 +18,15 @@ public class BusinessUpdateRequest {
     @Size(max = 500)
     private String logoUrl;
 
+    @Size(max = 500)
+    private String backgroundUrl;
+
+    @Size(max = 16)
+    private String stampIcon;
+
+    @Size(max = 16)
+    private String rewardIcon;
+
     @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "colorPrimary must be a hex color like #FF6B35")
     private String colorPrimary;
 

@@ -108,6 +108,20 @@
                [placeholder]="'PLATFORM.REWARD_PLACEHOLDER' | translate" />
       </div>
 
+      <app-emoji-picker
+        [label]="'BUSINESS.REWARD_ICON' | translate"
+        [hint]="'BUSINESS.REWARD_ICON_HINT' | translate"
+        [value]="createForm.rewardIcon"
+        (valueChange)="createForm.rewardIcon = $event">
+      </app-emoji-picker>
+
+      <app-emoji-picker
+        [label]="'BUSINESS.STAMP_ICON' | translate"
+        [hint]="'BUSINESS.STAMP_ICON_HINT' | translate"
+        [value]="createForm.stampIcon"
+        (valueChange)="createForm.stampIcon = $event">
+      </app-emoji-picker>
+
       <button class="btn btn-primary btn-full" type="button" [disabled]="!canCreate()" (click)="create()">
         {{ creating ? ('COMMON.LOADING' | translate) : ('PLATFORM.CREATE' | translate) }}
       </button>

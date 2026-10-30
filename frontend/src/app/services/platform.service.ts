@@ -55,4 +55,14 @@ export class PlatformService {
   updateMyBusiness(payload: Partial<Business>): Observable<Business> {
     return this.http.put<Business>(`${environment.apiUrl}/v1/business/me`, payload);
   }
+
+  uploadBackground(file: File): Observable<Business> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<Business>(`${environment.apiUrl}/v1/business/me/background`, body);
+  }
+
+  removeBackground(): Observable<Business> {
+    return this.http.delete<Business>(`${environment.apiUrl}/v1/business/me/background`);
+  }
 }

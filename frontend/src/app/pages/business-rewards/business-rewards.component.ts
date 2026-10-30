@@ -4,6 +4,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { RewardService } from '../../services/reward.service';
+import { SlugService } from '../../services/slug.service';
 import { Reward } from '../../models/models';
 
 interface RewardTab {
@@ -33,7 +34,16 @@ export class BusinessRewardsComponent implements OnInit {
     { value: '', label: 'COMMON.ALL' }
   ];
 
-  constructor(private rewardService: RewardService, private translate: TranslateService) {}
+  constructor(private rewardService: RewardService, private translate: TranslateService,
+              private slugService: SlugService) {}
+
+  get rewardIcon(): string {
+    return this.slugService.getTenant()?.rewardIcon || '🏆';
+  }
+
+  get giftIcon(): string {
+    return this.slugService.getTenant()?.rewardIcon || '🎁';
+  }
 
   ngOnInit(): void {
     this.load();
