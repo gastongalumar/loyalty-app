@@ -53,7 +53,8 @@ PLATFORM_ADMIN (global, tenant_id = NULL)
 ├── scripts/verify-migrations.sh # gate de migraciones (Docker / CI)
 ├── scripts/verify-migrations.ps1# gate de migraciones con MySQL local (Windows, sin Docker)
 ├── scripts/run-local.ps1        # arranca backend + frontend leyendo .env
-├── scripts/update.sh            # deploy: pull + build + up en la VM
+├── scripts/update.sh            # deploy: pull + build + up (Linux/WSL)
+├── scripts/update.ps1           # deploy en Windows (PowerShell)
 ├── scripts/backup.sh            # mysqldump comprimido a backups/
 ├── backend/
 │   ├── Dockerfile               # eclipse-temurin:21
@@ -363,6 +364,20 @@ docker compose logs -f backend
 > `docker compose` falla a propósito si faltan `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` o
 > `APP_JWT_SECRET` (validación `${VAR:?}`). No hay valores por defecto en producción.
 
+### Estado actual del host (2026-10-29)
+
+- `loyalty.programandos.site` resuelve a `40.160.241.75`.
+- El puerto **8090 está libre**; el portfolio corre en `8080`.
+- Hoy el dominio (puerto 80) responde con un **Apache/PHP legado**, no con esta app:
+  falta apuntar el vhost/reverse proxy a `127.0.0.1:8090`.
+- El servidor es **Windows** (Apache Win32). Usar `.\scripts\update.ps1` o WSL/Git Bash
+  para los `.sh`, y abrir el puerto en el firewall:
+  ```powershell
+  New-NetFirewallRule -DisplayName "Loyalty 8090" -Direction Inbound `
+    -Protocol TCP -LocalPort 8090 -Action Allow
+  ```
+- El primer despliegue requiere acceso SSH al host (publickey o password).
+
 ### Reverse proxy + HTTPS
 
 Caddy en el host (recomendado, TLS automático):
@@ -403,6 +418,8 @@ sudo ufw enable
 ./scripts/update.sh     # git pull + build + up -d + prune
 ./scripts/backup.sh     # mysqldump comprimido en backups/
 ```
+
+En Windows: `.\scripts\update.ps1`.
 
 El backup se guarda en `backups/` (ignorado por git). Para restaurar:
 
