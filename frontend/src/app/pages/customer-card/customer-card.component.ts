@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
@@ -31,7 +31,8 @@ export class CustomerCardComponent implements OnInit {
 
   constructor(
     private loyalty: LoyaltyService,
-    private slugService: SlugService
+    private slugService: SlugService,
+    private translate: TranslateService
   ) {}
 
   get availableRewards(): Reward[] {
@@ -46,7 +47,7 @@ export class CustomerCardComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not load card';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_CARD');
         this.loading = false;
       }
     });

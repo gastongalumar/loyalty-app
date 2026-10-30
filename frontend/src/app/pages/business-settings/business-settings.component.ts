@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
 import { PlatformService } from '../../services/platform.service';
 import { ThemeService } from '../../services/theme.service';
@@ -23,11 +23,16 @@ export class BusinessSettingsComponent implements OnInit {
   saved = false;
   error = '';
   logoPreview = '';
+  logoError = false;
   private slug = '';
   private status: 'ACTIVE' | 'SUSPENDED' | 'DELETED' = 'ACTIVE';
   private stamp = Date.now();
 
-  constructor(private platform: PlatformService, private theme: ThemeService) {}
+  constructor(
+    private platform: PlatformService,
+    private theme: ThemeService,
+    private translate: TranslateService
+  ) {}
 
   get canSave(): boolean {
     const stamps = Number(this.form.stampsRequired);
@@ -36,6 +41,20 @@ export class BusinessSettingsComponent implements OnInit {
       && stamps >= 1
       && stamps <= 100
       && !this.saving;
+  }
+
+  /** Sellos visibles en la vista previa (máximo 12 para no romper la tarjeta). */
+  get previewStamps(): number[] {
+    const total = Math.min(Math.max(Number(this.form.stampsRequired) || 0, 1), 12);
+    return Array.from({ length: total }, (_, i) => i);
+  }
+
+  get previewFilled(): number {
+    return Math.min(3, this.previewStamps.length);
+  }
+
+  get previewOverflow(): number {
+    return Math.max((Number(this.form.stampsRequired) || 0) - this.previewStamps.length, 0);
   }
 
   ngOnInit(): void {
@@ -54,7 +73,7 @@ export class BusinessSettingsComponent implements OnInit {
         };
         this.onLogoChange();
       },
-      error: (err) => this.error = err.error?.message || 'Could not load business'
+      error: (err) => this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_BUSINESS')
     });
   }
 
@@ -62,14 +81,28 @@ export class BusinessSettingsComponent implements OnInit {
     this.applyPreview();
   }
 
+  applyPreset(tokenName: string): void {
+    const value = this.token(tokenName);
+    if (!value) {
+      return;
+    }
+    this.form.colorPrimary = value.toUpperCase();
+    this.onColorChange();
+  }
+
   onLogoChange(): void {
     const url = (this.form.logoUrl || '').trim();
+    this.logoError = false;
     if (!url) {
       this.logoPreview = '';
       return;
     }
     const separator = url.includes('?') ? '&' : '?';
     this.logoPreview = `${url}${separator}v=${this.stamp}`;
+  }
+
+  onLogoError(): void {
+    this.logoError = true;
   }
 
   save(): void {
@@ -97,7 +130,7 @@ export class BusinessSettingsComponent implements OnInit {
         setTimeout(() => this.saved = false, 2500);
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not save';
+        this.error = err.error?.message || this.translate.instant('ERRORS.SAVE_BUSINESS');
         this.saving = false;
       }
     });

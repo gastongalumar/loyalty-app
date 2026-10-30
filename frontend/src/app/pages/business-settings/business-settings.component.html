@@ -70,15 +70,39 @@
           </div>
         </div>
 
+        <div class="color-presets">
+          <span class="form-label">{{ 'BUSINESS.PRESETS' | translate }}</span>
+          <div class="preset-row">
+            <button type="button" class="preset preset-coffee" (click)="applyPreset('--brand-coffee')"
+                    [attr.aria-label]="'BUSINESS.PALETTE_COFFEE' | translate"
+                    [title]="'BUSINESS.PALETTE_COFFEE' | translate"></button>
+            <button type="button" class="preset preset-forest" (click)="applyPreset('--brand-forest')"
+                    [attr.aria-label]="'BUSINESS.PALETTE_FOREST' | translate"
+                    [title]="'BUSINESS.PALETTE_FOREST' | translate"></button>
+            <button type="button" class="preset preset-ocean" (click)="applyPreset('--brand-ocean')"
+                    [attr.aria-label]="'BUSINESS.PALETTE_OCEAN' | translate"
+                    [title]="'BUSINESS.PALETTE_OCEAN' | translate"></button>
+            <button type="button" class="preset preset-plum" (click)="applyPreset('--brand-plum')"
+                    [attr.aria-label]="'BUSINESS.PALETTE_PLUM' | translate"
+                    [title]="'BUSINESS.PALETTE_PLUM' | translate"></button>
+            <button type="button" class="preset preset-berry" (click)="applyPreset('--brand-berry')"
+                    [attr.aria-label]="'BUSINESS.PALETTE_BERRY' | translate"
+                    [title]="'BUSINESS.PALETTE_BERRY' | translate"></button>
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label" for="business-logo">{{ 'BUSINESS.LOGO_URL' | translate }}</label>
           <input id="business-logo" name="logoUrl" class="form-control"
-                 [(ngModel)]="form.logoUrl" (ngModelChange)="onLogoChange()" />
+                 [(ngModel)]="form.logoUrl" (ngModelChange)="onLogoChange()"
+                 placeholder="https://..." />
+          <p class="field-hint">{{ 'BUSINESS.LOGO_HINT' | translate }}</p>
         </div>
 
-        <div *ngIf="logoPreview" class="logo-preview">
+        <div *ngIf="logoPreview && !logoError" class="logo-preview">
           <span class="form-label">{{ 'BUSINESS.LOGO_PREVIEW' | translate }}</span>
-          <img [src]="logoPreview" alt="" />
+          <img [src]="logoPreview" [alt]="'BUSINESS.LOGO_PREVIEW' | translate"
+               (error)="onLogoError()" />
         </div>
       </section>
 
@@ -92,8 +116,9 @@
 
       <div class="preview-card">
         <div class="preview-brand">
-          <img *ngIf="logoPreview" [src]="logoPreview" alt="" class="preview-logo" />
-          <span *ngIf="!logoPreview" class="preview-logo preview-logo-empty" aria-hidden="true">🏪</span>
+          <img *ngIf="logoPreview && !logoError" [src]="logoPreview" alt=""
+               class="preview-logo" (error)="onLogoError()" />
+          <span *ngIf="!logoPreview || logoError" class="preview-logo preview-logo-empty" aria-hidden="true">🏪</span>
           <div class="preview-identity">
             <strong>{{ form.name || ('COMMON.NAME' | translate) }}</strong>
             <span class="muted">{{ form.description || ('BUSINESS.DASHBOARD_SUBTITLE' | translate) }}</span>
@@ -103,14 +128,16 @@
         <p class="preview-reward">🏆 {{ form.rewardDescription || ('BUSINESS.REWARD' | translate) }}</p>
 
         <div class="preview-stamps" aria-hidden="true">
-          <span *ngFor="let i of [0,1,2,3,4]" class="preview-stamp" [class.filled]="i < 3">
-            {{ i < 3 ? '☕' : i + 1 }}
+          <span *ngFor="let i of previewStamps" class="preview-stamp" [class.filled]="i < previewFilled">
+            {{ i < previewFilled ? '☕' : i + 1 }}
           </span>
+          <span *ngIf="previewOverflow > 0" class="preview-stamp preview-overflow">+{{ previewOverflow }}</span>
         </div>
 
         <div class="preview-accent-bar" aria-hidden="true"></div>
       </div>
 
+      <p class="preview-hint">{{ 'BUSINESS.PREVIEW_STAMPS' | translate }}</p>
       <p class="preview-hint">{{ 'BUSINESS.PREVIEW_HINT' | translate }}</p>
     </aside>
   </div>

@@ -656,6 +656,22 @@ input[type='color'].form-control {
   text-align: center;
 }
 
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.auth-brand-logo {
+  width: auto;
+  max-width: 64px;
+  max-height: 64px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
 .auth-tagline {
   margin-bottom: var(--space-6);
   color: var(--color-text-muted);
@@ -860,6 +876,11 @@ input[type='color'].form-control {
     order: 3;
     width: 100%;
     overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+
+  .navbar-nav a {
+    white-space: nowrap;
   }
 }
 
@@ -879,4 +900,33 @@ input[type='color'].form-control {
   .auth-card {
     padding: var(--space-6) var(--space-4);
   }
+
+  .page-title {
+    font-size: var(--text-xl);
+  }
+
+  .navbar {
+    gap: var(--space-2);
+  }
+
+  .navbar-actions {
+    gap: var(--space-1);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn-sm {
+    min-height: 40px;
+  }
 }
+
+@media (max-width: 380px) {
+  .lang-switcher {
+    padding: 2px;
+  }
+
+  .lang-btn {
+    padding-inline: var(--space-2);
+  }
+}
+

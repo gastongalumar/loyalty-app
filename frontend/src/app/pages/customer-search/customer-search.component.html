@@ -9,7 +9,7 @@
     </div>
     <span class="count-pill">
       <strong>{{ total }}</strong>
-      {{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}
+      {{ (total === 1 ? 'BUSINESS.CUSTOMER_ONE' : 'BUSINESS.CUSTOMER_MANY') | translate }}
     </span>
   </header>
 

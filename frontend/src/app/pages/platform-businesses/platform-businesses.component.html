@@ -1,61 +1,119 @@
 <app-navbar></app-navbar>
 
-    <div class="container-wide" style="padding-top: 24px; padding-bottom: 40px;">
-      <div class="page-header">
-        <h1 class="page-title">{{ 'PLATFORM.BUSINESSES' | translate }}</h1>
-      </div>
-
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-      <div *ngIf="success" class="alert alert-success">{{ success }}</div>
-
-      <div class="card" style="margin-bottom:20px;">
-        <h3>{{ 'PLATFORM.NEW_BUSINESS' | translate }}</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">{{ 'COMMON.NAME' | translate }}</label>
-            <input class="form-control" [(ngModel)]="createForm.name" (ngModelChange)="onNameChange()" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">{{ 'COMMON.SLUG' | translate }}</label>
-            <input class="form-control" [(ngModel)]="createForm.slug" placeholder="cafe-a"
-                   (ngModelChange)="onSlugChange($event)" />
-            <p style="margin-top:4px; color: var(--color-text-subtle); font-size: var(--text-xs);">
-              {{ 'PLATFORM.SLUG_HINT' | translate }}
-            </p>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">{{ 'BUSINESS.REWARD' | translate }}</label>
-          <input class="form-control" [(ngModel)]="createForm.rewardDescription" />
-        </div>
-        <button class="btn btn-primary" [disabled]="!canCreate()" (click)="create()">
-          {{ creating ? ('COMMON.LOADING' | translate) : ('COMMON.CREATE' | translate) }}
-        </button>
-      </div>
-
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'COMMON.NAME' | translate }}</th>
-            <th>{{ 'COMMON.SLUG' | translate }}</th>
-            <th>{{ 'COMMON.STATUS' | translate }}</th>
-            <th>{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</th>
-            <th>{{ 'COMMON.ACTIONS' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let business of businesses">
-            <td><a [routerLink]="['/platform/businesses', business.id]">{{ business.name }}</a></td>
-            <td>{{ business.slug }}</td>
-            <td>{{ business.status }}</td>
-            <td>{{ business.totalCustomers }}</td>
-            <td>
-              <button *ngIf="business.status === 'ACTIVE'" class="btn btn-ghost btn-sm"
-                      (click)="setStatus(business, 'SUSPENDED')">{{ 'PLATFORM.SUSPEND' | translate }}</button>
-              <button *ngIf="business.status === 'SUSPENDED'" class="btn btn-ghost btn-sm"
-                      (click)="setStatus(business, 'ACTIVE')">{{ 'PLATFORM.ACTIVATE' | translate }}</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<main class="platform">
+  <header class="platform-head fade-in">
+    <div>
+      <p class="eyebrow">{{ 'NAV.BUSINESSES' | translate }}</p>
+      <h1 class="page-title">{{ 'PLATFORM.BUSINESSES' | translate }}</h1>
+      <p class="page-subtitle">{{ 'PLATFORM.NEW_BUSINESS_HINT' | translate }}</p>
     </div>
+    <span class="count-pill">
+      <strong>{{ businesses.length }}</strong>
+      {{ (businesses.length === 1 ? 'PLATFORM.BUSINESS_ONE' : 'PLATFORM.BUSINESS_MANY') | translate }}
+    </span>
+  </header>
+
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+  <div class="platform-layout fade-in">
+    <section class="panel">
+      <header class="panel-head">
+        <div>
+          <h2>{{ 'PLATFORM.BUSINESSES' | translate }}</h2>
+          <p class="muted">{{ 'PLATFORM.EMPTY_HINT' | translate }}</p>
+        </div>
+      </header>
+
+      <div *ngIf="businesses.length === 0" class="empty-state">
+        <span class="empty-icon" aria-hidden="true">🏪</span>
+        <strong>{{ 'PLATFORM.EMPTY' | translate }}</strong>
+        <p>{{ 'PLATFORM.EMPTY_HINT' | translate }}</p>
+      </div>
+
+      <div *ngIf="businesses.length > 0" class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>{{ 'COMMON.NAME' | translate }}</th>
+              <th>{{ 'COMMON.SLUG' | translate }}</th>
+              <th>{{ 'COMMON.STATUS' | translate }}</th>
+              <th class="num">{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</th>
+              <th class="actions-col">{{ 'COMMON.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let business of businesses">
+              <td [attr.data-label]="'COMMON.NAME' | translate">
+                <a class="business-link" [routerLink]="['/platform/businesses', business.id]">
+                  <span class="business-avatar" aria-hidden="true">{{ initial(business) }}</span>
+                  <span class="business-name">{{ business.name }}</span>
+                </a>
+              </td>
+              <td [attr.data-label]="'COMMON.SLUG' | translate">
+                <code class="slug">{{ business.slug }}</code>
+              </td>
+              <td [attr.data-label]="'COMMON.STATUS' | translate">
+                <span class="status-badge" [ngClass]="statusTone(business)">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  {{ statusKey(business) | translate }}
+                </span>
+              </td>
+              <td class="num" [attr.data-label]="'BUSINESS.TOTAL_CUSTOMERS' | translate">
+                <strong>{{ business.totalCustomers }}</strong>
+              </td>
+              <td class="actions-col" [attr.data-label]="'COMMON.ACTIONS' | translate">
+                <div class="row-actions">
+                  <a class="btn btn-ghost btn-sm" [routerLink]="['/platform/businesses', business.id]">
+                    {{ 'COMMON.DETAILS' | translate }}
+                  </a>
+                  <button *ngIf="business.status === 'ACTIVE'" class="btn btn-ghost btn-sm"
+                          type="button" (click)="setStatus(business, 'SUSPENDED')">
+                    {{ 'PLATFORM.SUSPEND' | translate }}
+                  </button>
+                  <button *ngIf="business.status === 'SUSPENDED'" class="btn btn-ghost btn-sm"
+                          type="button" (click)="setStatus(business, 'ACTIVE')">
+                    {{ 'PLATFORM.ACTIVATE' | translate }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="panel create-panel">
+      <header class="panel-head">
+        <div>
+          <h2>{{ 'PLATFORM.NEW_BUSINESS' | translate }}</h2>
+          <p class="muted">{{ 'PLATFORM.NEW_BUSINESS_HINT' | translate }}</p>
+        </div>
+      </header>
+
+      <div class="form-group">
+        <label class="form-label" for="new-business-name">{{ 'COMMON.NAME' | translate }}</label>
+        <input id="new-business-name" class="form-control" [(ngModel)]="createForm.name"
+               (ngModelChange)="onNameChange()"
+               [placeholder]="'PLATFORM.NAME_PLACEHOLDER' | translate" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="new-business-slug">{{ 'COMMON.SLUG' | translate }}</label>
+        <input id="new-business-slug" class="form-control" [(ngModel)]="createForm.slug"
+               placeholder="cafe-central" (ngModelChange)="onSlugChange($event)" />
+        <p class="field-hint">{{ 'PLATFORM.SLUG_HINT' | translate }}</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="new-business-reward">{{ 'BUSINESS.REWARD' | translate }}</label>
+        <input id="new-business-reward" class="form-control" [(ngModel)]="createForm.rewardDescription"
+               [placeholder]="'PLATFORM.REWARD_PLACEHOLDER' | translate" />
+      </div>
+
+      <button class="btn btn-primary btn-full" type="button" [disabled]="!canCreate()" (click)="create()">
+        {{ creating ? ('COMMON.LOADING' | translate) : ('PLATFORM.CREATE' | translate) }}
+      </button>
+    </aside>
+  </div>
+</main>

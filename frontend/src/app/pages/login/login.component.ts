@@ -20,6 +20,7 @@ export class LoginComponent {
   error = '';
   slug = this.slugService.get() ?? '';
   businessName = this.slugService.getTenant()?.name ?? this.slugService.get() ?? '';
+  logoUrl = this.slugService.getTenant()?.logoUrl ?? '';
 
   constructor(
     private authService: AuthService,
@@ -40,7 +41,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Login failed';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOGIN');
       }
     });
   }

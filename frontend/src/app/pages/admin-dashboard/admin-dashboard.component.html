@@ -18,11 +18,11 @@
       </div>
       <span class="status-pill" [class.is-off]="business.status !== 'ACTIVE'">
         <span class="status-dot" aria-hidden="true"></span>
-        {{ business.status }}
+        {{ statusKey | translate }}
       </span>
     </header>
 
-    <section class="stats-grid fade-in" aria-label="Resumen">
+    <section class="stats-grid fade-in" [attr.aria-label]="'BUSINESS.SUMMARY' | translate">
       <article class="stat-card">
         <span class="stat-icon" aria-hidden="true">👥</span>
         <strong class="stat-value">{{ activeCustomers }}</strong>

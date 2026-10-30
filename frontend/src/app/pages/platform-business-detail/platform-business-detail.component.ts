@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar.component';
 import { PlatformService } from '../../services/platform.service';
 import { Admin, Business } from '../../models/models';
+import { businessStatusKey, businessStatusTone } from '../../utils/status';
+import { apiErrorMessage } from '../../utils/api-error';
 
 @Component({
   selector: 'app-platform-business-detail',
@@ -19,21 +21,55 @@ export class PlatformBusinessDetailComponent implements OnInit {
   admins: Admin[] = [];
   adminForm = { email: '', password: '', firstName: '', lastName: '' };
   creatingAdmin = false;
+  loading = true;
   error = '';
   success = '';
   private id = 0;
 
-  constructor(private route: ActivatedRoute, private platform: PlatformService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private platform: PlatformService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
     this.load();
   }
 
+  get statusKey(): string {
+    return businessStatusKey(this.business?.status ?? 'ACTIVE');
+  }
+
+  get statusTone(): string {
+    return businessStatusTone(this.business?.status ?? 'ACTIVE');
+  }
+
+  get canCreateAdmin(): boolean {
+    return !this.creatingAdmin
+      && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(this.adminForm.email.trim())
+      && this.adminForm.password.length >= 6
+      && this.adminForm.firstName.trim().length >= 1
+      && this.adminForm.lastName.trim().length >= 1;
+  }
+
+  initials(admin: Admin): string {
+    const first = admin.firstName?.trim().charAt(0) ?? '';
+    const last = admin.lastName?.trim().charAt(0) ?? '';
+    return `${first}${last}`.toUpperCase() || '?';
+  }
+
   load(): void {
+    this.loading = true;
     this.platform.get(this.id).subscribe({
-      next: (business) => this.business = business,
-      error: (err) => this.error = err.error?.message || 'Could not load business'
+      next: (business) => {
+        this.business = business;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_BUSINESS');
+        this.loading = false;
+      }
     });
     this.platform.listAdmins(this.id).subscribe({
       next: (admins) => this.admins = admins,
@@ -42,19 +78,22 @@ export class PlatformBusinessDetailComponent implements OnInit {
   }
 
   createAdmin(): void {
+    if (!this.canCreateAdmin) {
+      return;
+    }
     this.creatingAdmin = true;
     this.error = '';
     this.success = '';
     this.platform.createAdmin(this.id, this.adminForm).subscribe({
       next: (admin) => {
         this.creatingAdmin = false;
-        this.success = `${admin.email} created`;
+        this.success = this.translate.instant('SUCCESS.ADMIN_CREATED', { email: admin.email });
         this.adminForm = { email: '', password: '', firstName: '', lastName: '' };
         this.load();
       },
       error: (err) => {
         this.creatingAdmin = false;
-        this.error = err.error?.message || 'Could not create admin';
+        this.error = apiErrorMessage(err, this.translate, this.translate.instant('ERRORS.CREATE_ADMIN'));
       }
     });
   }

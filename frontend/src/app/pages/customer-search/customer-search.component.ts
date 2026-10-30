@@ -1,11 +1,12 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AppDatePipe } from '../../pipes/app-date.pipe';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyService } from '../../services/loyalty.service';
 import { Customer } from '../../models/models';
+import { cardStatusKey } from '../../utils/status';
 
 @Component({
   selector: 'app-customer-search',
@@ -28,7 +29,10 @@ export class CustomerSearchComponent implements OnInit {
   qrLoading = false;
   qrError = '';
 
-  constructor(private loyalty: LoyaltyService) {}
+  constructor(
+    private loyalty: LoyaltyService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.search();
@@ -44,7 +48,7 @@ export class CustomerSearchComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not load customers';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_CUSTOMERS');
         this.loading = false;
       }
     });
@@ -73,16 +77,7 @@ export class CustomerSearchComponent implements OnInit {
   }
 
   statusKey(customer: Customer): string {
-    switch (customer.cardStatus) {
-      case 'REWARD_PENDING':
-        return 'CUSTOMER.REWARD_READY';
-      case 'ACTIVE':
-        return 'CUSTOMER.STATUS_ACTIVE';
-      case 'COMPLETED':
-        return 'CUSTOMER.STATUS_COMPLETED';
-      default:
-        return customer.cardStatus;
-    }
+    return cardStatusKey(customer.cardStatus);
   }
 
   addStamp(customer: Customer): void {
@@ -95,12 +90,12 @@ export class CustomerSearchComponent implements OnInit {
         customer.cardStatus = card.status;
         customer.completedCards = card.completedCards;
         this.addingId = 0;
-        this.success = `${customer.firstName}: ${card.currentStamps}/${card.totalStamps}`;
+        this.success = `${customer.firstName}: ${card.currentStamps}/${card.totalStamps} · ${this.translate.instant('BUSINESS.STAMP_ADDED')}`;
         setTimeout(() => this.success = '', 2500);
       },
       error: (err) => {
         this.addingId = 0;
-        this.error = err.error?.message || 'Could not add stamp';
+        this.error = err.error?.message || this.translate.instant('ERRORS.ADD_STAMP');
       }
     });
   }
@@ -117,7 +112,7 @@ export class CustomerSearchComponent implements OnInit {
         this.qrLoading = false;
       },
       error: (err) => {
-        this.qrError = err.error?.message || 'Could not load QR';
+        this.qrError = err.error?.message || this.translate.instant('ERRORS.LOAD_QR');
         this.qrLoading = false;
       }
     });

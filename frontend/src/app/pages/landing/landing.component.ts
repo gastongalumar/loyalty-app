@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SlugService } from '../../services/slug.service';
 
 @Component({
@@ -17,7 +17,11 @@ export class LandingComponent {
   loading = false;
   error = '';
 
-  constructor(private slugService: SlugService, private router: Router) {}
+  constructor(
+    private slugService: SlugService,
+    private router: Router,
+    private translate: TranslateService
+  ) {}
 
   go(): void {
     const value = this.slug.trim().toLowerCase();
@@ -25,7 +29,7 @@ export class LandingComponent {
       return;
     }
     if (this.slugService.isReserved(value)) {
-      this.error = 'Reserved slug';
+      this.error = this.translate.instant('ERRORS.SLUG_RESERVED');
       return;
     }
 
@@ -38,7 +42,7 @@ export class LandingComponent {
       },
       error: () => {
         this.loading = false;
-        this.error = 'Business not found';
+        this.error = this.translate.instant('ERRORS.BUSINESS_NOT_FOUND');
       }
     });
   }

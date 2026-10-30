@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, forkJoin, of } from 'rxjs';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyService } from '../../services/loyalty.service';
@@ -22,7 +22,11 @@ export class QrDisplayComponent implements OnInit {
   error = '';
   slug = this.slugService.get() ?? '';
 
-  constructor(private loyalty: LoyaltyService, private slugService: SlugService) {}
+  constructor(
+    private loyalty: LoyaltyService,
+    private slugService: SlugService,
+    private translate: TranslateService
+  ) {}
 
   get remaining(): number {
     if (!this.card) {
@@ -40,12 +44,12 @@ export class QrDisplayComponent implements OnInit {
         this.card = card;
         this.qr = qr;
         if (!qr) {
-          this.error = 'Could not load QR';
+          this.error = this.translate.instant('ERRORS.LOAD_QR');
         }
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not load QR';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_QR');
         this.loading = false;
       }
     });

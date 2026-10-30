@@ -57,7 +57,7 @@ export class BusinessRewardsComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not load rewards';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_REWARDS');
         this.loading = false;
       }
     });
@@ -89,7 +89,7 @@ export class BusinessRewardsComponent implements OnInit {
         this.redeeming = 0;
         this.error = err.status === 409
           ? this.translate.instant('BUSINESS.ALREADY_REDEEMED')
-          : (err.error?.message || 'Could not redeem');
+          : (err.error?.message || this.translate.instant('ERRORS.REDEEM'));
       }
     });
   }

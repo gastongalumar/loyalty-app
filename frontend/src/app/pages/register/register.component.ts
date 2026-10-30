@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { SlugService } from '../../services/slug.service';
 
@@ -19,11 +19,13 @@ export class RegisterComponent {
   error = '';
   slug = this.slugService.get() ?? '';
   businessName = this.slugService.getTenant()?.name ?? this.slugService.get() ?? '';
+  logoUrl = this.slugService.getTenant()?.logoUrl ?? '';
 
   constructor(
     private authService: AuthService,
     private slugService: SlugService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   onRegister(): void {
@@ -42,7 +44,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Registration failed';
+        this.error = err.error?.message || this.translate.instant('ERRORS.REGISTER');
       }
     });
   }

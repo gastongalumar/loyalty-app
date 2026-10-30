@@ -1,7 +1,7 @@
 <nav class="navbar">
       <a class="navbar-brand" [routerLink]="home">
         <img *ngIf="logoUrl" class="navbar-logo" [src]="logoUrl" alt="" />
-        <span>{{ businessName || ('APP.NAME' | translate) }}</span>
+        <span class="navbar-name">{{ businessName || ('APP.NAME' | translate) }}</span>
         <span *ngIf="slug" class="navbar-slug"> · {{ slug }}</span>
       </a>
 

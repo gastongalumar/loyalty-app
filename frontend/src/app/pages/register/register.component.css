@@ -1,2 +1,1 @@
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .auth-link { text-align: center; margin-top: 20px; font-size: 0.9rem; }
+/* Estilos compartidos en styles.css: .auth-page, .auth-card, .auth-brand, .auth-link y .form-row. */

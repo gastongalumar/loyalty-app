@@ -1,54 +1,111 @@
 <app-navbar></app-navbar>
 
-    <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
-      <a routerLink="/platform/businesses" class="btn btn-ghost btn-sm">{{ 'COMMON.BACK' | translate }}</a>
+<main class="detail">
+  <a routerLink="/platform/businesses" class="back-link">
+    <span aria-hidden="true">←</span>
+    {{ 'COMMON.BACK' | translate }}
+  </a>
 
-      <div *ngIf="error" class="alert alert-error">{{ error }}</div>
-      <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+  <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+  <div *ngIf="success" class="alert alert-success">{{ success }}</div>
 
-      <ng-container *ngIf="business">
-        <div class="page-header">
-          <h1 class="page-title">{{ business.name }}</h1>
-          <p class="page-subtitle">{{ business.slug }} · {{ business.status }}</p>
-        </div>
+  <div *ngIf="loading" class="card skeleton">{{ 'COMMON.LOADING' | translate }}</div>
 
-        <div class="card">
-          <p>{{ business.description }}</p>
-          <p><strong>{{ 'BUSINESS.REWARD' | translate }}:</strong> {{ business.rewardDescription }}</p>
-          <p><strong>{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}:</strong> {{ business.totalCustomers }}</p>
-        </div>
+  <ng-container *ngIf="business && !loading">
+    <header class="detail-head fade-in">
+      <div>
+        <p class="eyebrow">{{ 'PLATFORM.DETAIL' | translate }}</p>
+        <h1 class="page-title">{{ business.name }}</h1>
+        <p class="page-subtitle">
+          <code class="slug">{{ business.slug }}</code>
+          <span *ngIf="business.description"> · {{ business.description }}</span>
+        </p>
+      </div>
+      <span class="status-badge" [ngClass]="statusTone">
+        <span class="status-dot" aria-hidden="true"></span>
+        {{ statusKey | translate }}
+      </span>
+    </header>
 
-        <div class="card" style="margin-top:16px;">
-          <h3>{{ 'PLATFORM.ADMINS' | translate }}</h3>
-          <ul>
-            <li *ngFor="let admin of admins">{{ admin.email }} — {{ admin.firstName }} {{ admin.lastName }}</li>
-          </ul>
-          <p *ngIf="admins.length === 0">{{ 'COMMON.NONE' | translate }}</p>
-        </div>
+    <section class="summary-grid fade-in" [attr.aria-label]="'PLATFORM.DETAIL' | translate">
+      <article class="summary-card">
+        <span class="summary-icon" aria-hidden="true">🏆</span>
+        <span class="summary-label">{{ 'BUSINESS.REWARD' | translate }}</span>
+        <strong class="summary-value">{{ business.rewardDescription || '—' }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon" aria-hidden="true">👥</span>
+        <span class="summary-label">{{ 'BUSINESS.TOTAL_CUSTOMERS' | translate }}</span>
+        <strong class="summary-value">{{ business.totalCustomers }}</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon" aria-hidden="true">🛡️</span>
+        <span class="summary-label">{{ 'PLATFORM.ADMINS' | translate }}</span>
+        <strong class="summary-value">{{ admins.length }}</strong>
+      </article>
+    </section>
 
-        <div class="card" style="margin-top:16px;">
-          <h3>{{ 'PLATFORM.NEW_ADMIN' | translate }}</h3>
-          <div class="form-group">
-            <label class="form-label">{{ 'AUTH.EMAIL' | translate }}</label>
-            <input class="form-control" [(ngModel)]="adminForm.email" />
+    <div class="detail-grid fade-in">
+      <section class="panel">
+        <header class="panel-head">
+          <div>
+            <h2>{{ 'PLATFORM.ADMINS' | translate }}</h2>
+            <p class="muted">{{ 'PLATFORM.ADMINS_HINT' | translate }}</p>
           </div>
-          <div class="form-group">
-            <label class="form-label">{{ 'AUTH.PASSWORD' | translate }}</label>
-            <input type="password" class="form-control" [(ngModel)]="adminForm.password" />
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">{{ 'AUTH.FIRST_NAME' | translate }}</label>
-              <input class="form-control" [(ngModel)]="adminForm.firstName" />
+        </header>
+
+        <div *ngIf="admins.length === 0" class="empty-state">
+          <span class="empty-icon" aria-hidden="true">🛡️</span>
+          <p>{{ 'PLATFORM.ADMIN_EMPTY' | translate }}</p>
+        </div>
+
+        <ul *ngIf="admins.length > 0" class="admin-list">
+          <li *ngFor="let admin of admins" class="admin-row">
+            <span class="admin-avatar" aria-hidden="true">{{ initials(admin) }}</span>
+            <div class="admin-identity">
+              <strong>{{ admin.firstName }} {{ admin.lastName }}</strong>
+              <span class="muted">{{ admin.email }}</span>
             </div>
-            <div class="form-group">
-              <label class="form-label">{{ 'AUTH.LAST_NAME' | translate }}</label>
-              <input class="form-control" [(ngModel)]="adminForm.lastName" />
-            </div>
+          </li>
+        </ul>
+      </section>
+
+      <aside class="panel">
+        <header class="panel-head">
+          <div>
+            <h2>{{ 'PLATFORM.NEW_ADMIN' | translate }}</h2>
+            <p class="muted">{{ 'PLATFORM.NEW_ADMIN_HINT' | translate }}</p>
           </div>
-          <button class="btn btn-primary" [disabled]="creatingAdmin" (click)="createAdmin()">
-            {{ creatingAdmin ? ('COMMON.LOADING' | translate) : ('COMMON.CREATE' | translate) }}
-          </button>
+        </header>
+
+        <div class="form-group">
+          <label class="form-label" for="admin-email">{{ 'AUTH.EMAIL' | translate }}</label>
+          <input id="admin-email" type="email" class="form-control" [(ngModel)]="adminForm.email"
+                 autocomplete="email" />
         </div>
-      </ng-container>
+
+        <div class="form-group">
+          <label class="form-label" for="admin-password">{{ 'AUTH.PASSWORD' | translate }}</label>
+          <input id="admin-password" type="password" class="form-control" [(ngModel)]="adminForm.password"
+                 autocomplete="new-password" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="admin-first">{{ 'AUTH.FIRST_NAME' | translate }}</label>
+            <input id="admin-first" class="form-control" [(ngModel)]="adminForm.firstName" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="admin-last">{{ 'AUTH.LAST_NAME' | translate }}</label>
+            <input id="admin-last" class="form-control" [(ngModel)]="adminForm.lastName" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" type="button"
+                [disabled]="!canCreateAdmin" (click)="createAdmin()">
+          {{ creatingAdmin ? ('COMMON.LOADING' | translate) : ('PLATFORM.CREATE_ADMIN' | translate) }}
+        </button>
+      </aside>
     </div>
+  </ng-container>
+</main>

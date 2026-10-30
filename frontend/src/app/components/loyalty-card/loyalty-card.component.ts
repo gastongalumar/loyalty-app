@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { LoyaltyCard } from '../../models/models';
+import { cardStatusKey } from '../../utils/status';
 
 @Component({
   selector: 'app-loyalty-card',
@@ -28,13 +29,6 @@ export class LoyaltyCardVisualComponent {
   }
 
   get statusKey(): string {
-    switch (this.card?.status) {
-      case 'REWARD_PENDING':
-        return 'CUSTOMER.REWARD_READY';
-      case 'COMPLETED':
-        return 'CUSTOMER.STATUS_COMPLETED';
-      default:
-        return 'CUSTOMER.STATUS_ACTIVE';
-    }
+    return cardStatusKey(this.card?.status ?? 'ACTIVE');
   }
 }

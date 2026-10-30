@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Html5Qrcode } from 'html5-qrcode';
 import { NavbarComponent } from '../../components/navbar.component';
 import { LoyaltyCardVisualComponent } from '../../components/loyalty-card/loyalty-card.component';
@@ -31,11 +31,14 @@ export class QrScannerComponent implements OnDestroy {
   card: LoyaltyCard | null = null;
   private scanner: Html5Qrcode | null = null;
 
-  constructor(private loyalty: LoyaltyService) {}
+  constructor(
+    private loyalty: LoyaltyService,
+    private translate: TranslateService
+  ) {}
 
   startScanner(): void {
     if (typeof Html5Qrcode === 'undefined') {
-      this.error = 'Camera library not available';
+      this.error = this.translate.instant('ERRORS.CAMERA_UNAVAILABLE');
       return;
     }
     this.error = '';
@@ -51,7 +54,7 @@ export class QrScannerComponent implements OnDestroy {
       },
       () => undefined
     ).catch(() => {
-      this.error = 'Camera access denied';
+      this.error = this.translate.instant('ERRORS.CAMERA_DENIED');
       this.scannerActive = false;
     });
   }
@@ -88,7 +91,7 @@ export class QrScannerComponent implements OnDestroy {
         this.note = '';
       },
       error: (err) => {
-        this.error = err.error?.message || 'Invalid QR code';
+        this.error = err.error?.message || this.translate.instant('ERRORS.INVALID_QR');
         this.loading = false;
       }
     });

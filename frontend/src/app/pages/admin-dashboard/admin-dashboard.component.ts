@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, forkJoin, of } from 'rxjs';
 import { NavbarComponent } from '../../components/navbar.component';
 import { PlatformService } from '../../services/platform.service';
@@ -9,6 +9,7 @@ import { LoyaltyService } from '../../services/loyalty.service';
 import { RewardService } from '../../services/reward.service';
 import { SlugService } from '../../services/slug.service';
 import { Business, Customer, Reward } from '../../models/models';
+import { businessStatusKey } from '../../utils/status';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -32,7 +33,8 @@ export class AdminDashboardComponent implements OnInit {
     private platform: PlatformService,
     private loyalty: LoyaltyService,
     private rewardService: RewardService,
-    private slugService: SlugService
+    private slugService: SlugService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -49,10 +51,14 @@ export class AdminDashboardComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Could not load dashboard';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOAD_DASHBOARD');
         this.loading = false;
       }
     });
+  }
+
+  get statusKey(): string {
+    return businessStatusKey(this.business?.status ?? 'ACTIVE');
   }
 
   get activeCustomers(): number {
@@ -83,12 +89,12 @@ export class AdminDashboardComponent implements OnInit {
         customer.totalStamps = card.totalStamps;
         customer.cardStatus = card.status;
         this.addingId = 0;
-        this.success = `${customer.firstName} ${customer.lastName}: ${card.currentStamps}/${card.totalStamps}`;
+        this.success = `${customer.firstName} ${customer.lastName}: ${card.currentStamps}/${card.totalStamps} · ${this.translate.instant('BUSINESS.STAMP_ADDED')}`;
         setTimeout(() => this.success = '', 2500);
       },
       error: (err) => {
         this.addingId = 0;
-        this.error = err.error?.message || 'Could not add stamp';
+        this.error = err.error?.message || this.translate.instant('ERRORS.ADD_STAMP');
       }
     });
   }

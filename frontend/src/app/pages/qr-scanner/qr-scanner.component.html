@@ -16,14 +16,14 @@
         <h2>{{ 'BUSINESS.START_CAMERA' | translate }}</h2>
         <span class="badge" [class.badge-success]="scannerActive"
               [class.badge-secondary]="!scannerActive">
-          {{ scannerActive ? 'LIVE' : 'OFF' }}
+          {{ (scannerActive ? 'SCANNER.LIVE' : 'SCANNER.OFF') | translate }}
         </span>
       </header>
 
       <div class="camera-shell">
         <div id="qr-reader" class="qr-reader"></div>
         <p *ngIf="!scannerActive" class="camera-hint">
-          📷 {{ 'BUSINESS.SCANNER_SUBTITLE' | translate }}
+          📷 {{ 'SCANNER.IDLE_HINT' | translate }}
         </p>
       </div>
 
@@ -32,7 +32,7 @@
           {{ 'BUSINESS.START_CAMERA' | translate }}
         </button>
         <button *ngIf="scannerActive" class="btn btn-outline" type="button" (click)="stopScanner()">
-          {{ 'COMMON.CANCEL' | translate }}
+          {{ 'BUSINESS.STOP_CAMERA' | translate }}
         </button>
       </div>
     </section>
@@ -41,6 +41,8 @@
       <header class="panel-head">
         <h2>{{ 'BUSINESS.CONFIRM_SCAN' | translate }}</h2>
       </header>
+
+      <p class="manual-hint">{{ 'SCANNER.MANUAL_HINT' | translate }}</p>
 
       <div class="form-group">
         <label class="form-label" for="manual-code">{{ 'BUSINESS.QR_CODE' | translate }}</label>
@@ -61,6 +63,7 @@
   </div>
 
   <section *ngIf="card" class="result fade-in">
+    <p class="result-label">{{ 'SCANNER.RESULT' | translate }}</p>
     <app-loyalty-card [card]="card" />
   </section>
 </main>

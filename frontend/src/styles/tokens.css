@@ -138,6 +138,13 @@
   /* QR: siempre sobre blanco para que el escáner lea */
   --qr-surface: #ffffff;
 
+  /* Paletas de marca sugeridas (solo acentos) */
+  --brand-coffee: #a63a12;
+  --brand-forest: #1f6f4a;
+  --brand-ocean: #1d4e89;
+  --brand-plum: #6b2d5c;
+  --brand-berry: #a11d4b;
+
   /* Componente */
   --button-bg: var(--color-surface-raised);
   --button-bg-hover: var(--color-surface);

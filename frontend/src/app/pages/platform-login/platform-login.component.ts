@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { SlugService } from '../../services/slug.service';
 import { ThemeService } from '../../services/theme.service';
@@ -26,7 +26,8 @@ export class PlatformLoginComponent {
     private slugService: SlugService,
     private themeService: ThemeService,
     private pwaService: PwaService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {
     // A platform login must never carry a tenant slug, branding or manifest from a previous session.
     this.slugService.clear();
@@ -43,13 +44,13 @@ export class PlatformLoginComponent {
         if (res.role === 'PLATFORM_ADMIN') {
           this.router.navigate(['/platform/businesses']);
         } else {
-          this.error = 'Not a platform administrator';
+          this.error = this.translate.instant('ERRORS.PLATFORM_ROLE');
           this.auth.logout();
         }
       },
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message || 'Login failed';
+        this.error = err.error?.message || this.translate.instant('ERRORS.LOGIN');
       }
     });
   }

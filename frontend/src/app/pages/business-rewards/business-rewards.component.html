@@ -9,7 +9,7 @@
     </div>
     <span class="count-pill">
       <strong>{{ total }}</strong>
-      {{ (status === 'REDEEMED' ? 'BUSINESS.REDEEMED' : 'BUSINESS.AVAILABLE') | translate }}
+      {{ (total === 1 ? 'BUSINESS.REWARD_ONE' : 'BUSINESS.REWARD_MANY') | translate }}
     </span>
   </header>
 
