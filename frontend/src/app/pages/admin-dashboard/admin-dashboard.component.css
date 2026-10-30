@@ -391,7 +391,23 @@
     justify-self: stretch;
   }
 
+  .action-body .muted {
+    overflow: visible;
+    white-space: normal;
+  }
+
   .reward-banner {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .stat-card {
+    padding: var(--space-4);
+  }
+
+  .stat-label {
+    font-size: var(--text-2xs);
+    letter-spacing: normal;
   }
 }
