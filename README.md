@@ -322,6 +322,9 @@ Verificado con **Temurin 21.0.13 LTS** (52 tests verdes sobre JVM 21) y **MySQL 
 
 ## Docker y despliegue en la VM
 
+> Guía operativa completa (SSH, password prompts, tunnel, backups, troubleshooting):
+> **[GUIA-DOCKER.md](GUIA-DOCKER.md)**.
+
 ### Servicios
 
 | Servicio | Imagen | Puertos | Notas |
