@@ -78,7 +78,8 @@
     "NEW_ADMIN": "New business admin",
     "ADMINS": "Business admins",
     "SUSPEND": "Suspend",
-    "ACTIVATE": "Activate"
+    "ACTIVATE": "Activate",
+    "SLUG_HINT": "lowercase letters, numbers and hyphens (e.g. cafe-a)"
   },
   "PWA": {
     "INSTALL": "Install app"

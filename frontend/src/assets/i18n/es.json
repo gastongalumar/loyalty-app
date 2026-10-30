@@ -78,7 +78,8 @@
     "NEW_ADMIN": "Nuevo administrador",
     "ADMINS": "Administradores del negocio",
     "SUSPEND": "Suspender",
-    "ACTIVATE": "Activar"
+    "ACTIVATE": "Activar",
+    "SLUG_HINT": "minúsculas, números y guiones (ej: cafe-a)"
   },
   "PWA": {
     "INSTALL": "Instalar app"
